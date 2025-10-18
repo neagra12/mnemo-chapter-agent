@@ -1,0 +1,4 @@
+# This file lists the Python packages needed to run the app.
+# Install them using: pip install -r requirements.txt
+Flask
+pytest

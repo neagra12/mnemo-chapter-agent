@@ -1,0 +1,9 @@
+# Ignore the Python virtual environment folder
+venv/
+
+# Ignore Python's compiled bytecode files
+*.pyc
+__pycache__/
+
+# Ignore platform-specific files
+.DS_Store
