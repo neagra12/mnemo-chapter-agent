@@ -1,61 +1,99 @@
-***
-## The Final 7-Week Plan
+# The Complete 7-Week Course Plan (v7)
+
+This document outlines the complete learning experience for the final seven weeks. It is divided into two parts:
+
+1.  **Part 1: The Lecture & ICE Sequence** describes the synchronous, in-class learning path.
+2.  **Part 2: Integrated Project & Skill Kits** describes the asynchronous, project-based skills delivered and evaluated via project deliverables, quizzes, and extra credit.
+
+-----
+
+## Part 1: The Lecture & ICE Sequence
+
+This is the 14-lecture, 7-week plan that forms the "spine" of the course.
 
 #### **Cycle 1: Foundations & Automated Quality (Weeks 1-2)**
-* **Week 1:**
-    * **Lecture 1: The Modern Web & The Engineering Mindset.**
-        * **Historical Hook:** The origin of HTTP at CERN.
-        * **Core Concepts:** Client-server model, HTTP basics, role of a web framework (Flask).
-        * **ICE 1:** Teams set up their Git repository, establish branching standards, and get the initial "Hello World" Flask app running.
-    * **Lecture 2: Continuous Integration (CI).**
-        * **Core Concepts:** Principles of CI, GitHub Actions workflow syntax, YAML structure.
-        * **ICE 2 (Project-Critical):** Teams create their `main.yml` workflow file for GitHub Actions and configure it to run `pytest` on every push.
-* **Week 2:**
-    * **Lecture 3: Databases & Models.**
-        * **Core Concepts:** ORMs (SQLAlchemy), database migrations, designing data models.
-        * **ICE 3:** Teams define their `User` and `Joke` models and create the initial database migration.
-    * **Lecture 4: Testing, Linting & Data Formats.**
-        * **Core Concepts:** Unit testing with Pytest, code linting with `flake8`, and a comparison of **YAML vs. JSON**.
-        * **ICE 4 (CI Enhancement):** Teams write their first unit tests and add a "Lint" job to their GitHub Actions workflow.
 
----
+  * **Week 1:**
+      * **Lecture 1: The Modern Web & The Engineering Mindset.** (HTTP, Flask)
+      * **ICE 1:** Repo setup, branching standards, "Hello World" Flask app.
+      * **Lecture 2: Continuous Integration (CI).** (GitHub Actions, YAML)
+      * **ICE 2:** Create `main.yml` to run `pytest` on push.
+  * **Week 2:**
+      * **Lecture 3: Databases & Models.** (SQLAlchemy, Migrations)
+      * **ICE 3:** Define `User` and `Joke` models, create initial migration.
+      * **Lecture 4: Testing, Linting & Data Formats.** (Pytest, `flake8`, YAML vs. JSON)
+      * **ICE 4 (CI Enhancement):** Write unit tests, add "Lint" job to `main.yml`.
+
+-----
+
 #### **Cycle 2: Security, Features & CI Enhancement (Weeks 3-4)**
-* **Week 3:**
-    * **Lecture 5: Authentication & User Roles.**
-        * **Historical Hook:** The history of password hashing (MD5 vs. bcrypt).
-        * **Core Concepts:** Secure password storage, session management, Role-Based Access Control (RBAC).
-        * **ICE 5:** Teams implement user registration and login functionality.
-    * **Lecture 6: Web Security & Secure CI.**
-        * **Core Concepts:** OWASP Top 10 (CSRF, Injection), security scanning tools (`bandit`, `pip-audit`).
-        * **ICE 6 (CI Enhancement):** Teams add `bandit` and `pip-audit` jobs to their GitHub Actions workflow.
-* **Week 4:**
-    * **Lecture 7: Feature Development & Integration.**
-        * **Core Concepts:** Implementing the rating system, integrating the new feature into the existing, secured application.
-        * **ICE 7 (Project-Critical):** Teams write the backend logic for the joke rating system.
-    * **Lecture 8: Cycle 2 Review & Retrospective.**
-        * **ICE 8:** A 30-minute "Start, Stop, Continue" team retrospective to identify process pain points.
 
----
+  * **Week 3:**
+      * **Lecture 5: Authentication & User Roles.** (Hashing, Sessions, RBAC)
+      * **ICE 5:** Implement user registration and login (on a `feature/user-auth` branch).
+      * **Lecture 6: Web Security & Secure CI.** (OWASP Top 10, `bandit`, `pip-audit`)
+      * **ICE 6 (CI Enhancement):** Add `bandit` and `pip-audit` jobs to CI workflow.
+  * **Week 4:**
+      * **Lecture 7: Feature Development & Integration.** (Rating System Logic)
+      * **ICE 7:** Implement backend logic for joke rating system.
+      * **Lecture 8: Cycle 2 Review & Retrospective.**
+      * **ICE 8:** Team "Start, Stop, Continue" retrospective.
+
+-----
+
 #### **Cycle 3: Integration, Operations & Scale (Weeks 5-7)**
-* **Week 5:**
-    * **Lecture 9: APIs & Decoupling: The "Contract".**
-        * **Core Concepts:** RESTful API design, API-first development.
-        * **ICE 9 (Vertical Slice, Part 1):** Teams define and build the backend "contract": a single, trivial data-only endpoint `GET /api/jokes/count`.
-    * **Lecture 10: Introduction to Frontend Frameworks: "Consuming the Contract".**
-        * **Core Concepts:** The "why" of React, component-based architecture, the `fetch` API.
-        * **ICE 10 (Vertical Slice, Part 2):** Teams create a single React component that fetches data from their `/api/jokes/count` endpoint and displays: "Total Jokes: [Number]".
-* **Week 6:**
-    * **Lecture 11: Containerization with Docker.**
-        * **Substituted Hook:** **The "It Works on My Machine" Problem.** (This replaces the redundant history hook).
-        * **Core Concepts:** Dockerfiles, Docker Compose, solving dependency and environment drift.
-        * **ICE 11:** Teams create a `Dockerfile` for their Flask application.
-    * **Lecture 12: Continuous Deployment (CD).**
-        * **Core Concepts:** Principles of CD, automating Docker builds, GitHub Container Registry.
-        * **ICE 12 (CI/CD Enhancement):** Teams enhance their GitHub Actions workflow to build the Docker image and push it to the GitHub Container Registry.
-* **Week 7:**
-    * **Lecture 13: Integrating External Services (GenAI).**
-        * **Core Concepts:** Making API calls to the GenAI service, synchronous vs. asynchronous operations.
-        * **ICE 13:** Teams add the synchronous API call to the local GenAI model.
-    * **Lecture 14: Course Retrospective & Professional Horizons.**
-        * **Core Concepts:** A final, course-wide retrospective; discussion of advanced topics (e.g., async, microservices); "where to go from here."
-        * **(No ICE - Final Q&A and wrap-up)**
+
+  * **Week 5:**
+      * **Lecture 9: APIs & Decoupling: The "Contract".** (RESTful API design)
+      * **ICE 9:** Build the `GET /api/jokes/count` backend endpoint.
+      * **Lecture 10: Introduction to Frontend: "Consuming the Contract".** (React "Why", `fetch`)
+      * **ICE 10 (Scaffolded):** Clone canned React template, change `fetch()` URL to connect to their backend.
+  * **Week 6:**
+      * **Lecture 11: Multi-Service Orchestration with Docker Compose.**
+      * **ICE 11 (Upgraded):** Create `docker-compose.yml` to run `backend` + `db` services.
+      * **Lecture 12: Continuous Deployment (CD).** (Docker builds, GitHub Container Registry)
+      * **ICE 12 (CI/CD Enhancement):** Enhance CI to build and push Docker image to registry.
+  * **Week 7:**
+      * **Lecture 13: Integrating External Services (GenAI).** (External API calls)
+      * **ICE 13:** Add synchronous API call to local GenAI model.
+      * **Lecture 14: Course Retrospective & Professional Horizons.**
+      * **(No ICE - Final Q\&A and wrap-up)**
+
+-----
+
+## Part 2: Integrated Project & Skill Kits
+
+This section details the essential SE skills that are delivered and evaluated *through* the project deliverables and other asynchronous materials.
+
+### Component 1: GitHub Project Management Kit
+
+  * **Core Objective:** To teach students the value of an integrated toolchain for team productivity, traceability, and documentation.
+  * **Delivery Vector:** Phased requirements added to the Cycle 1, 2, and 3 project deliverables.
+  * **Evaluation:** Compliance check (i.e., "Did you do it?") via links in the `CONTRIBUTIONS.md` file.
+
+| Cycle | Tool Introduced | The "Problem" It Solves | Deliverable Task & Artifact |
+| :--- | :--- | :--- | :--- |
+| **Cycle 1** | **GitHub Projects (Kanban)** | "How do we plan our work and see who is doing what?" | **Task:** Create a team project board and add all Cycle 1 tasks. <br> **Artifact:** Link to the project board. |
+| **Cycle 2** | **GitHub Issues + PRs** | "How do we track features/bugs and link our code to our plan?" | **Task:** All new work must start as an Issue. PRs must use keywords (e.g., `Closes #12`). <br> **Artifact:** A clean PR history showing links to Issues. |
+| **Cycle 3** | **GitHub Wiki** | "How do we document our setup and API *for other developers*?" | **Task:** Move dev setup instructions from `README.md` to a "Developer Setup" Wiki page. Create a new "API Contract" page. <br> **Artifact:** A clean `README.md` and links to the Wiki pages. |
+
+### Component 2: React Deep-Dive Kit (Extra Credit)
+
+  * **Core Objective:** To provide an advanced, optional path for students to learn React implementation *after* they have mastered the core integration task.
+  * **Delivery Vector:** Optional Extra Credit module, supported by instructor-provided video guides and documentation links.
+  * **Evaluation:** Manual code review of the custom React app and a reflection in the `CONTRIBUTIONS.md`.
+  * **Task:**
+    1.  Students will replace the "canned" React template from ICE 10.
+    2.  They will use `npm create vite@latest` to build a new React app from scratch.
+    3.  They must correctly implement `useState` and `useEffect` to fetch and display data from their backend API.
+  * **Artifact:** Custom React source code and an "Extra Credit" section in their `CONTRIBUTIONS.md` linking to the commit and explaining *why* `useEffect` was necessary.
+
+### Component 3: Ethical Challenge Prompts
+
+  * **Core Objective:** To ensure students reflect on their responsibilities as engineers and consider the societal impact of their software.
+  * **Delivery Vector:** Short-answer reflection questions embedded directly into quizzes and major project cycle deliverables.
+  * **Evaluation:** Graded as a short-answer component of the quiz or as part of the "Reflections" section of the deliverable.
+  * **Examples:**
+      * **Quiz 3:** "Defend or refute: 'If I'm just writing code, I am not responsible for the ethical implications of how it's used.'"
+      * **Cycle 2 Deliverable:** "Your rating system now *ranks* user-generated content. What is one potential negative consequence of this ranking, and what is one engineering step (not a policy) you could take to mitigate it?"
+      * **Cycle 3 Deliverable:** "You have integrated a GenAI model. What is one risk of your app amplifying biases from this model, and how could you *measure* that?"

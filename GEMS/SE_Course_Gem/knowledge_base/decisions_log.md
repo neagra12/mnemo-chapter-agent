@@ -1,5 +1,26 @@
 # Decision Log for FA25 SE 1 final 7 weeks
 
+Here is the updated decision log entry that captures the significance of this structural change.
+
+---
+## 2025-10-18 @ 12:10AM EDT - Restructured Plan (v7) to Integrate Deliverable-Driven Skills
+
+**Scope:** SE\_Course\_Gem (Knowledge Base: `general_plan_for_final_7_weeks.md`)
+
+**Description:**
+This change restructures the `general_plan_for_final_7_weeks.md` into a new, unified format (v7). This was done to formally plan for crucial learning objectives that are delivered **asynchronously via project deliverables** rather than in-class lectures.
+
+The plan is now split into two main sections:
+* **Part 1: The Lecture & ICE Sequence:** This is the existing 14-lecture sequence (unchanged).
+* **Part 2: Integrated Project & Skill Kits:** This new section details the scaffolded, deliverable-driven skills.
+
+This new "Part 2" explicitly defines and plans for three key components:
+1.  **GitHub Project Management Kit:** A new, 3-cycle plan to introduce GitHub Projects (Kanban), Issues/PRs, and the Wiki, with specific tasks tied to each project deliverable.
+2.  **React Deep-Dive Kit (Extra Credit):** Formalizes the extra credit path (our solution for the L10 "cognitive cliff") for students to build a React app from scratch.
+3.  **Ethical Challenge Prompts:** Defines the delivery vector for these questions (quizzes and deliverables).
+
+**Result:** This new structure provides a complete, holistic view of all learning vectors (synchronous and asynchronous) and their specific evaluation methods, creating a single, unified "master plan."
+
 ---
 
 ## 2025-10-17 @ 20:06 EDT - Finalized SE 7-Week Plan (v5) - Streamlined Prerequisite Content
