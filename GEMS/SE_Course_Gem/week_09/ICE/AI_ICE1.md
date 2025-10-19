@@ -1,187 +1,185 @@
-This is the correct approach. It makes the **in-class goal explicit: "un-block" every team member**. The PR submission becomes an asynchronous follow-up. This new push/pull requirement is the perfect "litmus test" to ensure all setups (especially SSH) are working before teams leave the room.
+This is a critical update. Thank you for providing the detailed TA guide. It introduces the **Project Board (Kanban)** requirement, which was missing, and clarifies the rubric. This new task is a perfect addition for the `Repo Admin` and reinforces the "project management" aspect of the course.
 
-Here are the two updated documents:
+The TA guide also has a small contradiction in its rubric (it says `CONTRIBUTIONS.md` exists *only* on the branch, but the starter file is on `main`). I have resolved this logically: the *starter template* is on `main`, and the *updated version* is committed to the feature branch.
 
-1.  The student-facing `CYCLE_1_SETUP.md` file.
-2.  The `TA_Followup_Guide.md` (which includes the new DoD).
-
------
-
-## `CYCLE_1_SETUP.md` (Cycle 1 Starter Kit - Revised)
-
-**Objective:** This is your first team workshop. It has two goals:
-
-1.  **In-Class Goal (35-Min Workshop):** Get every single team member "operational." This means everyone can clone the repo, run the app, and pull changes from a teammate. **Identify all blockers** so your TA can help you *now*.
-2.  **Final Goal (Due 11:59 PM Tonight):** Submit a perfect Pull Request (PR) that includes your project setup and contributions log.
-
-Follow these steps precisely.
+Here is the fully revised `ICE 1`, now 100% aligned with your `TA_Guide_ICE1.md`.
 
 -----
 
-## Part 1: Repository & Collaborator Setup (5 min)
+### ICE 1: Project Bootstrap, Kanban & Team Sync
 
-1.  **Select a "Repo Admin":** One team member will create the repository.
-2.  **Use the IU GitHub:** Go to **[https://github.iu.edu](https://www.google.com/search?q=https://github.iu.edu)** (do **NOT** use `github.com`).
-3.  **Create Repository:**
-      * Name: `fa25-p465-team-XX`
-      * Visibility: `Private`.
-4.  **Add Collaborators:** Go to `Settings > Collaborators` and add:
-      * Every member of your team.
-      * Your assigned Team TA.
-      * The Instructor.
+  - **Objective:** Set up the team's repository, bootstrap it with standard process files, create a project Kanban board, establish the feature branching workflow, add a minimal Flask app, and perform a full-team `git pull` to confirm all members are operational.
+  - **Time Limit:** 40 minutes
+  - **Context:** For `Angband`, you cloned a "brownfield" repo. Today, you build the "greenfield" repo from scratch. Your first task is to bootstrap the repository with the standard "Ministry" process files (`LICENSE`, `CONTRIBUTIONS.md`, etc.), set up your team's task board, and conduct a "team sync" to prove everyone can successfully push and pull code.
 
 -----
 
-## Part 2: Project (Kanban) Board Setup (5 min)
+### Role Kit Selection (Strategy 1: Parallel Processing ⚡)
 
-1.  **Enable GitHub Projects:** Go to the `Projects` tab and create a `New project` using the `Team planning` template.
-2.  **Configure Columns:** Rename the columns to: `To Do`, `In Progress`, `Done`.
-3.  **Create Starter Tasks:** In `To Do`, create notes for the five main tasks of Cycle 1 and assign them:
-      * `Task 1: Complete repository and project setup (ICE 1)`
-      * `Task 2: Create initial CI pipeline (pytest) (ICE 2)`
-      * `Task 3: Define database models (User, Joke) (ICE 3)`
-      * `Task 4: Add Linting & Testing to CI (ICE 4)`
-      * `Task 5: Finalize & Submit Cycle 1 Deliverable`
-4.  **Action:** Drag `Task 1` to `In Progress`.
+For this ICE, we will use the **Project Setup Kit**. Assign these three roles immediately.
+*Remember the course policy: You cannot hold the same role for more than two consecutive weeks.*
+
+  * **Repo Admin:** (GitHub & Repo): Creates the repo, adds starter files to `main`, sets up the Project Board, and manages collaborators.
+  * **Process Lead:** (Branching & Process): Manages the Git feature branching, leads the `CONTRIBUTIONS.md` edit, and manages the final PR.
+  * **Dev Crew:** (Code & Local Env): Sets up the `venv`, installs dependencies, writes `app.py`, and confirms the app and tests run locally.
 
 -----
 
-## Part 3: Local Setup & "Hello World" (10 min)
+### Task Description: "The Ministry is Founded"
 
-**Everyone on the team must do this.**
+This task is sequential. Call out when you are done with your part so the next person can begin.
 
-1.  **Clone the Repo:** `git clone [YOUR_SSH_URL_HERE]`
-      * **CRITICAL:** Use the **SSH** URL, not HTTPS. If this fails, **STOP**. This is your first "blocker." Call your TA over to help fix your SSH keys.
-2.  **Add Starter Code:** The "Repo Admin" will add the three starter files (`app.py`, `requirements.txt`, `.gitignore`) to the repo, commit, and push them *directly to `main`*.
-    ```bash
-    git add .
-    git commit -m "Initial commit: Add Hello World starter code"
-    git push origin main
-    ```
-3.  **Pull Starter Code:** Everyone else run `git pull origin main`.
-4.  **Create ICE 1 Branch:** **Everyone** must now create the *same* branch for this ICE:
-    ```bash
-    git checkout -b ice1-setup
-    ```
-5.  **Setup Python Environment (All Members):**
-      * Create `venv`: `python -m venv venv`
-      * Activate `venv`: `source venv/bin/activate` (or `.\venv\Scripts\activate`)
-      * Install packages: `pip install -r requirements.txt`
-6.  **Run the App:** Run `flask --app app run --debug`. You should see the server running. **This is your second blocker.** If it fails, call your TA.
+#### Part 1: Repo & Project Board Bootstrap
+
+  * **(Repo Admin)**
+    1.  Create a new, **public** GitHub repository. **You must use the format:** `FA25-P465-TeamXX-moj` (e.g., `FA25-P465-Team01-moj`).
+    2.  Go to `Settings` \> `Collaborators` and add all team members, your TA, and the instructor (`@seiffert`).
+    3.  In your *local terminal* (not the web UI), `git clone` the new, empty repo.
+    4.  Download the `moj-starter-files.zip` (provided on Canvas) and unzip them into your cloned repo. This should add all starter files (`LICENSE`, `CONTRIBUTIONS.md`, `requirements.txt`, `tests/test_placeholder.py`, etc.).
+    5.  Commit these files directly to the `main` branch and push:
+        ```bash
+        git add .
+        git commit -m "chore: initial project bootstrap with process files"
+        git push
+        ```
+    6.  **Project Board Setup:** In the GitHub repo, go to the `Projects` tab. Create a new "Project." Select the "Team backlog" or "Kanban" template.
+    7.  **Add Starter Tasks:** Add 5 "tasks" (as draft issues) to your new board: `Set up CI/CD pipeline`, `Define database models`, `Create user registration endpoint`, `Implement authentication`, `Test joke submission endpoint`.
+    8.  **ANNOUNCE:** "The repo is live and bootstrapped. Everyone `git clone`."
+
+#### Part 2: Feature Branching
+
+  * **(Process Lead)**
+    1.  After *everyone* has cloned the repo, you will create the first feature branch.
+    2.  In your terminal, run: `git checkout -b ice1-setup` (Note: `ice1-setup`, not `bootstrap`\!)
+    3.  Push this new branch to the remote repo: `git push -u origin ice1-setup`
+    4.  **ANNOUNCE:** "The `ice1-setup` branch is live. Everyone run `git fetch` and then `git checkout ice1-setup`."
+
+#### Part 3: "Hello, Ministry\!" & Local Verification
+
+  * **(Dev Crew)**
+    1.  Make sure you are on the `ice1-setup` branch.
+    2.  Create a virtual environment: `python3 -m venv venv`
+    3.  Activate it: `source venv/bin/activate` (Mac/Linux) or `.\venv\Scripts\activate` (Windows).
+    4.  Install the dependencies from the file the `Repo Admin` added:
+        `pip install -r requirements.txt`
+    5.  Create a file named `app.py` and add the "Hello, Ministry" code:
+        ```python
+        from flask import Flask
+
+        app = Flask(__name__)
+
+        @app.route("/")
+        def hello_ministry():
+            return "Hello, Ministry!"
+
+        if __name__ == '__main__':
+            app.run(debug=True)
+        ```
+    6.  **Verify everything locally\!** Run these two commands:
+          * `flask run` (and check `http://127.0.0.1:5000` in your browser).
+          * `pytest` (and confirm it finds and passes `1 test` from `test_placeholder.py`).
+    7.  Commit your work to the `ice1-setup` branch and push:
+        ```bash
+        git add app.py
+        git commit -m "feat: add initial 'Hello Ministry' flask app"
+        git push
+        ```
+    8.  **ANNOUNCE:** "The Flask app is pushed. Everyone `git pull`."
 
 -----
 
-## Part 4: `CONTRIBUTIONS.md` & Team Sync (15 min)
+### `CONTRIBUTIONS.md` Log Entry & Team Sync
 
-This part is the most important. It proves your whole team can collaborate.
+*One team member share their screen.* You are now editing the **existing** `CONTRIBUTIONS.md` file.
 
-1.  **One Person Creates the File:** One team member (who is *not* the "Repo Admin") will create the `CONTRIBUTIONS.md` file on the `ice1-setup` branch.
-
-2.  **Add Content:** Copy the template from Canvas into the new file. As a team, fill in the `ICE 1` entry.
-
-3.  **Commit & Push the File:**
-
+1.  **Process Lead:** Make sure everyone on the team has pulled the `app.py` file from the `Dev Crew`.
+2.  **Process Lead:** Open `CONTRIBUTIONS.md` and **fill in the template** for ICE 1 (the header and summary are already there). You only need to add:
+      * The `Date`
+      * The `@github-user` for all `Team Members Present`
+      * The `@github-user` for each `Role`
+3.  **Process Lead:** Commit and push this change:
     ```bash
     git add CONTRIBUTIONS.md
-    git commit -m "feat: Add initial contributions log for ICE 1"
-    git push origin ice1-setup 
+    git commit -m "docs: log ICE 1 team sync"
+    git push
     ```
-
-      * **This is your third blocker.** If this `git push` fails, call your TA.
-
-4.  **All *Other* Members Pull the File:**
-
-      * Everyone else on the team must now run:
-        ```bash
-        git pull origin ice1-setup
-        ```
-      * Confirm that the `CONTRIBUTIONS.md` file now appears in your local project folder.
-      * **This is your fourth blocker.** If this `git pull` fails, call your TA.
-
-**If your team completes this, you have met the in-class objective. Your team is officially "un-blocked."**
+4.  **CRITICAL STEP:** **All other team members** must now run `git pull` one last time.
 
 -----
 
-## Part 5: Submission (Due 11:59 PM Tonight)
+### Definition of Done (DoD) 🏁
 
-After class, one team member must complete the submission.
+#### Definition of "Class-Done" (End of Class)
 
-1.  **Open the PR:** Go to your `github.iu.edu` repo. Open a Pull Request to merge `ice1-setup` into `main`.
-2.  **Title:** `ICE 1: Repository & Project Setup`
-3.  **Assign Reviewer:** On the right-hand side, assign your **Team TA** as a "Reviewer".
-4.  **Submit to Canvas:** Copy the PR URL and submit it to the Canvas assignment for ICE 1.
+Your team's work is "Done" for class when you can check all of the following:
 
-**DO NOT MERGE THE PR.** Your TA will review, approve, and leave feedback. After they approve, you can merge it.
+  * [ ] **Team Sync:** ✅ **All team members** have successfully `git pull`-ed the final `CONTRIBUTIONS.md` update to their local `ice1-setup` branch.
+  * [ ] **Local Functionality:** All members have confirmed they can `flask run` the app and `pytest` runs successfully.
 
------
+#### Definition of "Done-Done" (Due: Midnight Tonight)
 
-## `CONTRIBUTIONS.md` Template
+You can complete these steps outside of class.
 
-```markdown
-# Team Contributions Log
-
-This file tracks contributions from team-based in-class exercises (ICEs) and individual work done outside of class.
-
-## Cycle 1
-
-### In-Class Exercises (ICEs)
-
----
-#### ICE 1: Repository & Project Setup
-* **Date:** 2025-XX-XX
-* **Team Members Present:** `@username1`, `@username2`, `@username3`
-* **Summary of Work:** As a team, we successfully created the private `github.iu.edu` repository, added all collaborators, configured the Cycle 1 Kanban board with 5 starter tasks, and created the `ice1-setup` branch. We are submitting this `CONTRIBUTIONS.md` file as part of our first PR.
-
----
-...
-```
+  * [ ] **Repository:** Repo is named correctly (`FA25-P465-TeamXX-moj`).
+  * [ ] **Collaborators:** All team members, TA, and Instructor are added.
+  * [ ] **`main` Branch:** `main` is clean (contains *only* the starter files).
+  * [ ] **Project Board:** The GitHub Project (Kanban) is created and has 5 starter tasks.
+  * [ ] **`CONTRIBUTIONS.md`:** The file is updated on the `ice1-setup` branch with date, members, and roles.
+  * [ ] **Submission:** A Pull Request is open (`ice1-setup` -\> `main`) with your TA assigned as a "Reviewer".
+  * [ ] **Canvas:** The PR URL is submitted to Canvas.
 
 -----
 
-## TA Follow-up Guide: ICE 1 (Revised)
+### Grading Rubric (10 points total)
 
-### In-Class Goal vs. Final DoD
+| Points | Category | Criteria |
+| :--- | :--- | :--- |
+| **5 pts** | **Repository Setup** | [ ] Repo is named correctly (`FA25-P465-TeamXX-moj`). <br> [ ] All members + TA + Instructor added as collaborators. <br> [ ] `main` branch is clean (only starter files). <br> [ ] `ice1-setup` branch contains `app.py`. <br> [ ] PR is correctly opened from `ice1-setup` -\> `main`. |
+| **2 pts** | **Project Board** | [ ] GitHub Project (Kanban) is created. <br> [ ] At least 5 starter tasks are added to the board. |
+| **2 pts** | **`CONTRIBUTIONS.md` File** | [ ] The *updated* file (with date, members, roles) is committed to the `ice1-setup` branch. <br> [ ] The ICE 1 entry is complete and correct. |
+| **1 pt** | **PR Submission** | [ ] TA is correctly assigned as a "Reviewer" on the PR. |
 
-  * **In-Class Goal (Workshop):** Your \#1 priority is **blocker removal**. The team's goal is *not* to submit the PR, but to get every member to a state where they can `git pull`, `git push`, and `flask run`. The "Team Sync" (`push`/`pull` of `CONTRIBUTIONS.md`) is the test.
+-----
+
+### TA Follow-up Guide
+
+  * **In-Class Goal (Workshop):** Your \#1 priority is **blocker removal**. The team's goal is *not* to submit the PR in class, but to get every member to a state where they can `git pull`, `git push`, and `flask run`. The "Team Sync" (`push`/`pull` of `CONTRIBUTIONS.md`) is the test for this.
+
   * **Final DoD (Due 11:59 PM):** The team submits a *perfect* PR for you to review.
 
-### Definition of Done (DoD) for ICE 1 (Updated)
+  * **Common Pitfalls & Coaching (Revised):**
 
-This is the team's *final* checklist.
+      * **The \#1 Blocker: SSH Key Hell.**
+          * **Symptom:** `git clone` or `git push` fails, or asks for a password.
+          * **The Fix:** This is your job. Walk them through `ssh-keygen`, adding the `.pub` key to GitHub, and ensuring their remote URL is the `ssh` version (not `https`). The new `push`/`pull` requirement is *designed* to force this error to happen in class.
+      * **The \#2 Blocker: Python/`venv` Path Hell.**
+          * **Symptom:** `python -m venv venv` fails, or `source venv/bin/activate` fails (especially Windows vs. Mac), or `pip install` fails with "permission denied."
+          * **The Fix:** Coach them on how `venv` works. Show them how to check (`which python3`) and be explicit (e.g., `python3.10 -m venv venv`).
+      * **The \#3 Blocker: Merge Conflict on `CONTRIBUTIONS.md`.**
+          * **Symptom:** `git pull` on the final step fails due to a merge conflict.
+          * **The Fix:** This happens if they didn't follow the "one person screen-share" rule. This is a perfect "coachable moment." Walk them through a `git pull`, fixing the merge conflict (accepting both changes), `git add`, `git commit`, and `push`ing the resolved file.
 
-  * [ ] **(In-Class) Team-Wide Local Setup:** Every team member has confirmed they can `git clone`, `git pull`, `git push`, and `flask run` the app locally.
-  * [ ] **(Final) Repository:** Repo is private on `github.iu.edu`.
-  * [ ] **(Final) Collaborators:** All team members, TA, and Instructor are added.
-  * [ ] **(Final) `main` Branch:** `main` is clean (only starter code).
-  * [ ] **(Final) Project Board:** Kanban board is created with 5 tasks assigned.
-  * [ ] **(Final) `CONTRIBUTIONS.md`:** File exists on the `ice1-setup` branch and is filled out.
-  * [ ] **(Final) Pull Request:** PR is open (`ice1-setup` -\> `main`) with TA as "Reviewer".
-  * [ ] **(Final) Canvas:** The PR link is submitted to Canvas.
+  * **Coaching Questions (for next team meeting):**
 
-### TA Grading Rubric: ICE 1 (10 points)
+      * "Your `Repo Admin` added several files you didn't write, like `LICENSE` and `DOCUMENTATION_POLICY.md`. Why does a real-world software team bootstrap a project with these 'process' files *before* writing any code?"
+      * "The main goal today was the 'Team Sync' (the final `git pull`). Why did we make that the *in-class* goal, instead of finishing the PR?" (Looking for "teamwork," "ensuring everyone's environment works," "finding setup bugs early").
+      * "I see you set up your Project Board. How do you plan to use that board to coordinate your work for the first project cycle?"
 
-*(This rubric is unchanged, as it grades the final, submitted PR artifact)*
+  * **Feed-Forward Prompts:**
 
-| Points | Artifact | Check |
-| :--- | :--- | :--- |
-| **1 pt** | **Repository Configuration** | [ ] Repo is on `github.iu.edu` and is `private`. |
-| **2 pts** | **Collaborators** | [ ] All team members are added. <br> [ ] TA and Instructor are added. |
-| **2 pts** | **Project (Kanban) Board** | [ ] Board exists with 3 columns. <br> [ ] 5 starter tasks are created and assigned. |
-| **2 pts** | **Branching Workflow** | [ ] `main` branch is clean. <br> [ ] PR is correctly opened from `ice1-setup` -\> `main`. |
-| **2 pts** | **`CONTRIBUTIONS.md` File** | [ ] File exists *only* on the `ice1-setup` branch. <br> [ ] ICE 1 entry is complete. |
-| **1 pt** | **PR Submission** | [ ] TA is correctly assigned as a "Reviewer". |
-| **Total** | | **/ 10** |
+      * "You've proven `pytest` runs *locally*. In our next class (ICE 2), we will build the GitHub Action to run it *automatically in the cloud* every time you push. Before then, find the 'Actions' tab on your GitHub repo. What do you see there?"
 
-### Common Pitfalls & Coaching (Revised)
+-----
 
-Your in-class time should be spent 100% on solving these "blockers."
+### Pedagogical Analysis
 
-1.  **The \#1 Blocker: SSH Key Hell.**
-      * **Symptom:** `git clone` or `git push` fails, or asks for a password.
-      * **The Fix:** This is your job. Do the 10-min workshop: `ssh-keygen`, add `.pub` key to `github.iu.edu`, and set remote URL to the `ssh` version. The new `push`/`pull` requirement is *designed* to force this error to happen in class.
-2.  **The \#2 Blocker: Python/`venv` Path Hell.**
-      * **Symptom:** `python -m venv venv` fails, or `source venv/bin/activate` fails, or `pip install` fails with a "permission denied" error (meaning they aren't in the venv).
-      * **The Fix:** Coach them on how `venv` works. Many students will have multiple Python versions. Show them how to check (`which python3`) and be explicit (e.g., `python3.11 -m venv venv`).
-3.  **The \#3 Blocker: The `flask` Command.**
-      * **Symptom:** `flask --app app run --debug` returns "command not found."
-      * **The Fix:** 99% of the time, their `venv` is not active. Make them run `which flask`. If it doesn't point to their `venv/bin/flask`, their environment is not active.
+  * **Core Goal (SE Experience):** This simulates "Day 1" on a real team. A senior dev (`Repo Admin`) sets up the repo with company-standard files (`LICENSE`, `CONTRIBUTIONS.md`), a standard naming convention, and the initial task backlog (the Kanban board). The dev team (`Dev Crew`) then checks out the repo, adds the first feature (`app.py`), and verifies the *existing* test/build infrastructure works (`pip install`, `pytest`).
+  * **Developer Workflow Competency:** This is hyper-focused on the *collaborative* Git workflow: `clone`, `checkout -b`, `push`, and (most critically) `pull`. The final "Team Sync" step is a scaffolded exercise in team synchronization.
+  * **Ethical Challenge:** This artifact does not include an ethical challenge. The task is purely technical setup.
+  * **Historical Context:** This artifact does not include a historical hook.
+  * **Creative Engagement:** The exercise uses the "Ministry of Jokes" narrative ("The Ministry is Founded") to frame the technical setup.
+  * **Cognitive Load Management:** This version has excellent load management.
+    1.  **De-risked Time:** By moving the PR to midnight and focusing the in-class goal on the "Team Sync," the "finish" pressure is gone.
+    2.  **Scaffolded Files:** The cognitive load of *creating* `requirements.txt`, `.gitignore`, `tests/`, and `CONTRIBUTIONS.md` is removed. The team only has to *use* them, which is a much more focused task.
+    3.  **Clear Goal:** The objective is a single, clear team action: "everyone `git pull`." This is an achievable, concrete, and high-value goal for the first day.
+    4.  **Parallel Tasks:** The `Repo Admin`'s new "Project Board" task can be done in parallel while the `Process Lead` and `Dev Crew` are working on their items, making good use of time.

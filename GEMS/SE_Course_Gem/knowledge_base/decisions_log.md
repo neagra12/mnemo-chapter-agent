@@ -1,7 +1,112 @@
 # Decision Log for FA25 SE 1 final 7 weeks
 
-
 --- 
+
+---
+
+## 2025-10-19 @ 00:45 EDT - Finalizing Module 2: The "Docker-for-Database" Strategy
+
+**Scope:** `Lecture 3`, `ICE 3`, and the overall viability of Module 2 (Week 10).
+
+**Description:**
+Upon a critical review of the planned `ICE 3` (Database & Migrations), I identified a fatal flaw: the ICE "magically assumed" every student would have a native PostgreSQL server installed, configured, and running locally. This unstated prerequisite would have introduced massive cognitive friction, platform-specific bugs, and made the 40-minute time limit impossible.
+
+**Insight (The "Aha!" Moment):**
+The user proposed a far superior solution: **use a pre-configured Docker container from DockerHub.**
+
+This insight is pedagogically and technically brilliant for three reasons:
+1.  **De-risking:** It completely eliminates the "setup hell" of native installation, which was the module's single greatest weakness.
+2.  **Consistency:** It provides a single, OS-agnostic `docker run` command, which allows us to define a **universal `sqlalchemy.url`** (connection string) that is *identical* for every student.
+3.  **Scaffolding:** It leverages students' existing familiarity with Docker (from `Angband`) and perfectly "primes" them for the upcoming orchestration module (Week 14), where they will simply codify this *exact same setup* in a `docker-compose.yml` file.
+
+**Decision(s):**
+1.  We will **not** create a `step-by-step-postgres-setup-guide.md` homework. It is no longer necessary.
+2.  **Lecture 3 (`Lecture 3.md`) will be modified** to include two new slides:
+    * **"Slide 9: Activating the 'Filing Cabinet' (with Docker)":** This slide will provide the exact `docker run ... postgres:16` command, setting the standard `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` environment variables.
+    * **"Slide 10: The Universal Connection String":** This slide will show the resulting `sqlalchemy.url` and explicitly tell students to copy it into their `alembic.ini` file during ICE 3.
+3.  **ICE 3 (`AI_ICE3.md`) is now finalized** with this Docker container as a hard prerequisite. This makes the 40-minute timing realistic, as it correctly focuses the in-class work on the *Alembic workflow*, not on database administration.
+
+**Impact:**
+The Module 2 plan is now exceptionally robust, and its primary weakness has been resolved. The pedagogical narrative is stronger, and the risk of in-class failure for ICE 3 has been dramatically reduced. The module rating is upgraded to **9.8/10**.
+
+---
+
+## 2025-10-18 @ 23:30 EDT - Finalizing Week 9 Module & Key Pedagogical Patterns
+
+**Scope:** `Lecture 2`, `ICE 2`, Week 9 Quiz, and future module workflow.
+
+**Description:**
+This log entry finalizes the complete Week 9 module and establishes several key pedagogical patterns that will be used for the rest of the course.
+
+1.  **Module 1 (Week 9) is Complete:** The module is now locked and consists of:
+    * `lecture1.md` (Flask/HTTP) & `AI_ICE1.md` (Repo/Team Sync)
+    * `step-by-step-runner-guide.md` (Homework)
+    * `Lecture 2.md` (CI/YAML)
+    * `ICE 2 (v3).md` (CI Pipeline Pass/Fail)
+    * `week9_quiz.md` (Individual Knowledge Check)
+
+2.  **Decision: ICE 2 Finalized with "Red Build" Simulation:** `ICE 2` has been iterated to `v3` and is now final. The key change is the addition of a **mandatory "red build" simulation**.
+    * **Objective:** The learning objective is no longer just "get a green checkmark." The new, more critical objective is for students to see *both* a "pass" and a "fail," and to learn the essential skill of **reading a failing build log** in a safe, scaffolded environment.
+    * **Role Update:** The "Mission Control 🚀" role kit is now used, and the `Mission Control` role is responsible for pushing the failing test (`assert False`), making them an active participant.
+
+3.  **Decision: `CONTRIBUTIONS.md` Reflection is Now an Open-Ended Question:** The `Reflection:` prompt in the `ICE Template` is now a mandatory, **open-ended question**.
+    * **Goal:** This turns the `CONTRIBUTIONS.md` file into a true evidence-gathering tool.
+    * **Content:** The question will be tailored to the ICE to probe either **engineering process** (e.g., "What is your team's process for handling a red build?") or **ethical impact** (e.g., "What is a potential bias of this feature?").
+
+4.  **Decision: Week 9 Quiz Added:** A 10-question quiz has been created to provide *individual, quantitative evidence* of student comprehension. This directly addresses the prior `decisions_log.md` entry ("I am interested in making up those quiz scores...").
+
+5.  **Decision: New Workflow - References First:** We will now generate the **Canonical Reference Guide at the *start* of each new module**. This allows us to "sprinkle" authoritative links (MDN, Python docs, etc.) throughout the module's lectures and ICEs, reducing cognitive friction for students.
+---
+## 2025-10-18 @ 22:27 EDT - Finalizing the "Greenfield" Bootstrap Strategy (ICE 1)
+
+**Scope:** `ICE 1`, all `MoJ` project teams, and all TAs.
+
+**Description:**
+This decision finalizes the structure of `ICE 1` to mitigate the high cognitive load and time risk of a pure "from scratch" exercise. The original plan risked in-class failure due to environment setup issues (SSH, `venv`, Python paths).
+
+The new, de-risked strategy involves three key changes:
+
+1.  **Provide Starter Files:** We will provide a `moj-starter-files.zip` package. This package bootstraps the project with all standard process files (`LICENSE`, `DOCUMENTATION_POLICY.md`, `CONTRIBUTIONS.md`), a correct `requirements.txt` (with `pytest`), and the `tests/test_placeholder.py` file. This shifts the `Dev Crew`'s task from *creating* these files to *using* them.
+2.  **Refocus In-Class Goal to "Team Sync":** The primary in-class objective is **no longer PR submission**. The new goal is "Team Sync": ensuring every team member can successfully `git clone`, `git pull`, `git push`, and locally run `flask run` and `pytest`. This forces all environment/SSH blockers to be resolved in class with TA support.
+3.  **Move PR to Midnight:** The final deliverable (the "perfect" PR) is now due at midnight, removing the in-class time pressure.
+4.  **Add Project Board Task:** The `Repo Admin` role is now also responsible for creating the team's GitHub Project (Kanban) board, integrating project management from Day 1.
+
+This new structure (documented in the `TA_Guide_ICE1.md`) better aligns with the course goal of simulating a real-world engineering experience, where setup is a collaborative task focused on unblocking the team.
+
+**Reference:** `ICE 1: Project Bootstrap, Kanban & Team Sync`, `TA_Guide_ICE1.md`
+
+---
+## 2025-10-18 @ 21:56 EDT - Standardized Repository Naming Convention
+
+**Scope:** All student `ministry-of-jokes` project repositories.
+
+**Description:**
+To ensure consistency, reduce administrative overhead, and make grading and TA coaching more efficient, all team project repositories must follow a standardized naming convention.
+
+The official format is: **`FA25-P465-TeamXX-moj`**
+
+* `FA25-P465`: Identifies the course and semester.
+* `TeamXX`: Identifies the team (e.g., `Team01`, `Team02`).
+* `moj`: Identifies the "Ministry of Jokes" project.
+
+This decision is implemented in **`ICE 1: Project Bootstrap & Team Sync`**, where the `Repo Admin` is explicitly tasked with creating the repository using this name.
+
+**Reference:** `ICE 1` documentation.
+
+---
+## 2025-10-18 @ 21:11 EDT - Standardized "World-Class" ICE Template
+
+**Scope:** All In-Class Exercises (ICEs) for the "Ministry of Jokes" project.
+
+**Description:**
+This decision finalizes a new, standardized template for all future ICEs. The goal is to create a "pedagogical operating system" that maximizes student engagement, manages cognitive load, and simulates a professional Agile micro-sprint in every class.
+
+* **Standardized Structure:** All ICEs will follow a consistent, multi-part structure (Objective, Roles, Tasks, Contributions, DoD, Submission).
+* **Mandatory "Closing Ritual":** The final three sections (`CONTRIBUTIONS.md`, `Definition of Done`, `Submission`) are now mandatory and standardized. This provides a predictable "closing ritual" for every workshop, reducing student anxiety and clarifying expectations.
+* **"Role Kit" System:** To balance structure with flexibility, we will use a "Role Kit" system. Each ICE will select a "kit" of 3 roles appropriate for the task (e.g., `Build Kit`, `Debug Kit`, `Design Kit`), while always maintaining the 3-role parallel processing model.
+* **Forced Role Rotation:** A new policy is established: **"A student cannot hold the same role for more than two weeks."** This rule, enforced via the `CONTRIBUTIONS.md` log, is the core mechanism to prevent role typecasting and ensure all students get hands-on practice with all aspects of the workflow (repo management, project management, and development).
+
+**Reference:** This decision supersedes the simple `In-Class Exercise (ICE) Template` from the initial persona instructions.
 
 ---
 
