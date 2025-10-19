@@ -4,6 +4,27 @@
 
 ---
 
+## 2025-10-19 @ 12:30 EDT - Highlighting Ethical/Profiling Implications of HTTP Headers
+
+**Scope:** Lecture 9 (HTTP Protocol) / General API Design Principles
+
+**Description:**
+To connect the foundational discussion of HTTP protocol headers to modern **Software Engineering Ethics** and **API Design**, a new speaker note was added.
+
+The instruction shifts the student's focus from merely "What data is transported?" to "What user profile can be inferred from this data?"
+
+* **Header Used for Illustration:** `Accept-Language` (`es-MX`, `en-GB`, etc.).
+* **Engineering Insight:** The discussion now emphasizes that application-specific headers act as an **infrastructure-level side channel** that precedes application logic.
+* **Ethical/Design Implication:** This low-level data can be logged, aggregated, and combined with other metrics (`User-Agent`, IP address) to create a specific **client fingerprint**. This fingerprint enables:
+    1.  **Price Discrimination** (e.g., serving different pricing tiers based on a user's inferred nation of origin).
+    2.  **Content Discrimination/Filtering** (e.g., controlling access to content or creating opaque information bubbles based on presumed nationality).
+
+**Result:** The HTTP lecture now includes a crucial ethical component on the **responsibility of the engineer** regarding data collection, logging, and minimizing profiling vectors, bridging the gap between networking fundamentals and contemporary application design concerns.
+
+**Reference:** [Link to updated lecture slide notes or commit containing new talking points]
+
+---
+
 ## 2025-10-19 @ 00:45 EDT - Finalizing Module 2: The "Docker-for-Database" Strategy
 
 **Scope:** `Lecture 3`, `ICE 3`, and the overall viability of Module 2 (Week 10).
