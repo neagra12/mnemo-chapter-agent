@@ -32,7 +32,7 @@ This is the team's *final* checklist.
 | **1 pt** | **PR Submission** | [ ] TA is correctly assigned as a "Reviewer". |
 | **Total** | | **/ 10** |
 
-## Common Pitfalls & Coaching (Revised)
+### Common Pitfalls & Coaching (Revised)
 
 Your in-class time should be spent 100% on solving these "blockers."
 

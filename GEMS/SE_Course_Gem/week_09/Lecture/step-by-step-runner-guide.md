@@ -1,151 +1,145 @@
 # 🛠️ GitHub Self-Hosted Runner Setup Guide (MoJ Project)
 
-This guide will set up your local machine to act as a **CI Server** for your Ministry of Jokes (MoJ) project. This is a mandatory, project-critical task that must be completed before Lecture 2.
+**Assignment:** `Week 9 ICE Prep`
+**Deliverable:** A screenshot of your "Idle" runner in the GitHub settings.
 
-### Essential Pre-Flight Checklist
+This guide will set up your local machine to act as a **CI Server (Runner)** for your team's `github.iu.edu` repository. This is a **mandatory, graded, individual assignment** that must be completed *before* Lecture 2.
 
-Before starting, check these assumptions, as they are the most likely failure points:
-
-1.  **SSH Keys:** You successfully completed ICE 1 and can use **SSH** (`git clone git@...`) with a private key. **Action:** Run `ssh-add` to ensure your private key is loaded into your `ssh-agent`.
-2.  **Python 3.10:** You have **Python 3.10+** installed on your machine. The Lecture 2 CI job will run *directly on your laptop*, not in a container.
-     * **Action:** Open your terminal and run `python --version` (or `python3 --version`). Ensure it reports Python 3.10 or newer and that the command is in your `PATH`.
-     * **Need to install?** [Windows Guide](https://www.python.org/downloads/windows/) | [macOS Guide](https://www.python.org/downloads/macos/)
-3.  **Permissions:** You have a working terminal and the ability to create directories in your user's home folder.
+The entire "CI/CR Fire Drill" workshop (ICE 2) will not work for your team if your runners are not configured and "Idle."
 
 -----
 
-## Step 1: Create Runner Directory and Download Package
+## Step 0: Essential Pre-Flight Checklist
 
-The runner software will live outside your project repository.
+Before starting, ensure these two things are true:
 
-### Procedure
+1.  **Python 3.10+:** You have Python 3.10 or newer installed and available in your system's `PATH`.
+      * **Action:** Open your terminal and run `python3 --version`.
+2.  **Permissions:** You have a working terminal and permission to create directories in your user's home folder.
+
+-----
+
+## Step 1: Navigate to the Runner Configuration Page
+
+1.  Log in to `github.iu.edu`.
+2.  Navigate to your team's **private** repository (e.g., `FA25-SE1-TeamXX-moj`).
+3.  Go to the repository **`Settings`** tab.
+
+-----
+
+### **❗ CRITICAL TROUBLESHOOTING: "I don't see the `Settings` tab\!"**
+
+You have just hit our first real-world permissions problem\! This is a perfect teachable moment.
+
+  * **The Problem:**
+
+    1.  In ICE 1, your `Repo Admin` added you as a **"Collaborator,"** which defaults to the **"Write"** role.
+    2.  This assignment requires you to add a **Self-Hosted Runner**.
+    3.  Only users with the **"Admin"** role can access the `Settings -> Actions -> Runners` page.
+
+  * **The Teachable Moment:** This is a classic "Role-Based Access Control" (RBAC) issue. We set up permissions for *writing code* ("Write") but forgot about *administering infrastructure* ("Admin").
+
+  * **THE FIX:**
+
+    1.  Contact your team's **`Repo Admin`** from ICE 1 *immediately*.
+    2.  Direct them to go to `Settings -> Collaborators`.
+    3.  Have them change your role from **"Write"** to **"Admin"**.
+    4.  Once they have done this, refresh the page. You should now see the "Settings" tab and can proceed.
+
+-----
+
+4.  On the left-hand menu, click **`Actions`**, then **`Runners`**.
+5.  Click the green **`New self-hosted runner`** button.
+
+-----
+
+## Step 2: Create a Professional Runner Directory
+
+We will create a scalable directory structure to manage this runner and any future runners you might create.
 
 1.  Open your terminal/command prompt.
-
-2.  Navigate to your home directory (`~` or `%USERPROFILE%`).
-
-3.  Create a folder for your runner:
-
+2.  Create a "parent" directory in your home folder to house *all* your runners:
     ```bash
-    mkdir actions-runner
-    cd actions-runner
+    mkdir -p ~/github-runners
     ```
-
-4.  Download the runner package. **Note:** Your GitHub URL is `github.iu.edu`. Replace `<OS>` and `<Arch>` below with your system's values (e.g., `linux-x64`, `osx-arm64`, `win-x64`).
-
+3.  Now, create a *project-specific* directory for your MoJ runner. **Use your exact repo name.**
     ```bash
-    # Check the latest release page on github.iu.edu for the exact link
-    # This example is for Linux/macOS
-    curl -o actions-runner.tar.gz -L 'https://github.iu.edu/actions/runner/releases/download/v2.309.0/actions-runner-<OS>-<Arch>-2.309.0.tar.gz'
-
-    # Unzip the package
-    tar xzf ./actions-runner.tar.gz
+    mkdir -p ~/github-runners/FA25-SE1-TeamXX-moj
     ```
-
-    *(Windows users will download the zip file and use PowerShell's `Expand-Archive` or a GUI tool to extract it).*
-
-### 🛠️ Verification 1 (Package Download)
-
-  * **Check:** Run `ls` (or `dir` on Windows).
-  * **Success:** You should see the files `config.sh` (or `config.cmd`), `run.sh` (or `run.cmd`), and the main `Runner.Listener` binary.
+    *(Replace `XX` with your team number)*
+4.  Navigate into your new project-specific runner directory. **All remaining steps will happen here.**
+    ```bash
+    cd ~/github-runners/FA25-SE1-TeamXX-moj
+    ```
 
 -----
 
-## Step 2: Configure the Runner
+## Step 3: Configure and Start Your Runner
 
-You need a **Registration Token** from your team's GitHub repository settings.
+You will now see a page with instructions for **`Download`** and **`Configure`**. Follow them precisely.
 
-### Procedure
+1.  **Select OS:** Choose the correct Operating System (macOS, Linux, Windows) and Architecture (e.g., `ARM64` for Apple Silicon Macs, `x64` for most other machines).
 
-1.  **Get the Token:** Navigate to your MoJ repository on `github.iu.edu`.
+2.  **Download:**
 
-      * Go to **Settings** $\rightarrow$ **Actions** $\rightarrow$ **Runners**.
-      * Click **New self-hosted runner**.
-      * Follow the on-screen prompts to select your OS and architecture.
-      * Copy the **registration token** provided. **This token is single-use\!**
+      * Copy and paste the `curl` command from the "Download" section to download the runner package *into your current directory*.
 
-2.  **Configure:** Run the configuration script using the token you just copied.
+3.  **Configure:**
 
-    ```bash
-    # Linux/macOS
-    ./config.sh --url https://github.iu.edu/<Your_Team_Org>/<Your_Repo> --token <YOUR_EPHEMERAL_TOKEN>
+      * **CRITICAL:** Copy the `config.sh ...` (or `config.cmd`) command from the "Configure" section on the GitHub page. This command includes your **unique, temporary registration token**.
+      * Run this command in your terminal (e.g., `./config.sh --url ... --token ...`).
+      * The script will ask you for a few settings:
+          * **Enter the name of runner group to add this runner to:** Press **Enter** to accept the `default` group.
+          * **Enter the name of runner:** `TeamXX-YourIUUsername` (e.g., `Team05-seiffert`).
+          * **Enter any additional labels:** Press **Enter** to accept the defaults.
+          * **Enter name of work folder:** Press **Enter** to accept the `_work` default.
+      * After a moment, you should see `Settings Saved`.
 
-    # Windows (PowerShell)
-    .\config.cmd --url https://github.iu.edu/<Your_Team_Org>/<Your_Repo> --token <YOUR_EPHEMERAL_TOKEN>
-    ```
+4.  **Start the Runner:**
 
-3.  **Prompts:** You will be prompted to enter the runner name and label.
-
-      * **Runner Name:** Use your `TeamName-YourName` (e.g., `MoJTeam4-Alice`).
-      * **Labels:** Leave the default (`self-hosted`) and press Enter.
-
-### 🛠️ Verification 2 (Configuration)
-
-  * **Check:** The terminal output should end with: `Settings Saved.`
-  * **Success:** Go back to your GitHub repository: **Settings** $\rightarrow$ **Actions** $\rightarrow$ **Runners**. Your newly named runner should appear with a status of **Offline**.
-
------
-
-## Step 3: Run the Runner Agent
-
-This step officially brings your CI server online. **Do not close this terminal window; it is now your CI server.**
-
-### Procedure
-
-1.  From the same `actions-runner` directory, execute the run script:
-
-    ```bash
-    # Linux/macOS
-    ./run.sh
-
-    # Windows (Command Prompt, NOT PowerShell)
-    .\run.cmd
-    ```
-
-### 🛠️ Verification 3 (Online Status)
-
-  * **Check:** The terminal output should show: `Listening for jobs...`
-  * **Success:** Refresh your GitHub repository: **Settings** $\rightarrow$ **Actions** $\rightarrow$ **Runners**. Your runner's status should immediately change from **Offline** to **Idle** (green dot).
+      * In the same terminal (still inside `~/github-runners/FA25-SE1-TeamXX-moj`), run the script:
+        ```bash
+        ./run.sh
+        ```
+      * You should see the runner connect successfully, ending with:
+        ```
+        √ Connected to GitHub
+        ...Listening for Jobs
+        ```
+      * **Leave this terminal window open.** Your runner is now "Idle" and waiting for a job from ICE 2.
 
 -----
 
-## Step 4: Final Round-Trip Verification (CI Job Test)
+## Step 4: Verify and Submit Your Evidence
 
-This is the **Evidence-Driven Design** check. We will ensure the runner can pull a job, execute it, and report back.
+This is the **Definition of Done** and the deliverable for your Canvas assignment.
 
-### Procedure
+1.  With the `./run.sh` script still running in your terminal, go back to your browser.
+2.  Refresh the `Settings` $\rightarrow$ `Actions` $\rightarrow$ `Runners` page in your repository.
+3.  You should now see your named runner (e.g., `Team05-seiffert`) in the list with a **green "Idle" status dot ✅**.
+4.  Take a single screenshot that **clearly shows** your runner with its **green "Idle" status**.
+5.  Submit this screenshot to the Canvas assignment **`Week 9 ICE Prep`**.
 
-1.  **Access GitHub:** Use a local copy of a repository in github.iu.edu. You must have commit privileges. Any text file in the repo is sufficient.
-
-2.  **Make a Test Commit:** Add a comment (e.g., `# Test comment for runner verification`) and commit to a feature branch.
-
-    ```bash
-    git commit -am "test: verify self-hosted runner is working"
-    git push
-    ```
-
-3.  **Run CI Job (Implicit):** This push will automatically trigger a test job. Your terminal (running `./run.sh`) should immediately display: `Job <JobName> was requested.`
-
-4.  **Watch the Job:** The runner will execute the job (it will fail, as you don't have a workflow yet, but it should *start*).
-
-### 📈 Final Verification (Quantitative Evidence)
-
-  * **Check:** Navigate to your repository's **Actions** tab.
-  * **Success:** You must see a new workflow run initiated by your push. Click on the job and verify that the runner name is **`TeamName-YourName`**. This confirms your local machine is correctly hosting the runner and communicating with `github.iu.edu`.
-  * **Goal:** Your runner is now ready for **Lecture 2 (CI)**, where you will write the workflow file to define what this runner actually does.
+**Example of a successful screenshot:**
 
 -----
 
-## Common Failures & Diagnostics
+## Step 5: Managing Your Runners (Going Forward)
+
+  * **To stop this runner:** Go to the terminal where `./run.sh` is running and press `Ctrl+C`. The runner will go "Offline" in GitHub.
+  * **To run this runner again (for ICE 2):** Open a terminal, `cd ~/github-runners/FA25-SE1-TeamXX-moj`, and run `./run.sh`.
+  * **To add a runner for another project:**
+    1.  Create a *new* directory (e.g., `mkdir ~/github-runners/new-project`).
+    2.  `cd` into that new directory.
+    3.  Go to the *new repo's* settings and follow this guide again from **Step 3**.
+    4.  To run both at once, you will need **two separate terminal windows**, one for each runner.
+
+-----
+
+### Common Failures & Diagnostics
 
 | Symptom | Cause | Diagnostic Check |
 | :--- | :--- | :--- |
-| **Runner is "Offline" (Never "Idle")** | Outbound Port 443 blocked, or runner process is not running. | **Check 1:** Is the ./run.sh (or run.cmd) script still running in your terminal? **Check 2:** Is your machine connected to the university Wi-Fi/VPN? |
-| **Configuration Fails (Step 2)** | Token expired or incorrect URL. | **Check 1:** Get a **NEW** single-use registration token. **Check 2:** Double-check the URL: `https://github.iu.edu/<Org>/<Repo>`. |
-| **Job Starts, but Fails Immediately** | Missing dependency required by the job (e.g., Python, `pytest`). | **Check:** Ensure Python is in your machine's `$PATH` (`which python` or `where python`) and that the correct `requirements.txt` dependencies are installed *globally* for the runner user, or that the job explicitly installs them. |
-| **Permissions Error during `run.sh`** | Runner needs to execute a file but lacks permissions (Linux/macOS). | **Check:** Run `chmod +x run.sh config.sh`. |
-
-
-
------
------
+| **Runner is "Offline" (Red Dot)** | The `./run.sh` script is not running, or your computer lost its connection. | **Check:** Is the `./run.sh` script still running in your terminal? If you re-run it, does the dot turn green? |
+| **Configuration Fails (Step 3)** | The token expired (they only last 60 minutes). | **Check:** Refresh the "New self-hosted runner" page to get a **new token** and run the `./config.sh ...` command again. |
+| **`./config.sh: Permission denied`** | The script is not executable (macOS/Linux). | **Check:** Run `chmod +x config.sh` and `chmod +x run.sh`, then try again. |

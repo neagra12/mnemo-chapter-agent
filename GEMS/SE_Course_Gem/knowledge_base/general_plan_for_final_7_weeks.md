@@ -98,13 +98,6 @@ This section details the essential SE skills that are delivered and evaluated *t
       * **Cycle 2 Deliverable:** "Your rating system now *ranks* user-generated content. What is one potential negative consequence of this ranking, and what is one engineering step (not a policy) you could take to mitigate it?"
       * **Cycle 3 Deliverable:** "You have integrated a GenAI model. What is one risk of your app amplifying biases from this model, and how could you *measure* that?"
 
-
-## Part 3: "The Ministry of Jokes' Narrative Framework"
-
-You are correct. The narrative framework in Part 3 *must* be regenerated to align with the new ICE sequence in Part 1.
-
-Here is the reworked "Ministry of Jokes" narrative framework, with each scenario now correctly mapped to the new technical goals from Part 1 of your 7-week plan.
-
 ---
 ## Part 3: The "Ministry of Jokes" Narrative Framework (v2)
 

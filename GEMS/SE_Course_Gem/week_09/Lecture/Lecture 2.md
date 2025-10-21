@@ -1,180 +1,92 @@
 
-# Lecture 2: Continuous Integration (CI)
-
+# Lecture 2: The "Silliness Detector" (CI/CR)
 ## Slide 1: Title Slide
-
-  - **Topic:** Continuous Integration with GitHub Actions
-  - **Course:** Software Engineering
+- **Topic:** Lecture 2: The "Silliness Detector" (CI/CR)
+- **Course:** Software Engineering
 
 ## Slide 2: Learning Objectives
+- By the end of this lecture **and workshop**, you will be able to:
+- **Define** Continuous Integration (CI) and its value as a "safety net."
+- **Implement** a basic CI pipeline to automate `pytest`.
+- **Diagnose** a failed build (a "Red X" ❌) by reading the workflow log.
+- **Practice** the professional Code Review (CR) 🙅‍♂️ $\rightarrow$ 👍 workflow to manage a failed build.
 
-  - By the end of this lecture, you will be able to:
-  - **Define** Continuous Integration (CI) and its value in a team workflow.
-  - **Read and write** a basic GitHub Actions workflow file using YAML syntax.
-  - **Implement** a CI pipeline that automatically runs `pytest` on every commit.
-  - **Explain** how a CI pipeline functions as a source of *evidence* for code quality.
-
-## Slide 3: Bridging Context: From "Angband" to "MoJ"
-
-  - **Key Point:** In the first half of the course, building and testing `Angband` was a **manual** process.
-  - You had to *remember* to run `make`, `make test`, or other scripts on your *local* machine.
-  - This is slow, error-prone, and leads to the "it worked on my machine\!" problem.
-  - **Key Point:** For our "greenfield" MoJ project, we will **automate** this process from day one. Our engineering goal: **Never merge broken code.**
--     Speaker Note: Ask the class: "Hands up, who *forgot* to run the tests at least once before pushing a change for Angband? What was the result?" This connects their past pain to the new solution. "This automation is our first step in moving from a *hope-based* development model to an *evidence-based* one."
-
+## Slide 3: Bridging Context
+- **Key Point:** In Part 1 (`Angband`), our testing was **manual**, **local**, and **"hope-based."**
+- You had to *remember* to run `make test`. If you forgot, you could push broken code. This is slow and leads to the "it worked on my machine!" problem.
+- **Key Point:** In Part 2 (`MoJ`), our testing will be **automated**, **remote**, and **"evidence-based."**
+- Our engineering goal: **Never merge broken code.**
+- Speaker Note: "Hands up, who *forgot* to run the tests at least once before pushing a change for Angband? This lecture is the solution to that exact feeling. We are moving from a *hope-based* model to an *evidence-based* one."
 
 ## Slide 4: What is Continuous Integration (CI)?
+- **Key Point:** CI is the *practice* of automating builds and tests *on every single commit* to get rapid, reliable feedback.
+- **Analogy:** We are hiring a "robot" for our team.
+- Its only job is to check everyone's work, 24/7.
+- For the "Ministry of Jokes," we'll call it our **"Silliness Detector."**
+- Speaker Note: "This robot is our first and most important source of *quantitative evidence* about our project's health."
 
-  - **Key Point:** CI is the *practice* of automatically building and testing your code every time a developer pushes a change to a shared repository.
-  - It's a **safety net** and a **feedback loop**. It answers the critical question: "Did my new change break the main project?"
-  - 
-  - **Historical Hook 📜:** The concept was popularized in the late 90s as part of **Extreme Programming (XP)**. The goal was to solve "integration hell"—the nightmare of merging weeks of work from different developers at the end of a project, only to find nothing worked.
-- Speaker Note: Emphasize that CI forces *small, frequent* integrations, which are much safer and easier to debug. The cost is a little setup time. The benefit is a massive reduction in future debugging.
-  
+## Slide 5: The "Why": CI as a Safety Net
+- **Key Point:** CI builds **team trust** and provides **evidence**.
+- **Solves "It Worked on My Machine":** The CI pipeline is a clean, consistent environment. If it passes there, it *really* works.
+- **Finds Bugs in Seconds:** You get feedback *immediately*, not days later from an angry teammate or user.
+- **Enables "Fearless Refactoring":** You can confidently make changes knowing the "Silliness Detector" will warn you if you break something.
 
-## Slide 5: Why Do We Use CI? (The Value)
+## Slide 6: The "How": GitHub Actions (GHA)
+- **Key Point:** GHA is the *tool* (an event-driven system) we use to implement the *practice* (CI).
+- **Core Concepts:**
+    - **`Event`**: A trigger (e.g., `git push`).
+    - **`Workflow`**: The `.yml` file with instructions (e.g., `main.yml`).
+    - **`Job`**: A task for a runner (e.g., `build-and-test`).
+    - **`Step`**: A single command (e.g., `run: pytest`).
+- Speaker Note: "Don't memorize this. The `.yml` file is just the instruction manual for the robot. We are learning this by *doing* it in the workshop."
 
-  - **1. Reduces Risk:** Catches bugs, integration errors, and broken tests *immediately*, not days or weeks later when the code is harder to fix.
-  - **2. Improves Quality:** Enforces quality standards (like running tests and linters) on *every single commit*, not just when someone remembers.
-  - **3. Increases Velocity:** Automates repetitive tasks (testing, deploying), letting developers focus on building features.
-- Speaker Note: "I mentioned 'linters' on that second point. What is a linter? It's a tool that's like a grammar checker for your code. It doesn't run the code, but it *does* check it for stylistic errors, like bad formatting, unused variables, or common mistakes. By running a linter automatically, we enforce a *single, consistent style guide* for the whole team and catch simple bugs before they even get to the testing phase."
+## Slide 7: Critical Prerequisite: `self-hosted` Runners
+- **Key Point:** `github.iu.edu` (our private GitHub) cannot run jobs itself. It needs a "worker" machine.
+- Your **"Week 9 ICE Prep"** assignment configured your laptop as that worker.
+- **ACTION REQUIRED:** You *must* have your runner script (`./run.sh` or `run.cmd`) active *right now* for ICE 2 to work.
+- Speaker Note: "This is the #1 blocker. Please open your terminal and start your runner *now*. If it's not 'Listening for Jobs', your team will be blocked. Flag a TA immediately if you're stuck."
 
+## Slide 8: How to Diagnose a "Red X" ❌
+- **Key Point:** The Red X is *feedback*, not failure. It's the *start* of the diagnostic process.
+- **The Workflow:**
+    1.  Find the **Red X** ❌ (on the PR or "Actions" tab).
+    2.  Click **"Details"** to open the workflow run.
+    3.  Click the failing **Job** (e.g., `build-and-test`).
+    4.  Find and **expand** the failing **Step** (e.g., `Run tests with pytest`).
+    5.  Read the error message at the bottom.
+- Speaker Note: "This is the *real* skill of this exercise. In the ICE, you will *intentionally* cause a Red X. You will use *this exact process* to find the error."
 
-## Slide 6: Our Tool: GitHub Actions
+## Slide 9: The *Other* Safety Net: Code Review (CR)
+- **Key Point:** CI is the *robot* check ("Is it safe?"). CR is the *human* check ("Is it a good idea?"). You need both.
+- **The Core Exchange:**
+    - **Author's Goal:** "I have a clean, tested, and valuable change."
+    - **Reviewer's Goal:** "I *understand* this change, and I *agree* it's safe and valuable."
+- Speaker Note: "As you do the Code Review part of ICE 2, here is your guidance. This is how you build a professional team culture:
+    1.  **Critique the code, not the coder.** Never say 'You made a mistake.' Say, 'This code has a bug.'
+    2.  **Ask questions, don't give commands.** Instead of 'Fix this,' ask, 'What was the thinking here? I'm worried this might not handle the `None` case.'
+    3.  **Automate the small stuff.** A *bad* code review argues about commas or indentation. That's a *linter's* job, which we'll add next week. A *good* code review talks about logic, risk, and design."
 
-  - **Key Point:** GitHub Actions is a CI/CD tool built directly into GitHub.
-  - It's **event-driven**. It "listens" for events (like a `push` or `pull_request`) and then "runs" a set of commands (a "workflow").
-  - **Key Point:** Workflows are defined in **YAML** files placed in a special directory in your repository: `.github/workflows/`.
-- Speaker Note: You may not have heard of YAML, but you've seen it. It stands for "YAML Ain't Markup Language." It's just a human-readable way to write configuration data. We'll learn it by example.
-
-
-## Slide 7: Anatomy of a Workflow: `name` and `on`
-
-  - **Key Point:** A workflow file always starts with two key things: a `name` for the workflow and the `on` trigger that specifies when it should run.
-  - **Code Example:**
-    ```yaml
-    # This is a comment in YAML
-
-    # 1. A name for this workflow (shows up in GitHub)
-    name: Python CI
-
-    # 2. When to run it?
-    on: [push] 
-
-    # This configuration runs the workflow on *every push* # to *every branch* in the repository.
-    ```
-
+## Slide 10: Public Evidence: Status Badges
+- **Key Point:** A status badge is a live, public-facing sign of your team's quality and professionalism.
+- It's a small image in your `README.md` that automatically shows if your `main` branch is "passing" (green) or "failing" (red).
 - 
-Speaker Note: Emphasize the `on:` trigger. This is the event listener. We can make this much more specific (e.g., only on the `main` branch, or only on `pull_request`). For now, `[push]` is simple and effective.
+- **How:** You can get the Markdown for this badge directly from your repository's "Actions" tab.
+- Speaker Note: "This aligns with our 'evidence-based' goal. It's a live, quantitative metric of your team's health that is visible to everyone. It's a point of professional pride."
 
+## Slide 11: Handoff to ICE 2 Workshop
+- **Topic:** The CI/CR "Fire Drill"
+- **Task:** Time to build it, break it, and fix it—as a team.
+- **This is a 45-minute "macro-workshop."**
+- **Your Goal:**
+    1.  Get a **Green Check ✅** (Prove it works).
+    2.  Get a **Red X ❌** (Prove it catches bugs).
+    3.  Practice the full Code Review **🙅‍♂️ $\rightarrow$ 👍** loop (Prove your *process* works).
+- Speaker Note: "This is the main event for today. The goal is *not speed*, it's *accuracy* and *communication*. We are validating our *process* in-class to de-risk your individual homework."
 
-## Slide 8: Anatomy of a Workflow: `jobs`
-
-  - **Key Point:** A workflow is made of one or more `jobs`. A `job` is a set of steps that run on a specific "runner" (a virtual machine).
-  - **Key Point:** Jobs run in parallel by default, but can be configured to run sequentially.
-  - **Code Example:**
-    ```yaml
-    # ... (name: and on: are above) ...
-
-    # 3. What jobs to run?
-    jobs:
-      # 4. Give the job a unique ID (e.g., "build")
-      build:
-        # 5. What OS to run on?
-        # We will use our own laptops as "self-hosted" runners.
-        runs-on: self-hosted
-        
-        # 6. What are the steps to run?
-        steps:
-          # (Steps go here... see next slide)
-    ```
-
-- Speaker Note: "Pay close attention to `runs-on: self-hosted`. Public GitHub projects can use runners provided by GitHub, like `ubuntu-latest`. But our repositories are **private**. For security and cost reasons, GitHub doesn't provide free runners for private repos.
-"So, we will use **self-hosted runners**. This means you are configuring your *own machine* (your laptop) to securely listen for jobs from *your* repository. This is very common in companies that have private code. You must follow the **'Self-Hosted Runner Setup Guide'** on Canvas to get this working. It's a one-time setup."
-"Also, that `build:` ID on line 4? That just needs to be a unique name for this job *inside this file*. It's how you'd tell other jobs to 'wait for the `build` job to finish' if you had a more complex pipeline."
-
-
-## Slide 9: Anatomy of a Workflow: `steps` (Part 1)
-
-  - **Key Point:** `steps` are the *actual commands* the job will run, in order.
-  - You can use pre-built "actions" (like `actions/checkout`) or run your own shell commands (using `run:`).
-  - **Code Example:**
-    ```yaml
-    # ... (inside the "build:" job) ...
-    steps:
-      # Step 1: Check out our repository's code
-      # This action lets the runner access our project files.
-      - uses: actions/checkout@v4
-
-      # Step 2: Set up a specific Python version
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-    ```
-
-- Speaker Note: "Let's look at `uses: actions/checkout@v4`. `actions/checkout` is a script written by GitHub that pulls your code into the runner. The `@v4` is critical. This is **version pinning**. We are telling GitHub to use *exactly* version 4 of this action. Why? Because it's stable and we know it works. If we just said `actions/checkout`, we'd get the *latest* version. If the author released a new, buggy `v5` tomorrow, our pipeline would break for no reason. Version pinning is a core engineering practice for creating stable, repeatable builds."
-
-
-## Slide 10: Anatomy of a Workflow: `steps` (Part 2)
-
-  - **Key Point:** Once the environment is set up, we use `run:` to execute shell commands, just like in our own terminal.
-  - We need to install our project's dependencies before we can run our code.
-  - **Code Example:**
-    ```yaml
-    # ... (previous steps: checkout, setup-python) ...
-
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-    ```
-
-- Speaker Note: Point out the `|` (pipe) character. This lets us write a multi-line shell script for a single `run` command. This is where we install Flask, Pytest, etc., as defined in our `requirements.txt`.
-
-
-## Slide 11: Anatomy of a Workflow: `steps` (Part 3)
-
-  - **Key Point:** The *most important* step is running our test suite.
-  - If any command in a step fails (returns a non-zero exit code), the *entire job fails*.
-  - This is how CI "catches" errors and reports a failure.
-  - **Code Example:**
-    ```yaml
-    # ... (previous steps: checkout, setup-python, install) ...
-
-      # Step 4: Run our tests!
-      - name: Run Pytest
-        run: |
-          pytest
-    ```
-
-- Speaker Note: This is the moment of truth\! If `pytest` finds a failing test, it will exit with a non-zero code. This `Run Pytest` step will fail, the `build` job will fail, and GitHub will report a big red 'X' next to our commit. This is the feedback loop in action.
-
-
-## Slide 12: Evidence-Driven Engineering 📈
-
-  - **Key Point:** How do we *prove* our project is stable? We use the CI pipeline as our **source of evidence**.
-  - A **"Green Build"** (all checks pass) is the *evidence* that the new code is safe to merge.
-  - A **"Red Build"** (checks fail) is a clear, objective signal to *stop* and fix the problem before it gets merged into `main`.
-  - 
-- **Instructor Note:** "For your project, you will make this evidence *public* by adding a **CI status badge** to your `README.md`. A status badge is a small image, provided by GitHub, that automatically shows 'passing' (green) or 'failing' (red) based on the last CI run on your `main` branch. You can get the Markdown for this badge directly from your repository's 'Actions' tab. Adding this to your README is a point of professional pride. It's a live, quantitative metric of your team's health that is visible to everyone."
-
-## Slide 13: Next: In-Class Exercise (ICE 2)
-- **Topic:** The Ministry's First Line of Defense
-- **Task:** It's time to build the "Silliness Detector"! You will create the `main.yml` workflow file to automatically test all new "Joke-Objects" (code) before they're approved.
-- **Goal:** This workflow will automatically:
-  1.  Check out your code.
-  2.  Set up Python 3.10.
-  3.  Install dependencies from `requirements.txt`.
-  4.  Run `pytest`... and watch it pass!
-- Speaker Note: "This is where we put it all together. Before we start, this is a good time to check that your team's self-hosted runners are active and listening for jobs, as per the setup guide. This workflow will be 'queued' by GitHub but won't run until your runner picks it up."
-
-
-## Slide 14: Key Takeaways
-
-  - **CI (Continuous Integration)** is the *practice* of automating builds and tests on every commit to get rapid feedback.
-  - **GitHub Actions** is the *tool* we use to implement CI.
-  - Workflows are defined in **YAML** files (e.g., `main.yml`) inside the `.github/workflows/` directory.
-  - We use **`self-hosted` runners** because our projects are private.
-  - CI provides a critical **safety net** and **evidence** of code quality *before* problems are merged into the `main` branch.
+## Slide 12: Key Takeaways
+- *(This slide is shown *after* the 45-minute ICE, at the end of the 75-minute class.)*
+- **CI** is the *practice* of automating tests; **GHA** is the *tool*.
+- The **"Red X"** is the *start* of the diagnostic process, not the end.
+- **CI (robot) + CR (human)** are the two safety nets of a professional team.
+- **Status Badges** are the public-facing *evidence* of your automated quality.
+- Speaker Note: "Great job on the fire drill. You've now all seen a failed build, diagnosed it, and used the professional CR process to manage it. Your homework is to do this *individually*, and the `CONTRIBUTIONS.md` log explains how."
