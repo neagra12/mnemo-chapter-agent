@@ -1,6 +1,47 @@
-# Decision Log for FA25 SE 1 final 7 weeks
+# Decision Log for Clio
 
 --- 
+
+
+---
+
+## 2025-10-22 @ 00:03 EDT - Responding to Wk 9 After-Action Report & Workflow Optimization (Mnemo System v1.1)
+
+**Scope:** Course Logistics, Pedagogical Workflow, Evidence-Driven Design
+
+**Description:**
+The instructor provided a detailed after-action report following the delivery of the first lecture and ICE of Cycle 1 (Week 9 of the course). All Week 1 (Week 9) materials are considered published.
+
+The report identified several critical blockers and workflow friction points. This log entry summarizes the analysis of that report and the corresponding decisions made to remediate blockers and improve our development pipeline (The Mnemo System v1.1).
+
+### 1. Triage: Week 9 Blocker Remediation
+
+Two major blockers were identified in the first ICE delivery:
+
+* **Blocker 1 (External):** An external platform (Canvas) outage severely impacted the second class, as teams could not copy/paste instructions and were gated by a single projector view.
+    * **Decision:** While this was an external failure, future ICEs should have a low-tech fallback (e.g., a pre-exported PDF of instructions) available in the "Files" section of Canvas as a backup.
+* **Blocker 2 (Technical):** A critical platform constraint was discovered: the IU GitHub instance **requires a repository to be in an "Organization"** to set collaborator roles (e.g., "Admin"). This invalidates the current plan for managing self-hosted runners.
+    * **Decision (Hotfix):** I will generate an "ICE 1.5" hotfix. This will be a 15-minute, high-priority task for the *start* of the next lecture (Lecture 2).
+    * **Pedagogical Framing:** This will be framed as an **"Emergency Ops-Level Directive."** Teams must create a GitHub Organization and transfer their `moj-project` repo to it, correctly re-assigning roles. This turns a technical blocker into a realistic, evidence-based learning exercise.
+
+### 2. Workflow Optimization: The Mnemo System v1.1
+
+The instructor identified three key friction points in the `Clio -> Artifact` development pipeline. We have agreed on the following optimizations:
+
+1.  **Artifact Extraction:** To solve the "teasing apart" of my analysis from the deliverables, all future generated artifacts (ICEs, TA Guides, etc.) **must** be wrapped in parseable comment tags (e.g., `` and ``). This enables automated scripting.
+2.  **PDF Styling:** To fix poor rendering (fonts, page breaks) of `Markdown -> PDF` exports, I have generated `course_styles.css`. This file will be used with the `Markdown PDF` VS Code extension to create professional, readable, and "print-safe" documents.
+3.  **Persona Framework:** We have formalized our roles. **Mnemo** is the foundational persona for cross-course pedagogy and workflow. **Clio** (this instance) is the specialized "Muse of History" persona for this SE course, focused on Evidence-Driven Design and historical context.
+
+### 3. Strategic Shift: The "Canvas Checkpoint" Model
+
+The instructor's suggestion to use Canvas for ICE delivery is a major pedagogical advancement that directly serves my **Evidence-Driven Design** mandate.
+
+* **Decision:** We will adopt the **"ICE Checkpoint" Model**, beginning with ICE 3.
+* **Mechanism:** ICEs will be structured as **Canvas Quizzes**. Each "question" in the quiz will be a checkpoint for a specific task (e.g., "Part 1: Paste the URL of your new feature branch").
+* **Evidence Gathered:** This model moves us from simple artifact-based grading to real-time process metrics. It will automatically capture:
+    1.  **Quantitative Team Velocity:** Timestamped data on "time-to-completion" for each part of the exercise.
+    2.  **Real-Time Blocker ID:** A dashboard view of where the entire class is getting stuck.
+    3.  **Automated Attendance:** A non-repudiable record of in-class engagement.
 
 ---
 ## 2025-10-21 @ [Current Time] - AI Persona Finalization: The Muse Clio
