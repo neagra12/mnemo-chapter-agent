@@ -3,6 +3,55 @@
 --- 
 
 ---
+## 2025-10-21 @ [Current Time] - AI Persona Finalization: The Muse Clio
+
+**Scope:** Pedagogical Process, Curriculum Development AI Assistant
+
+**Description:**
+This decision formalizes the naming and persona for the specialized AI assistant (this instance) dedicated to developing the Software Engineering curriculum.
+
+* **Designated Name:** The assistant will be known as **Clio** (The Muse of History).
+* **Source/Knowledge Base:** The foundational core instructions and shared knowledge are formally named **Mnemo** (Mnemosyne, the Titan of Memory). Clio is considered a specialized 'daughter' instance of the Mnemo framework, tasked with a specific creative and instructional domain.
+* **Rationale (Clio):** The persona of Clio, the Muse of History, is chosen because it directly embodies the core pedagogical goal of **Evidence-Driven Design**. The AI's mission is to:
+    1.  **Record History:** Maintain the `Decision Log` and course history.
+    2.  **Analyze Evidence:** Guide the creation of assignments that gather measurable evidence (quantitative, qualitative, and artifact-based).
+    3.  **Provide Context:** Proactively suggest the "Historical Hook" for technological topics.
+    
+This persona ensures the curriculum remains accountable to data and built upon a strong foundation of historical context.
+
+**Reference:** Discussion between Instructor and AI Assistant, 2025-10-21.
+
+---
+## 2025-10-21 @ [Current Time] - Finalizing Team Structure, ICE Roles, and Absentee Policy
+
+**Scope:** Course Policy, In-Class Exercises (ICEs), Grading
+
+**Description:**
+This decision finalizes the standard team size and establishes a robust, equitable policy for managing team member absences during project-critical In-Class Exercises (ICEs). The policy is designed to uphold the **100% credit for present members** philosophy, while using the 85% grade cap to incentivize attendance for absent members.
+
+### 1. Standard Team Structure and Role Allocation
+The default team size is **5 members**, ensuring the `Process Lead` serves as a natural tie-breaker in team decision-making.
+
+| Team Size | Primary Role 1 | Primary Role 2 | Dev Crew Role 3 | Dev Crew Role 4 | Dev Crew Role 5 (Flex/Shadow) |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **5 Members** | **Repo Admin** (Branching/Merge) | **Process Lead** (Documentation/DoD/Tie-breaker) | **Dev Crew (A)** | **Dev Crew (B)** | **CR Shadow** (Real-time Review/QA) |
+| **4 Members** | **Repo Admin** (Flex) | **Process Lead** | **Dev Crew (A)** | **Dev Crew (B)** | *(Empty)* |
+
+* **4-Member Team Flex Rule:** The **Repo Admin** will act as the flex member, assisting the Dev Crew with any single-threaded tasks to ensure load-balancing.
+
+### 2. Revised ICE Absentee and Grading Policy
+The policy is structured to prevent present members from being penalized due to absences, defining two or more absences as an automatic trigger for a low-stress team make-up.
+
+| Scenario | In-Class Outcome & Action | Make-Up Requirement & Grading | Rationale & Evidence |
+| :--- | :--- | :--- | :--- |
+| **Full Attendance (Team Success)** | Team completes the ICE and merges the artifact to `main` by the deadline. | N/A | **100%** for all members. |
+| **One Absence** | Present $\mathbf{4-5}$ members attempt the ICE in class. The team must update `CONTRIBUTIONS.md` with the absent member's status during class. | **Absent Student:** Must complete the **Individual Remedial Drill** and submit a private PR with reflection. | **Present Members:** Eligible for **100%** (if successful). **Absent Student:** Capped at $\mathbf{85\%}$ of the team score. |
+| **Two or More Absences (Automatic Failure)** | The present $\mathbf{2-3}$ members **immediately** update the `CONTRIBUTIONS.md` log and pause the in-class ICE. | **Team Make-Up:** The present team members schedule a make-up (within one week) to complete and merge the artifact. | **Present Members:** Receive **100%** of the 10-point ICE rubric score upon successful make-up. **Absent Members:** Capped at $\mathbf{85\%}$ of the team score (conditional on the Individual Drill). |
+
+---
+**Reference:** Discussion between Instructor and Lecture Coach, 2025-10-21.
+
+---
 ## 2025-10-20 @ 00:56 EDT - Finalizing ICE 2: The "Needle-Thread" (Team Validation + Individual Competency)
 
 **Scope:** Week 9, ICE 2 (CI/CR Workshop)
