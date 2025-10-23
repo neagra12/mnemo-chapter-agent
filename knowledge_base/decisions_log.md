@@ -1,5 +1,43 @@
 # Decision Log for Clio
 
+---
+
+
+---
+
+## 2025-10-23 @ 12:01 EDT - Formalizing the "Standard Blocker Protocol" (SBP) & "5+5" Grading Model
+
+**Scope:** Course Policy, Grading, In-Class Exercises (ICEs), Evidence-Driven Design
+
+**Description:**
+The total failure of ICE 2 revealed a critical gap in our course design: an un-tested or broken ICE (an "instructional failure") unfairly penalizes students and creates a high-anxiety, low-learning environment.
+
+To remediate this, we have designed the **"Standard Blocker Protocol" (SBP)** to act as a "safe harbor." This policy transforms a technical failure into a high-level pedagogical opportunity, shifting the learning objective from "task completion" to "professional triage and recovery."
+
+### 1. The "5+5" Grading Model
+The initial idea to award full (10/10) credit for an After-Action Report (AAR) was **REJECTED**. This flaw was identified: "Knowing the answer is only half of an engineering problem." The full engineering loop (`Blocker -> Report -> Fix -> Verification`) must be incentivized.
+
+The finalized policy is the **"5+5" Grading Model**:
+* **Part 1: The AAR (5 pts):** If a team is blocked (>15 min), they must pivot. Submitting a professional, on-time AAR (using the 7-part template) *to the original ICE assignment* counts as their "on-time" submission and is worth the first **5 points**. This is the "safe harbor" that protects them from a late penalty.
+* **Part 2: The Hotfix (5 pts):** The instructor will provide a "hotfix." The team receives the **remaining 5 points** only after they apply the fix, achieve the original Definition of Done, and **resubmit** the correct, working deliverable (e.g., the passing PR) to the same assignment.
+
+### 2. The Canvas Workflow (Simplified)
+The initial idea of a separate, semester-long "AAR Triage Assignment" was **REJECTED**. It is incompatible with Canvas's submission logic, as it would be overwritten with each new AAR, destroying the evidence trail.
+
+The final, simplified workflow is:
+1.  A blocked team submits their AAR (the alternate deliverable) directly *to the original ICE assignment* (e.G., "ICE 2").
+2.  The TA grades this submission, awarding 5/10 for the AAR.
+3.  The TA provides the hotfix in the Canvas assignment's "Comments" field.
+4.  The team **resubmits** their *fixed* deliverable (the passing PR) to the *same* assignment.
+5.  The TA re-grades the final submission, updating the score to 10/10.
+
+This keeps all artifacts, evidence, and communication for a single ICE within a single, self-contained Canvas assignment.
+
+### 3. Action Item: Template Updates
+This SBP is now a core policy. It **must** be added to all future ICEs.
+1.  **`ICE_TEMPLATE` Update:** The `ICE_TEMPLATE` has been permanently updated to include a "💡 Standard Blocker Protocol (SBP)" section that clearly outlines this "5+5" policy and workflow.
+2.  **`START/END` Markers:** The `ICE_TEMPLATE` has also been updated to include the `` and `` markers, as required by the **Mnemo System v1.1** automated pipeline.
+
 --- 
 
 ## 2025-10-19 @ 13:05 EDT - Integrating DevSecOps Tools (GitHub Security Tab)

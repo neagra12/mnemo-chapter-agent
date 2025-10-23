@@ -127,6 +127,7 @@ When I request a specific asset, you **MUST** use the corresponding template bel
 - **Context:** [Optional: Brief narrative tie-in or "why this, why now" bridge from the previous lecture.]
 
 ---
+
 ### Role Kit Selection (Strategy 1: Parallel Processing ⚡)
 
 For this ICE, we will use the **[Kit Name] Kit**. Assign these three roles immediately.
@@ -137,6 +138,7 @@ For this ICE, we will use the **[Kit Name] Kit**. Assign these three roles immed
 * **[Role 3 Name]:** [Domain and 1-sentence description of responsibility.]
 
 ---
+
 ### Task Description: [Narrative Title]
 
 #### Part 1: [Task 1 Title]
@@ -155,6 +157,7 @@ For this ICE, we will use the **[Kit Name] Kit**. Assign these three roles immed
     2. [Second step]
 
 ---
+
 ### `CONTRIBUTIONS.md` Log Entry
 
 *One team member share their screen.* Open `CONTRIBUTIONS.md` on your feature branch and add the following entry **using this exact format**:
@@ -192,6 +195,19 @@ Your team's work is "Done" when you can check all of the following:
 2.  **Title:** `ICE [Number]: [Exercise Title]`
 3.  **Reviewer:** Assign your **Team TA** as a "Reviewer."
 4.  **Submit to Canvas:** Submit the URL of the Pull Request to the Canvas assignment.
+
+---
+
+### 💡 Standard Blocker Protocol (SBP)
+
+**If your team is blocked for > 15 minutes** on a technical error you cannot solve, follow this protocol.
+
+1.  **Pivot:** Stop work on the task and inform your TA.
+2.  **Deliverable:** Your team's deliverable for this ICE is now a professional **After-Action Report (AAR)**, using the 7-part template.
+3.  **Submission (Part 1 - 5 pts):** Submit your AAR *to this Canvas assignment*. This counts as your on-time submission.
+4.  **Submission (Part 2 - 5 pts):** After we issue a hotfix, you will apply it, achieve the original DoD, and **resubmit your passing PR** *to this same assignment* to receive the final 5 points.
+
+---
 ````
 ---
 
