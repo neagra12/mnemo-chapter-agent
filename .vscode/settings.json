@@ -1,0 +1,13 @@
+{
+      "markdown-pdf.styles": [
+        ".vscode/course_styles.css"
+      ],
+      "markdown-pdf.outputDirectory": "pdfs",
+      "markdown-pdf.highlight": true,
+      "markdown-pdf.emoji": true,
+      "markdown-pdf.pageRanges": "",
+      
+      "markdown-pdf.width": "210mm",
+    
+      "markdown-pdf.omitBackground": true
+}
