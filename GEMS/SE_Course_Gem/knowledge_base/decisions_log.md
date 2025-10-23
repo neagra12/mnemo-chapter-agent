@@ -2,6 +2,54 @@
 
 --- 
 
+## 2025-10-19 @ 13:05 EDT - Integrating DevSecOps Tools (GitHub Security Tab)
+
+**Scope:** Lecture 11 (Application Security) / DevSecOps Practices
+
+**Decision:**
+A segment will be added to the **Week 11 Application Security** lecture to introduce the universal DevSecOps techniques implemented in the **GitHub Security Tab** (or equivalent features in other platforms).
+
+### Rationale:
+The goal is to bridge the gap between conceptual security (covered in the lecture, e.g., SQL injection) and **automated, continuous security practices** used in industry (DevSecOps).
+
+| GitHub Feature Demonstrated | Core Technology/Technique Taught |
+| :--- | :--- |
+| **Dependabot Alerts** | **Software Composition Analysis (SCA):** Monitoring third-party dependencies for known vulnerabilities (CVEs). |
+| **Secret Scanning** | **Hardcoded Credential Prevention:** Automated checking for accidental commits of API keys or passwords. |
+| **Code Scanning** | **Static Application Security Testing (SAST):** Analyzing source code for common security flaws before execution. |
+
+### Pedagogical Enhancement:
+This ensures that security is taught as a **process layer** integrated into the CI/CD pipeline, reinforcing the idea that security is automated and continuous, not a manual, one-time audit. The timing is ideal as students will have a full application codebase and dependencies (Week 11) ready for these tools to analyze.
+
+### Final Check:
+This decision is complementary to the Week 12/13 Ruleset decision and is fully aligned with the course's shift toward **architectural and automated engineering practices**. 
+
+[Image of DevSecOps lifecycle]
+
+---
+
+## 2025-10-19 @ 13:00 EDT - Introducing Policy as Code (GitHub Rulesets/Branch Protection)
+
+**Scope:** Lecture 12 (Automated Deployment) or Lecture 13 (GenAI Integration) / Software Governance
+
+**Decision:**
+The concept of **Policy as Code (PaC)**, specifically implemented via **GitHub Rulesets** (or similar features in other platforms), will be formally introduced into the course schedule between **Week 12 (CD)** and **Week 13 (GenAI Integration)**.
+
+### Rationale:
+The timing is chosen to present Rulesets as the final layer of **Governance Automation**, which sits directly on top of the CI/CD pipeline built in Week 12:
+
+1.  **Architectural Necessity:** After automating code *delivery* (CD), Rulesets automate the **governance** of that delivery. This answers the question: "How do we prevent a human from manually overriding the pipeline's findings?"
+2.  **Pedagogical Link:** It enforces critical techniques already taught: **Code Review (CR)** and **Continuous Integration (CI)** success (e.g., "CI must pass," "Require 2 approvals"). This moves process requirements from a team rule into a repository configuration.
+3.  **Project Alignment:** This provides context for the **Extra Credit** option in the MoJ Project (Section 7: "Enforce Branch Protection"), encouraging students to implement the technical solution for PaC.
+
+### Action Item:
+The lecture material must be designed to teach the general **PaC technique** rather than focusing exclusively on the specific GitHub product.
+
+---
+
+### 🛑 Reminder: Pre-Finalization Check
+
+**This decision must be cross-checked with 2.5 Pro** to ensure the integration point does not conflict with advanced topics or architectural assumptions being made in Week 13/14 regarding the GenAI model integration or final deployment strategy.
 
 ---
 

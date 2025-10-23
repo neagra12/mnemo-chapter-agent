@@ -1,7 +1,15 @@
 # TA Follow-up Guide
 
+## Collect and forward Contribution Reflections
+As you review the PR's for the ICEX, please extract the team reflections and send all of them to me in an email message. 
+
+Students who are making up the ICEX are required to submit an individual reflection with the submission. Please forward those when you process those individual make-up. A Team make-up will be handled as a normal team reflection. 
+
+## ICEX Goals
 * **In-Class Goal (Workshop):** Your \#1 priority is to ensure the self-hosted runner is **active and connected** and to help teams diagnose any YAML/pathing issues in the `main.yml` file to achieve the **Initial Green Check ✅**. Any team that doesn't get green by the end of class is blocked on the homework.
 * **Final DoD (Due 11:59 PM):** The final submission must be a single team PR (`ice2-ci-workshop`) that is **"Approved"** and has a **Green Check**, and whose `CONTRIBUTIONS.md` links out to a passing PR from *every* team member.
+
+## Pitfalls and Coaching
 * **Common Pitfalls & Coaching:**
     1.  **Self-Hosted Runner Offline:**
         * **Symptom:** The CI run is stuck in a "Waiting for a self-hosted runner" state.
@@ -25,3 +33,17 @@ The final `ice2-ci-workshop` PR (due 11:59 PM) will be graded using this rubric.
 | **Process Log & Links** | 3 pts | `CONTRIBUTIONS.md` is complete and—most importantly—contains **working links** to every team member's individual demo PR. |
 | **Individual Homework** | 3 pts | Each linked individual PR *also* correctly shows the **Green $\rightarrow$ Red $\rightarrow$ Green** loop and a **CR-Approve** loop. (Partial credit if some are missing). |
 | **Total** | **10 pts** | |
+
+
+## Rules for team structure
+This decision finalizes the standard team size and establishes a robust, equitable policy for managing team member absences during project-critical In-Class Exercises (ICEs). The policy is designed to uphold the **100% credit for present members** philosophy, while using the 85% grade cap to incentivize attendance for absent members.
+
+### 1. Standard Team Structure and Role Allocation
+The default team size is **5 members**, ensuring the `Process Lead` serves as a natural tie-breaker in team decision-making.
+
+| Team Size | Primary Role 1 | Primary Role 2 | Dev Crew Role 3 | Dev Crew Role 4 | Dev Crew Role 5 (Flex/Shadow) |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **5 Members** | **Repo Admin** (Branching/Merge) | **Process Lead** (Documentation/DoD/Tie-breaker) | **Dev Crew (A)** | **Dev Crew (B)** | **CR Shadow** (Real-time Review/QA) |
+| **4 Members** | **Repo Admin** (Flex) | **Process Lead** | **Dev Crew (A)** | **Dev Crew (B)** | *(Empty)* |
+
+* **4-Member Team Flex Rule:** The **Repo Admin** will act as the flex member, assisting the Dev Crew with any single-threaded tasks to ensure load-balancing.
