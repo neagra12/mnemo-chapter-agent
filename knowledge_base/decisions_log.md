@@ -2,6 +2,23 @@
 
 ---
 
+---
+## 2025-10-24 @ 15:28 EDT - Optimizing Rubric Workflow for Pandoc and Canvas
+
+**Scope:** Workflow, In-Class Exercises (ICEs), Grading Artifacts, Pandoc
+
+**Description:**
+We identified a critical conflict between our two target renderers (Canvas and Pandoc). Inlined HTML rubrics, while professional-looking in Canvas, are discarded by Pandoc, which breaks the `Markdown -> PDF/DOCX` pipeline. Conversely, Pandoc-native tables (like grid tables) render poorly or as plain text in the Canvas RCE.
+
+To resolve this, we are adopting a "two-target" workflow to treat the Markdown file as the single source of truth for the Pandoc toolchain.
+
+### 1. Master Document (Pandoc-Native)
+All future ICE Markdown files will use a **Pandoc-native grid table** for the rubric. This ensures the master file can be perfectly converted to PDF or DOCX using our standard Pandoc toolchain.
+
+### 2. Canvas Deliverable (HTML Snippet)
+As a separate, manual step, I (Clio) will generate a **Canvas-optimized HTML snippet** for the rubric immediately after generating the ICE. The instructor will then manually copy this HTML into the Canvas RCE to ensure a professional appearance.
+
+This is our standard operating procedure for now. The instructor will remind me to provide this snippet after generating an ICE, and we can revisit automating this pipeline later.
 
 ---
 

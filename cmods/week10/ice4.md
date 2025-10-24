@@ -1,8 +1,4 @@
-Here is the In-Class Exercise for Module 2, Day 2, following directly from Lecture 4.
-
------
-
-### ICE 4: The Ministry's Style Guide
+# ICEX08: The Ministry's Style Guide
 
   - **Objective:** Add a second, parallel "quality gate" to the CI pipeline by creating a `lint` job. Write one *real* unit test to replace the placeholder.
   - **Time Limit:** 40 minutes
@@ -10,7 +6,7 @@ Here is the In-Class Exercise for Module 2, Day 2, following directly from Lectu
 
 -----
 
-### Role Kit Selection (Strategy 1: Parallel Processing ⚡)
+## Role Kit Selection (Strategy 1: Parallel Processing ⚡)
 
 For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit different parts of the repository to make the pipeline pass.
 *Remember the course policy: You cannot hold the same role for more than two consecutive weeks.*
@@ -21,7 +17,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
 
 -----
 
-### Task Description: Installing the "Style Guide"
+## Task Description: Installing the "Style Guide"
 
 **Goal:** All three roles will work in parallel. The final goal is to get a "green" build on *both* the `test` job and the new `lint` job.
 
@@ -42,7 +38,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
 
 *Now, all three roles work at the same time.*
 
-#### Part 1: Fix the `test` Job
+### Part 1: Fix the `test` Job
 
   * **([Process Lead])**
     1.  Open `.github/workflows/main.yml`.
@@ -50,11 +46,11 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
     3.  This job is **broken** because it doesn't install our new database packages from ICE 3.
     4.  **Replace** the entire `Install dependencies` step with this one, which uses `requirements.txt`:
         ```yaml
-              - name: Install dependencies
-                run: |
-                  python -m venv venv
-                  source venv/bin/activate
-                  pip install -r requirements.txt
+        - name: Install dependencies
+          run: |
+            python -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
         ```
     5.  Commit and push this change:
         ```bash
@@ -63,7 +59,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
         git push
         ```
 
-#### Part 2: Write a Real Unit Test
+### Part 2: Write a Real Unit Test
 
   * **([Dev Crew])**
     1.  Create a *new* test file: `tests/test_app.py`.
@@ -101,7 +97,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
         git push
         ```
 
-#### Part 3: Add the `lint` Job
+### Part 3: Add the `lint` Job
 
   * **([Repo Admin])**
     1.  Open `.github/workflows/main.yml`.
@@ -145,7 +141,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
 
 -----
 
-#### Part 4: Sync & Validate (Team Task)
+### Part 4: Sync & Validate (Team Task)
 
 1.  **([All Roles])** Pull all changes. Your goal is for *everyone* to have the updated `main.yml` and new `tests/` directory.
     ```bash
@@ -161,7 +157,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
 
 -----
 
-### `CONTRIBUTIONS.md` Log Entry
+## `CONTRIBUTIONS.md` Log Entry
 
 *One team member share their screen.* Open `CONTRIBUTIONS.md` on your feature branch (`ice4-linting-pipeline`) and add the following entry **using this exact format**:
 
@@ -181,7 +177,7 @@ For this ICE, we will use the **CI/CD Crew Kit**. All three roles will edit diff
 
 -----
 
-### Definition of Done (DoD) 🏁
+## Definition of Done (DoD) 🏁
 
 Your team's work is "Done" when you can check all of the following:
 
@@ -194,7 +190,7 @@ Your team's work is "Done" when you can check all of the following:
 
 -----
 
-### Submission (Due 11:59 PM Today)
+## Submission (Due 11:59 PM Today)
 
 1.  **Open Pull Request:** Open a new PR to merge your feature branch (`ice4-linting-pipeline`) into `main`.
 2.  **Title:** `ICE 4: The Ministry's Style Guide`
@@ -204,7 +200,6 @@ Your team's work is "Done" when you can check all of the following:
 -----
 
 -----
-
 ### TA Follow-up Guide
 
   * **In-Class Goal (Workshop):** Get every team to a "double-green" build. The *most important* pedagogical moment is when a team's `lint` job fails.
@@ -229,7 +224,7 @@ Your team's work is "Done" when you can check all of the following:
 
 -----
 
-### Pedagogical Analysis
+## Pedagogical Analysis
 
   * **Core Goal (SE Experience):** This is a perfect "Cycle 1" capstone exercise. It forces students to *return to and modify* a core piece of infrastructure (`main.yml`), which is a very common and realistic task. It adds a second, parallel "quality gate," formalizing the idea of automated quality.
   * **Developer Workflow Competency:** This is a strong parallel workflow. More importantly, it teaches students how to *read* and *react* to a `flake8` failure in a CI log, reinforcing that "cleanliness" is a team-level, non-negotiable standard.

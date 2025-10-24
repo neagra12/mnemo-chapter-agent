@@ -3,10 +3,10 @@
 /* Version 1.0 - Clio */
 
 /* --- Page and Print Setup --- */
- /* @page {
+ @page {
   size: A4; 
   margin: 1in; 
-}  */
+} 
 
 
 body {
