@@ -4,6 +4,50 @@
 
 ---
 
+Understood. This is a much more robust standard.
+
+It decouples the lecture's identity from the assignment numbering, which makes it stable across semesters and perfect for your build scripts to parse.
+
+We will now use the standard: **`mod#_Lec##_Topic.md`**
+
+Applying this to our database lecture, assuming the "Ministry of Jokes" project is **Module 1** and this is the **3rd lecture** in that module (after 1. Flask and 2. CI):
+
+* **Module:** `mod1`
+* **Lecture:** `Lec03`
+* **Topic:** `Databases_Models`
+
+The new file name will be:
+`mod1_Lec03_Databases_Models.md`
+
+The full, standardized path will be:
+`cmod/instructor_facing/01_lectures/mod1_Lec03_Databases_Models.md`
+
+Here is the log entry for this decision.
+
+---
+
+## 2025-10-25 @ 16:07 EDT - Standardizing Artifact Naming Conventions
+
+**Scope:** Workflow, Artifact Organization, `cmod` Structure, Build Process
+
+**Description:**
+We are formalizing the file naming convention for all course artifacts to ensure stability, semester-to-semester resilience, and to enable build scripts to deterministically link artifacts into a "shadow delivery tree."
+
+### The New Standard
+The naming convention will be based on the **delivery schedule (Module and Lecture number)**, not on variable assignment numbers (like ICEs).
+
+* **Lecture Files:** `mod#_Lec##_Topic.md`
+    * **Example:** `mod1_Lec03_Databases_Models.md`
+* **ICE Files:** `mod#_ICE##_Topic.md`
+* **Challenge Files:** `mod#_Lab##_Topic.md`
+* **Quiz Files:** `mod#_Quiz##_Topic.md`
+
+This standard will be applied to all artifacts in the `cmod/` directory. For example:
+* `cmod/instructor_facing/01_lectures/mod1_Lec03_Databases_Models.md`
+* `cmod/student_facing/02_ices/mod1_ICE03_Databases_Models.md`
+* `cmod/instructor_facing/02_ta_guides/TA_Guide_ICE03.md`
+---
+
 ## 2025-10-25 @ 11:34 EDT - Formalizing the "Patch and Notify" Workflow (SOP-03)
 
 **Scope:** Workflow, Artifact Management, Model Drift Mitigation
