@@ -189,16 +189,17 @@ Your team's work is "Done" when you can check all of the following:
 
 -----
 
-## TA Grading Rubric (10 Points)
+### Rubric Generation: Two-Target (Pandoc + Canvas) Workflow
 
-The final PR (due 11:59 PM) will be graded using this rubric.
-
-| Criteria | Points | Description |
-| :--- | :--- | :--- |
-| **Artifacts** | 4 pts | All required files (`app.py`, `tests/test_app.py`, `requirements.txt`, `.gitignore`) are present in the PR and are correct. |
-| **Process Log** | 3 pts | `CONTRIBUTIONS.md` is present, complete, and includes a thoughtful answer to the reflection question. |
-| **PR Hygiene** | 3 pts | The PR is titled correctly (`ICE 1: ...`) and has the **Team TA** assigned as a "Reviewer." |
-| **Total** | **10 pts** | |
+1.  **Mandate:** All `In-Class Exercise (ICE)` and `Project Assignment` rubrics must be generated in **two distinct formats** to support the course's "two-target" build pipeline (Pandoc-to-PDF and Markdown-to-Canvas).
+2.  **Target 1: Master Markdown File (for Pandoc PDF):**
+    * **Format:** The rubric *inside* the main `.md` file (e.g., in the `TA Follow-up Guide`) **MUST** be a Pandoc-native **grid table** (the format using `+`, `-`, and `|` dividers).
+    * **Rationale:** This is the "single source of truth." It is the only format that the `build_pdf.sh` script (using `xelatex`) can correctly parse and render as a professional, native table in the final PDF document.
+3.  **Target 2: Canvas RCE (for Students):**
+    * **Format:** After generating the complete Markdown artifact, you **MUST** also generate a separate, standalone **"Canvas-Optimized HTML Snippet."**
+    * **Rationale:** This snippet (using `<table>` with inline CSS) is for the instructor to manually copy/paste into the Canvas Rich Content Editor (RCE). It is the only way to ensure a clean, styled, and readable table for students on the live course site.
+4.  **Forbidden Format:** Standard Markdown "pipe tables" (`| Column 1 | Column 2 |`) **MUST NOT** be used for rubrics, as they fail both targets: they render poorly in Canvas and are less robust for Pandoc.
+5. **Points:** Rubrics will be based on a total 10 points and at least 3 points for completed CONTRIBUTIONS.md entry. The remaining 7 points will be spread over the major goals of the ICE.
 
 -----
 
@@ -263,7 +264,7 @@ The final PR (due 11:59 PM) will be graded using this rubric.
 ### 4. Evidence
 *(Paste the *full* terminal output, relevant code snippets, or screenshots that support your hypothesis.)*
 
-(Paste full logs here)
+    (Paste full logs here)
 
 
 ### 5. The "Aha!" Moment (if any)

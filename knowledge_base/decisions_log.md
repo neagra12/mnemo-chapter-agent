@@ -3,6 +3,49 @@
 ---
 
 ---
+
+## 2025-10-24 @ 21:25 EDT - Integrating AAR Template into ICEs & Pivoting to Individual AARs
+
+**Scope:** Workflow, SBP, ICE Template, Pedagogy, Grading
+
+**Description:**
+We have made two significant improvements to the Standard Blocker Protocol (SBP).
+
+1.  **AAR Template Integration:** The 7-part AAR template is now integrated directly into the `ICE Template`. This allows me (Clio) to pre-fill a new "Instructor's Diagnostic Hints" section with ICE-specific guidance, simulating a senior engineer's "expert biasing" to make the AAR a more effective diagnostic tool.
+2.  **Pivot to Individual AARs:** We are clarifying and formalizing the SBP as an **individual "safe harbor" protocol**, not a team-wide one. This was based on the instructor's clarification that individuals, not just teams, can file AARs. This supersedes the "team AAR" workflow logged at 21:10 EDT.
+
+### The Finalized (Individual) AAR Workflow:
+
+  * **Trigger:** An *individual student* is blocked for \>15 minutes.
+  * **Action:** The student informs their team, creates an `aar/AAR-ICE[X]-<username>.md` file from the template, and completes it.
+  * **Submission (Part 1):** The student opens a PR with their AAR and assigns the **instructor**. The PR URL is submitted to Canvas for 5 points.
+  * **Feedback (Part 2):** The instructor provides a hotfix via PR comments. The student applies the fix, completes the original ICE, and resubmits their *passing* PR for the final 5 points.
+
+**Rationale:** This workflow is pedagogically superior. It maintains the high cognitive engagement of document authoring, simulates a professional senior/junior engineer dialog, and provides a robust "safe harbor" for individual students without forcing the entire team to pivot.
+
+---
+## 2025-10-24 @ 21:10 EDT - Finalizing the AAR Submission & Review Workflow (PR-Based)
+
+**Scope:** Workflow, SBP, Grading, Automation, Pedagogical Design
+
+**Description:**
+We have finalized the workflow for the Standard Blocker Protocol (SBP) After-Action Report (AAR) submission and review. We explicitly **rejected** using web forms (like MS Forms) or email attachments in favor of a process that is more pedagogically sound and better simulates a professional engineering workflow.
+
+### The Finalized AAR Workflow:
+1.  **Student Action (Authoring):** When blocked, the team will copy a `aar_template.md` file into an `/aar` directory in their project repository. They will fill out this document as a team.
+2.  **Student Action (Submission):** The team will commit the new `AAR-ICE[X].md` file to a new branch and open a **Pull Request (PR)**, assigning the **instructor** as a reviewer. This PR serves as their on-time "Part 1" (5-point) submission.
+3.  **Instructor Action (Automation):** The instructor will use the PR URL as an input to a local script (via Apple Shortcuts) that will fetch, parse, and log the AAR data into the course's private improvement log.
+4.  **Instructor Action (Feedback):** The instructor will provide feedback, lessons learned, and (if necessary) a hotfix by **commenting directly on the Pull Request.**
+5.  **Resolution:** The PR will be merged or closed, and the student will proceed with the "Part 2" hotfix submission.
+
+### Rationale:
+This workflow was chosen because it perfectly aligns with our core goals:
+* **Core Goal (SE Experience):** Using a PR to review a post-mortem document is a high-fidelity simulation of a real-world engineering process.
+* **Developer Workflow Competency:** It reinforces the Git/PR workflow for non-code artifacts.
+* **Cognitive Load Management:** It shifts the "Form vs. Document" debate decisively toward **document authoring**, which promotes deeper reflection and metacognition by having students construct a single, coherent narrative.
+* **Automation:** It provides a clean, scriptable "handle" (the PR URL) for the instructor's automation, without compromising the student experience.
+
+---
 ## 2025-10-24 @ 15:28 EDT - Optimizing Rubric Workflow for Pandoc and Canvas
 
 **Scope:** Workflow, In-Class Exercises (ICEs), Grading Artifacts, Pandoc
