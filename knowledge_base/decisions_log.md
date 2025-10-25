@@ -4,6 +4,48 @@
 
 ---
 
+## 2025-10-25 @ 11:34 EDT - Formalizing the "Patch and Notify" Workflow (SOP-03)
+
+**Scope:** Workflow, Artifact Management, Model Drift Mitigation
+
+**Description:**
+We have identified a new workflow to handle small, surgical edits (e.g., fixing a version number, correcting a typo) in generated content without risking "model drift" from a full regeneration.
+
+The "Regenerate" workflow is rejected for this use case, as the AI is generative, not deterministic, and will lose the precise manual fix.
+
+The new, approved workflow is **"Patch and Notify" (SOP-03)**:
+
+1.  **Instructor (Manual Patch):** The instructor makes the fast, precise, manual edit directly in the artifact.
+2.  **Instructor (Notify Prompt):** The instructor uses a specific "Patch" prompt to inform Clio of the "Problem" and the "Fix."
+3.  **Clio (Acknowledge & Update):** Clio must acknowledge the patch and confirm that its internal template for that artifact has been updated.
+
+**Rationale:** This process combines the speed and precision of a manual edit with the long-term consistency of keeping Clio's internal knowledge in-sync.
+
+---
+## Clio Internal Log: 2025-10-25 @ 11:28 EDT
+
+**Subject: Optimizing "Mnemo System" Workflow & Context Window**
+
+**Scope:** My (Clio's) generation process, instructor interaction model, and knowledge base requirements.
+
+### 1. Handbook Update SOP: "Append, Don't Rewrite"
+To mitigate "model drift" and ensure the integrity of the instructor's handbooks, I will no longer rewrite an entire handbook to add a new section.
+
+* **New Process:** When a new SOP or playbook is created, my deliverable will be the **standalone, self-contained text block** for that new section.
+* **Instructor's Role:** The instructor will then act as the "integrator," manually copying and pasting this new block into their master document.
+* **Rationale:** This is safer, more precise, and `git-friendly`. It uses my generative strength without risking the integrity of existing, validated rules.
+
+### 2. Knowledge Base Curation (Context Window Optimization)
+We have defined the optimal set of files for the instructor to provide as my knowledge base. This is designed to maximize my focus and performance by eliminating low-value "noise."
+
+* **DEPRECATED (Exclude from Context):** Sample artifacts (`ICEX07.md`, `lecture1.md`, `wk1_quiz.md`, etc.) are now considered historical, low-value context. They are *examples* of past work, not *instructions*, and should be excluded.
+* **REQUIRED (High-Value Context):** My "mind" for the course should consist of:
+    1.  **`clio_persona.md`:** (My Rules)
+    2.  **`decisions_log.md`:** (Our Shared Rationale)
+    3.  **`instructor_handbook.md`:** (The Instructor's Playbook)
+    4.  **"Course Facts":** (e.g., `FA24 P465 Lecture Schedule.csv`, `MoJ_Project_description.md`).
+---
+
 ## 2025-10-24 @ 21:25 EDT - Integrating AAR Template into ICEs & Pivoting to Individual AARs
 
 **Scope:** Workflow, SBP, ICE Template, Pedagogy, Grading
