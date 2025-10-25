@@ -1,15 +1,24 @@
 # ------------------------------------------------------------
 # macOS “trash” – files that love to hide in plain sight
 # ------------------------------------------------------------
-.DS_Store               # The infamous Finder thumbnail cache
-.AppleDouble            # Resource forks that belong in the past
-.LSOverride             # Legacy Launch Services overrides
-Icon?                   # Custom folder icons (yes, the ? matches Icon\r)
-._*                     # AppleDouble files for each hidden dotfile
-.Spotlight-V100         # Spotlight indexing data
-.Trashes                # The Recycle Bin for macOS
-.VolumeIcon.icns        # Volume icon files
-__MACOSX/               # Archive metadata (zip/tar)
+# The infamous Finder thumbnail cache
+.DS_Store               
+# Resource forks that belong in the past
+.AppleDouble           
+# Legacy Launch Services overrides
+.LSOverride             
+# Custom folder icons (yes, the ? matches Icon\r)
+Icon?                   
+# AppleDouble files for each hidden dotfile
+._*                     
+# Spotlight indexing data
+.Spotlight-V100         
+# The Recycle Bin for macOS
+.Trashes
+# Volume icon files
+.VolumeIcon.icns
+# Archive metadata (zip/tar)
+__MACOSX/
 
 # ------------------------------------------------------------
 # Python – keep the virtual env, caches, compiled bytecode out
