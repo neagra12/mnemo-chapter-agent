@@ -189,6 +189,19 @@ Your team's work is "Done" when you can check all of the following:
 
 -----
 
+## TA Grading Rubric (10 Points)
+
+The final PR (due 11:59 PM) will be graded using this rubric.
+
+| Criteria | Points | Description |
+| :--- | :--- | :--- |
+| **Artifacts** | 4 pts | All required files (`app.py`, `tests/test_app.py`, `requirements.txt`, `.gitignore`) are present in the PR and are correct. |
+| **Process Log** | 3 pts | `CONTRIBUTIONS.md` is present, complete, and includes a thoughtful answer to the reflection question. |
+| **PR Hygiene** | 3 pts | The PR is titled correctly (`ICE 1: ...`) and has the **Team TA** assigned as a "Reviewer." |
+| **Total** | **10 pts** | |
+
+-----
+
 ### Submission (Due Date)
 
 1.  **Open Pull Request:** Open a new PR to merge your feature branch (`ice[X]-...`) into `main`.
@@ -200,15 +213,78 @@ Your team's work is "Done" when you can check all of the following:
 
 ### 💡 Standard Blocker Protocol (SBP)
 
-**If your team is blocked for > 15 minutes** on a technical error you cannot solve, follow this protocol.
+**If you are individually blocked for \> 15 minutes** on a technical error you cannot solve, you can invoke the SBP. This is an *individual* protocol to protect your on-time grade.
 
-1.  **Pivot:** Stop work on the task and inform your TA.
-2.  **Deliverable:** Your team's deliverable for this ICE is now a professional **After-Action Report (AAR)**, using the 7-part template.
-3.  **Submission (Part 1 - 5 pts):** Submit your AAR *to this Canvas assignment*. This counts as your on-time submission.
-4.  **Submission (Part 2 - 5 pts):** After we issue a hotfix, you will apply it, achieve the original DoD, and **resubmit your passing PR** *to this same assignment* to receive the final 5 points.
+1.  **Notify Team:** Inform your team that you are invoking the SBP and pivot to helping them with a different task (e.g., documentation, testing, research).
+2.  **Create Branch:** Create a new *individual* branch (e.g., `aar-ice[X]-<username>`).
+3.  **Create AAR File:** Create a new file in your repo: `aar/AAR-ICE[X]-<your_github_username>.md`.
+4.  **Copy & Complete:** Copy the template below into your new file and fill it out completely.
+5.  **Submission (Part 1 - 5 pts):** Open a Pull Request to merge your AAR branch into `main`.
+      * **Title:** `AAR ICE [Number]: <Brief Description of Blocker>`
+      * **Reviewer:** Assign your **Instructor** as a "Reviewer."
+      * **Submit to Canvas:** Submit the URL of *your AAR Pull Request* to this Canvas assignment. This counts as your on-time submission.
+6.  **Submission (Part 2 - 5 pts):** After the instructor provides a hotfix in the PR, you will apply it, achieve the original DoD, and **resubmit your *passing* PR** *to this same assignment* to receive the final 5 points.
+
+-----
+
+### AAR Template (Copy into `aar/AAR-ICE[X]-....md`)
+
+```markdown
+# AAR for ICE [Number]: [Blocker Title]
+
+* **Student:** `@your-github-username`
+* **Timestamp:** `2025-XX-XX @ HH:MM`
 
 ---
+
+### Instructor's Diagnostic Hints
+* **Hint 1:** [A pre-filled hint relevant to this specific ICE]
+* **Hint 2:** [Another pre-filled hint pointing to a common error]
+
+---
+
+### 1. The Blocker
+*(What is the *symptom*? What is the *exact* error message?)*
+
+> [Paste error message or describe symptom]
+
+### 2. The Investigation
+*(What *exactly* did you try? List the commands you ran, files you edited, and Stack Overflow links you read.)*
+
+* I tried...
+* Then I edited...
+* This Stack Overflow post suggested...
+
+### 3. The Root Cause Hypothesis
+*(Based on your investigation, what do you *think* is the real problem? Try to be specific.)*
+
+> I believe the problem is...
+
+### 4. Evidence
+*(Paste the *full* terminal output, relevant code snippets, or screenshots that support your hypothesis.)*
+
+(Paste full logs here)
+
+
+### 5. The "Aha!" Moment (if any)
+*(Did you have a moment of clarity or discover the solution just as you were writing this?)*
+
+> [Describe your realization, or N/A]
+
+### 6. The Learning
+*(What new, specific thing did you learn from this? What will you do *differently* next time?)*
+
+> I learned that...
+
+### 7. The Remaining Question
+*(What do you *still* not understand? What is the *one key question* you need answered to get unblocked?)*
+
+> My one question is...
+
+
+
 ````
+***--- END ICE ---***
 ---
 
 **TA Followup Guide Template:**
