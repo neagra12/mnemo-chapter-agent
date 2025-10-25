@@ -23,7 +23,7 @@ mkdir -p "$OUTPUT_DIR"
 # --to html5: Specifies HTML5 output
 # --output: The destination file
 #
-pandoc "$MARKDOWN_FILE" \
+pandoc -f markdown-yaml_metadata_block "$MARKDOWN_FILE" \
     --standalone \
     --to html5 \
     --output "$OUTPUT_FILE"

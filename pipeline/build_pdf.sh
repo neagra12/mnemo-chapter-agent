@@ -42,7 +42,7 @@ mkdir -p "$OUTPUT_DIR"
 #             which fixes the 'Undefined control sequence' error.
 #
 echo "Building PDF... (this may take a moment)"
-pandoc "$MARKDOWN_FILE" \
+pandoc -f markdown-yaml_metadata_block "$MARKDOWN_FILE" \
     --standalone \
     --pdf-engine=xelatex \
     -V geometry:"top=1in, bottom=1in, left=1in, right=1in" \
