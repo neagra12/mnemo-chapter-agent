@@ -2,6 +2,25 @@
 
 ---
 
+
+---
+
+## 2025-10-26 @ 11:47 EDT - Pedagogical Strategy for mod1_Lec03 (Databases) & ICE07
+
+**Scope:** `mod1_Lec03_Databases_Models.md`, `ICE_07_Models_Migrations.md`, `Course_Pedagogy`, `SBP_Workflow`
+
+**Description:**
+We have finalized the lecture and ICE for the database module. This plan reflects three major pedagogical decisions:
+
+1.  **Pairing SBP Rollout with a High-Risk ICE:** The new **Standard Blocker Protocol (SBP)** and **After-Action Report (AAR)** workflow is being introduced in this lecture. We are *intentionally* pairing this policy rollout with ICE07, an exercise known to have a high risk of technical blockers (e.g., the circular import trap, the multi-step migration command workflow).
+    * **Rationale:** This strategy introduces the "safety net" (SBP) at the exact moment students are most likely to need it. By time-boxing the in-class portion and making the final `flask db upgrade` step homework, we are creating an immediate, practical, and low-stakes application for the SBP.
+
+2.  **Strengthening the "Brownfield-to-Greenfield" Bridge:** The lecture's justification for using a database has been explicitly tied to the students' prior work.
+    * **Rationale:** The new Slide 3 ("The MFE Problem") frames the "pain" of the `Angband` Monster File Editor assignment (manually managing flat-file relationships) as the core problem that a relational database (SQLAlchemy) is designed to solve. This directly connects their Part 1 experience to the Part 2 "greenfield" architecture.
+
+3.  **Prioritizing Workflow over Theory:** The lecture content was strategically "de-scoped" to focus on practical, workflow-oriented skills.
+    * **Rationale:** We removed deep theoretical dives (e.g., standalone slides on ACID transactions, concurrency) to dedicate more time to the *practical implementation*: the ORM-to-SQL mapping (Slide 9), the migration process (Slide 11), and the SBP/AAR workflow. The "theory" (SQL vs. NoSQL) is now concentrated in a single, dense trade-off table (Slide 6) that serves as "ground truth" for the `MongoDB_exploration.md` weekly challenge, creating a tight loop between the lecture and the asynchronous assignment.
+
 ---
 
 Understood. This is a much more robust standard.
