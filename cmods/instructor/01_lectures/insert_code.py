@@ -41,3 +41,8 @@ import models  from project import models
 # In models.py  
 # # 3. This import now works!  
 from app import db
+
+
+# Brittle, hard to maintain, and a HUGE security risk (SQL Injection)  
+user_input = "Admin' --"  
+db.execute("SELECT * FROM users WHERE username = '" + user_input + "'")
