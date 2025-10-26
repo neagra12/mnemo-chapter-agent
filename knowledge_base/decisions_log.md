@@ -3,6 +3,104 @@
 ---
 
 
+
+---
+
+## 2025-10-26 @ 14:17 EDT - Finalizing the "Recipe/Tool" Build Pipeline
+
+**Scope:** `Workflow`, `Build_Process`, `Scaffolding`, `ICE_Workflow`
+
+**Description:**
+We have formalized the workflow for generating "starter kit" `.zip` files for ICEs and assignments. This workflow is now a two-part, tool-based pipeline to ensure consistency, reusability, and a clean separation of "content" from "logic."
+
+**The Pipeline:**
+1.  **The "Tool" (`scripts/build_kit.sh`):** A generic, reusable Bash script. Its only job is to:
+    * Create a secure, temporary staging directory.
+    * Accept a "recipe" script as an argument.
+    * Execute the "recipe" *inside* the staging directory.
+    * Zip the contents of the staging directory into the `dist/kits/` folder.
+    * Clean up all temporary files.
+
+2.  **The "Recipe" (e.g., `cmods/student/02_ices/mod1_icex08_refactor_kit.sh`):** A content-specific, executable Bash script. Its only job is to populate the *current working directory* (which the "Tool" sets to the staging area) with all the necessary files and directories for that specific starter kit.
+
+**Rationale:**
+This model is vastly superior to our initial single-script approach.
+* **Separation of Concerns:** The "Tool" (`build_kit.sh`) handles the *process* (zip, paths, cleanup), while the "Recipe" (`..._kit.sh`) handles the *content* (the `cat << EOF` blocks).
+* **Scalability:** We can now create new, complex starter kits by simply writing a new "recipe" script. We never have to touch the "tool" script again.
+* **Maintainability:** This fits our `cmod` philosophy. The "recipe" (content) lives in `cmods/` alongside the ICE it belongs to, while the "tool" (logic) lives in a central `scripts/` directory.
+
+---
+
+You are absolutely right to question this. This is an excellent point.
+
+`moj` is the better choice. `project` is a common *tutorial convention*, but it is not a strong *industry best practice* and it is pedagogically weaker.
+
+Let's break down the "why."
+
+### `project` (The "Tutorial" Model)
+
+  * **Why it's used:** This pattern is common in tutorials (especially the Django `project`/`app` model) to create a "generic" template. The pedagogical idea is to show a *reusable pattern* where `project/` is "the main package" and `tests/` is "the tests."
+  * **Why it's bad:** It's generic and abstract. An import like `from project.models import User` has no identity. It's "the models from... the project." This is weak.
+
+### `moj` (The "Application" Model)
+
+  * **Why it's better (Pedagogy):** It is **specific and descriptive**.
+
+      * `from moj.models import User` is concrete. It reads as "get the `User` model *from the Ministry of Jokes app*."
+      * This reinforces the application's identity and makes the code "self-documenting." It's less abstract and easier for students to trace.
+
+  * **Why it's better (Industry):** This is a *far more common and professional* industry practice.
+
+      * You don't `import project` when you use Flask; you `import flask`. The package name *is* the application/library name.
+      * This avoids namespace collisions and makes the project's components clearly identifiable.
+
+The only "better" industry practice would be the `src/moj` layout, but this adds a layer of `pip install -e .` path complexity that is *unnecessary cognitive load* for this course.
+
+**Decision: We will use `moj` as the standard package name.** All examples and scaffolding will be updated.
+
+Here is the log entry to formalize this excellent pivot.
+
+-----
+
+## 2025-10-26 @ 12:28 EDT - Standardizing on `moj/` as the App Package Name
+
+**Scope:** `MoJ_Project`, `ICE_Scaffolding`, All `mod1` Lectures
+
+**Description:**
+We are pivoting from the generic `project/` directory to the specific `moj/` directory for the main application package. This decision supersedes the "Simple Package Model" decision from 12:23 EDT.
+
+All future artifacts will assume the following directory structure:
+
+```
+FA25-SE1-TEAMXX-MoJ/    <-- The <repo-root>
+|
+|-- .github/
+|   |-- workflows/
+|       |-- main.yml
+|
+|-- moj/                  <-- THIS IS THE FLASK "app package"
+|   |-- __init__.py       <-- Main app file (app, db, migrate)
+|   |-- models.py
+|   |-- config.py
+|
+|-- tests/
+|   |-- conftest.py
+|   |-- test_models.py
+|
+|-- .flake8
+|-- requirements.txt
+|-- migrations/
+|-- CONTRIBUTIONS.md
+|-- README.md
+```
+
+**Rationale:**
+
+1.  **Pedagogical Clarity:** `moj` is specific and descriptive. An import like `from moj.models import User` is less abstract and easier for students to trace than the generic `from project.models import User`.
+2.  **Industry Alignment:** Naming the core package after the application itself is a more professional and common industry standard than the "tutorial-ism" of a generic `project` folder.
+3.  **Project Identity:** This standardizes the project's identity from the repository name (`...-MoJ`) to its core importable package (`moj`).
+4.  **Cognitive Load (Rejected Alternative):** We are *still* rejecting the `src/moj` layout, as it adds installation and path-mapping complexity (`pip install -e .`) that is unnecessary for our learning objectives.
+
 ---
 
 ## 2025-10-26 @ 11:47 EDT - Pedagogical Strategy for mod1_Lec03 (Databases) & ICE07
