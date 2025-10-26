@@ -1,9 +1,3 @@
-Here is the slide deck for Lecture 3, implementing Step 2 of our plan.
-
-It follows the template, bridges from the previous lectures, and incorporates the canonical reference links we just generated.
-
------
-
 # Lecture 3: Databases & Models
 
 ## Slide 1: Title Slide
@@ -14,10 +8,10 @@ It follows the template, bridges from the previous lectures, and incorporates th
 ## Slide 2: Learning Objectives
 
   - By the end of this lecture, you will be able to:
-  - **Explain** why a web server needs a database for persistence.
+  - **Explain** why a web app needs a database for persistence.
   - **Define** the role of an ORM (Object-Relational Mapper) like SQLAlchemy.
   - **Implement** a Python "Model" class that maps to a database table.
-  - **Explain** why database "migrations" (using Alembic) are critical for team-based development.
+  - **Explain** why database "migrations" (using **Flask-Migrate**) are critical for team-based development.
 
 ## Slide 3: Bridging Context: Where Does Our Data Go?
 
@@ -26,119 +20,190 @@ It follows the template, bridges from the previous lectures, and incorporates th
   - **The Solution:** We need a **database** for **persistence**.
   - Speaker Note: "Think of your Flask app as a temporary office worker. When they go home for the night (the server restarts), their desk is cleared. We need to give them a permanent filing cabinet—that's our database."
 
-## Slide 4: What is a Database?
+## Slide 4: Our First Database: SQLite
 
-  - **Key Point:** A database (like PostgreSQL) is a separate, highly-optimized *server program* whose only job is to store, protect, and retrieve data.
-  - It is the "filing cabinet" for our Ministry.
-  - Our Flask app (the "office worker") will make requests to the Database server (the "filing cabinet") to store or fetch data.
-  - 
-  - Speaker Note: "It's critical to understand: our Flask app and our Postgres database are two *separate programs* that will talk to each other over a network port."
+  - **Key Point:** For this first project cycle, we will use **SQLite**.
+  - **What is SQLite?** It's a simple, fast, self-contained database engine that runs *inside* our application. It stores the entire database in a **single file** (e.g., `moj.db`).
+  - **Why not Postgres?** We will use a powerful *database server* (like Postgres) later. SQLite has **zero setup** and lets us focus 100% on the *models* and *migrations* first.
+  - Speaker Note: "There are other ways to organize databases. NoSQL is a document oriented system, MongoDB for example, and there are key/value pair databases like Redis."
 
-## Slide 5: The Translation Problem
+## Slide 5: Relational vs. NoSQL (The Core Trade-Off)
+- **Key Point:** SQLAlchemy is an "Object-**Relational** Mapper" because it's built for **Relational** (SQL) databases. The most popular alternative is **NoSQL**.
+- **The Core Trade-Off:** This is the central conflict you must understand.
 
-  - **Key Point:** We have a translation problem.
-  - We, the developers, speak **Python** (e.g., `class User:`).
-  - The database speaks **SQL** (e.g., `CREATE TABLE user_account (...)`).
-  - We don't want to spend our time writing messy, error-prone SQL strings inside our Python code.
-  - Speaker Note: "This is a classic problem. How do we, as Python developers, talk to a SQL database without having to become expert SQL writers ourselves?"
+| Concept | Relational (SQL / SQLAlchemy) | NoSQL (Document / MongoDB) |
+| :--- | :--- | :--- |
+| **Data Model** | **Normalized** (Data is split into separate, related tables, e.g., `User` and `Joke`). | **Denormalized** (Data is stored in one "document," e.g., a `User` with a *list* of their jokes embedded inside). |
+| **Schema** | **Schema-on-Write** (Rigid. The table *must* conform to the `models.py` definition. Enforced by the DB.) | **Schema-on-Read** (Flexible. Each document can have a different structure. Enforced by your *app code*.) |
+| **"The Lock"** | **Transactions (ACID).** Solves the race condition with guaranteed, strict consistency. | **Atomic Operations.** Concurrency is managed differently, often at the *document* level. (Faster, but different.) |
+| **The "Join"** | **Yes.** You can easily `JOIN` the `User` and `Joke` tables. | **No.** You *cannot* join collections. This is why data is "denormalized" (pre-joined). |
+| **Code** | `SQLAlchemy` (ORM) | `PyMongo` (Driver) |
 
-## Slide 6: The Solution: An ORM (Object-Relational Mapper)
+- Speaker Note: "Pay close attention to this slide. This is the **exact set of trade-offs** you will be investigating in this week's challenge. This is your 'ground truth' for evaluating the AI."
 
-  - **Key Point:** We use an **ORM (SQLAlchemy)**. An ORM is a "universal translator" for our code.
-  - It maps our **Objects** (Python classes) to the database's **Relations** (SQL tables).
-  - **We write:** A Python `class`.
-  - **The ORM translates:** This class into a `CREATE TABLE` SQL command.
-  - **We write:** `user = User(name="admin")`
-  - **The ORM translates:** This into an `INSERT INTO ...` SQL command.
-  - Speaker Note: "This is our first *major* architectural decision. We are choosing to let SQLAlchemy manage this translation so we can focus on Python."
-  - **Reference:** [SQLAlchemy ORM Quick Start](https://docs.sqlalchemy.org/en/20/orm/quickstart.html)
+## Slide 6: The Problem: Code vs. Data
 
-## Slide 7: What is a "Model"?
+  - **Key Point:** Our application "thinks" in Python (objects, classes, methods), but our database "thinks" in SQL (tables, rows, columns).
+  - **The "Impedance Mismatch":** How do we translate `my_user.get_email()` into `SELECT email FROM user WHERE id=1`?
+  - **Bad Solution:** Writing raw SQL queries by hand (e.g., `db.execute("INSERT INTO ...")`).
+      - This is tedious, error-prone, and a major security risk (SQL Injection).
+  - **Good Solution:** Use a "translator."
 
-  - **Key Point:** A "Model" is the specific name for a Python class that the ORM knows how to map to a database table.
-  - We will create a `models.py` file in our application.
-  - This file will contain all our "data blueprints," like `class User` or `class Joke`.
-  - The ORM (SQLAlchemy) will read this file to understand our application's data structure.
+## Slide 7: The Solution: An "ORM"
 
-## Slide 8: Code Example: A Basic Model
+  - **Key Point:** We use an **Object-Relational Mapper (ORM)**.
+  - **What it is:** An ORM is a library that automatically translates our Python objects and methods into SQL queries, and vice-versa.
+  - **The Analogy:** The ORM is our "universal translator."
+      - **We speak Python:** `user.username = "new_name"`
+      - **The ORM translates:** `UPDATE user SET username = 'new_name' WHERE id = 1`
+      - **We speak Python:** `db.session.add(new_joke)`
+      - **The ORM translates:** `INSERT INTO joke (joke_text, ...) VALUES (...)`
 
-  - **Key Point:** This looks like a Python class, but it's full of instructions for SQLAlchemy.
-  - **Code Example:**
+## Slide 8: What is SQLAlchemy?
+
+  - **Key Point:** **SQLAlchemy** is the most popular, powerful, and professional-grade ORM in the Python world.
+  - It is *not* a database. It is a *translator* that can talk to many different databases (SQLite, Postgres, MySQL, etc.).
+  - We will use the **Flask-SQLAlchemy** extension, which is a simple wrapper that makes it easy to integrate with our Flask app.
+  - Speaker Note: "Learning SQLAlchemy is a major, transferable skill. It's used by companies like Reddit, Dropbox, and Yelp."
+
+## Slide 9: From `class` to `table`
+
+  - **Key Point:** With an ORM, our database "schema" (the design) is just a Python class that inherits from `db.Model`.
+  - We define the *columns* as class-level *attributes*.
+  - **Code Example:** This is the **"I" of our I-WE-YOU** model.
 
 <!-- end list -->
 
 ```python
-# models.py
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+# We define a Python class
+class User(db.Model):
+    # SQLAlchemy translates this...
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
 
-# All our models will inherit from this Base class
-class Base(DeclarativeBase):
-    pass
-
-class User(Base):
-    __tablename__ = "user_account" # The *real* table name in SQL
-
-    # Mapped[] tells the ORM this is a column
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
-    email: Mapped[str]
+# ...into this SQL
+CREATE TABLE user (
+    id INTEGER NOT NULL,
+    username VARCHAR(80) NOT NULL,
+    email VARCHAR(120) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (username),
+    UNIQUE (email)
+);
 ```
 
-  - Speaker Note: "We define the *shape* of our data in Python. `__tablename__` is the SQL table name. `Mapped` and `mapped_column` tell SQLAlchemy 'this is a column' and what its properties are, like `primary_key=True`."
+  - Speaker Note: "Notice how `nullable=False` becomes `NOT NULL`. The ORM handles the translation, so we can stay in our 'Python brain'."
 
-## Slide 9: The *New* Team Problem: Schema Changes
+## Slide 10: The Problem with Models
 
-  - **Key Point:** We just created a *new* problem.
-  - **Scenario:**
-    1.  You (on `feat/user-auth`) add the `email` column to the `User` model.
-    2.  Your teammate (on `feat/joke-form`) adds a `date_posted` column to the `Joke` model.
-    3.  You both merge to `main`.
-  - **Question:** Whose database is "correct"? How do we keep everyone's local database in sync with the new code?
-  - Speaker Note: "This is a *critical* team synchronization problem. If your code expects an `email` column but your database doesn't have it, your app will crash. How do we manage *changes* to the database structure?"
+  - **Key Point:** This is great for Week 1. But what happens in Week 2, when we want to add a `role` column to our `User` model?
+  - `class User(db.Model): ... role = db.Column(db.String(20))`
+  - **The Conflict:** Our *code* (the Model) now **does not match** our *database* (the Table).
+  - **The Problem:** If we just run the app, it will crash. If we drop the whole database, *we lose all our data*. How do we safely *change* a live database?
 
-## Slide 10: Solution: Database Migrations
+## Slide 11: The Solution: Migrations
 
-  - **Key Point:** We solve this with **database migrations**. A migration is a *version-controlled script* that safely applies (or undoes) a single change to the database structure.
-  - **The Tool:** We will use **Alembic**, a migration tool built for SQLAlchemy.
-  - Think of it like **Git for your database schema**.
-  - **Reference:** [Alembic Tutorial](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
+  - **Key Point:** We **never** change a production database by hand. We use a **migration tool**. We will use **Flask-Migrate**.
+  - (Flask-Migrate is a simple wrapper for a powerful tool called **Alembic**).
+  - **What it is:** A migration is a small, version-controlled *script* that describes *one single change* to the database schema.
+  - **The Analogy:** Migrations are like **`git commit` for your database**.
+      - `git` records changes to your *code*.
+      - `flask-migrate` records changes to your *database schema*.
 
-## Slide 11: The Alembic Workflow
+## Slide 12: The Migration Workflow
 
-  - **Key Point:** You *never* change the database by hand. You let Alembic do it.
-  - **The Workflow (for a new change):**
-    1.  You change your `models.py` file (e.g., add `email: Mapped[str]`).
-    2.  You run `alembic revision --autogenerate -m "add email to user"`
-    3.  Alembic compares your Python models to the database's state and *writes a new migration script*.
-    4.  You **commit this new script to Git**.
-  - **The Workflow (to get changes):**
-    1.  You `git pull` and get your teammate's new migration script.
-    2.  You run `alembic upgrade head`
-    3.  Alembic runs the script and safely updates your local database to match the code.
-  - Speaker Note: "This is the process. Edit models, run autogenerate, commit the script. Pull, run upgrade. This ensures *everyone's* database structure matches the code, solving the team sync problem."
+  - **Key Point:** This is a critical, three-step "safety dance" that you will do *every time* you change your models.
+  - **Step 1: You edit `models.py`**
+      - (e.g., You add `role = db.Column(...)` to the `User` model)
+  - **Step 2: You run `flask db migrate -m "Added role to User"`**
+      - Flask-Migrate "diffs" your models against the database.
+      - It auto-generates a new Python script (e.g., `migrations/versions/abc123.py`) that contains the *one* command: `ALTER TABLE user ADD COLUMN role ...`.
+      - You should **commit** this new script to Git.
+  - **Step 3: You run `flask db upgrade`**
+      - The tool runs the new migration script, safely applying the `ALTER TABLE` command.
+      - Now your code, your migration scripts, and your database schema all match.
 
-## Slide 12: Historical Hook: The Relational Model
+## Slide 13: The \#1 Blocker: The "Circular Import" Trap
 
-  - **Key Point:** Why is it called an "Object-Relational Mapper"?
-  - The "Object" part is our Python `class` objects.
-  - The "Relational" part comes from the **Relational Model of Data**, a formal theory proposed by **Edgar F. Codd** at IBM in 1970.
-  - Codd's paper defined the concept of "relations" (tables), "tuples" (rows), and "attributes" (columns) that are the foundation of SQL and nearly every modern database (PostgreSQL, MySQL, SQL Server, etc.).
-  - We are mapping our *new* object-oriented world (Python) to Codd's *foundational* relational world (SQL).
+  - **Key Point:** You are *all* going to hit this. It's the most common trap in Flask.
+  - **The Paradox:**
+    1.  `app.py` needs to import `models.py` (to know about the `User` class for our routes).
+    2.  `models.py` needs to import `app.py` (to get the `db = SQLAlchemy(app)` object).
+  - **The Result:** A "circular import" paradox. Python will crash with an `ImportError: cannot import name ...`
+  - **Speaker Note:** "Draw this loop on the board: `app.py` -\> `models.py` -\> `app.py`. Tell them this error is a rite of passage. Then, immediately show them the solution on the next slide. This is scaffolding: defuse the \#1 blocker *before* the exercise."
 
-## Slide 13: Next: In-Class Exercise (ICE 3)
+## Slide 14: The Solution: The "Late Import" Pattern (Worked Example 3)
+
+  - **Key Point:** The solution is to delay one of the imports. We make sure `app.py` *finishes* defining the `db` object *before* `models.py` (or anything else) tries to import it.
+  - **The "Golden" `app.py` Structure:**
+
+<!-- end list -->
+
+```python
+# --- app.py ---
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate  # New import
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///moj.db'
+
+# --- INIT ALL THE PLUGINS ---
+# These objects MUST be defined globally here
+db = SQLAlchemy(app)
+migrate = Migrate(app, db) # New line for migration support
+
+# CRITICAL: Import models *after* db is defined
+# This avoids the circular import!
+from project import models 
+
+# --- ROUTES ---
+@app.route('/')
+def hello():
+    return "Hello from MoJ!"
+
+# ... other routes
+```
+
+  - **Speaker Note:** "This is the 'golden template.' The `from project import models` line *must* come *after* `db = SQLAlchemy(app)`. This is the hint for the ICE."
+
+
+## Slide 15: New Policy: The Standard Blocker Protocol (SBP)
+- **Key Point:** In the *Angband* project, getting blocked was frustrating. For the *MoJ* project, we have a "safe harbor" policy.
+- **The SBP:** If you are **individually blocked for > 15 minutes**, you can invoke the SBP.
+- This is a **Process Pivot**, not a failure.
+- Your new goal: Stop coding and write a professional **After-Action Report (AAR)**. This is a core engineering skill.
+
+
+## Slide 16: The AAR (After-Action Report) Workflow
+
+  - **Key Point:** Your ICE template now contains a full AAR template.
+  - Crucially, it includes **"Instructor's Diagnostic Hints"**—check these first\!
+  - **The 5+5 Grading Workflow:**
+    1.  **Part 1 (5 pts):** Create an `aar/AAR-ICE[X]-username.md` file, fill it out, and open a **Pull Request** assigning me as reviewer. Submit the PR link. This is your "on-time" submission.
+    2.  **Part 2 (5 pts):** I will give you a "hotfix" in the PR. You apply the fix, complete the ICE, and resubmit your *passing* PR for the final 5 points.
+  - Speaker Note: "This is how senior and junior engineers interact. The goal is to turn a blocker into an actionable, documented report. The AAR is a *learning opportunity*, not a penalty."
+
+## Slide 17: Next: In-Class Exercise (ICE 7)
 
   - **Topic:** The Ministry's Filing Cabinet
   - **Task:** It's time to build the "filing cabinet."
   - **Goal:** You will:
-    1.  Install `sqlalchemy`, `psycopg2-binary` (the "driver" that lets Python talk to Postgres), and `alembic`.
-    2.  Add the new packages to `requirements.txt`.
-    3.  Define the first `User` and `Joke` models.
-    4.  Initialize Alembic.
-    5.  Run `alembic revision --autogenerate` to create your *first migration script*.
+    1.  Install `flask-sqlalchemy` and `flask-migrate`.
+    2.  Configure the app to use **SQLite** (and create a `moj.db` file).
+    3.  Define the `User` and `Joke` models using the **I-WE-YOU** template.
+    4.  Initialize Flask-Migrate (`flask db init`).
+    5.  Run `flask db migrate` to create your *first migration script*.
+    6.  Run `flask db upgrade` to apply the migration and create your database.
 
-## Slide 14: Key Takeaways
+## Slide 18: Key Takeaways
+- Flat files (`Angband`) fail to manage **concurrency** (race conditions) on the web.
+- A **Relational Database (SQL)** is one model: structured, rigid, and great for "joining" related data.
+- A **NoSQL Database (Document)** is another model: flexible, denormalized, and great for self-contained data.
+- We use an **ORM (SQLAcademy)** to map our Python objects to our relational (SQL) database.
+- We use **Migrations (Flask-Migrate)** to safely manage our **rigid schema**.
+- The **SBP** is your "safe harbor" to turn a blocker into a learning (and grading) opportunity.
 
-  - We need a **Database** (PostgreSQL) for **Persistence** (to save data).
-  - We use an **ORM (SQLAlchemy)** to translate our Python code into SQL commands.
-  - A **Model** is a Python class that represents a database table.
-  - We use **Alembic** for **Migrations** to manage changes to the database structure safely in a team, like "Git for your database."
+---
+
