@@ -1,18 +1,15 @@
-## Slide 15: SBP Workflow: From Blocker to Fix
-- **Key Point:** This is a two-part process: **Report** (for 5pts) and **Resolve** (for 5pts). The PR is the central communication log.
+## Slide 3: "Brownfield" Data: The MFE Problem
+- **Key Point:** Let's connect your `Angband` experience (Part 1) to our new "greenfield" problem (Part 2).
+- **Remember your Monster File Editor (MFE)?**
+- **The "Simple" Task:** Edit a monster in `monster.txt`.
+- **The *Actual* Problem:** To *validate* a monster's "blows," you also had to manually read, parse, and cross-reference `blow_effects.txt` and `blow_methods.txt`.
 
-### Part 1: Report (Student ➡️ TA)
-1.  **Invoke SBP:** You're stuck > 15 min. You stop coding.
-2.  **Create Branch:** Create a new branch (e.g., `aar-ice7-username`).
-3.  **Write AAR:** Create `aar/AAR-ICE7-username.md` and fill it out completely.
-4.  **Open PR:** Push your branch and open a Pull Request.
-    * **Title:** `AAR ICE 7: Circular Import Error`
-    * **Reviewers:** Assign your Instructor & TA.
-5.  **Submit (5 pts):** Submit the AAR PR link to Canvas. This is your "on-time" submission.
+| `monster.txt` (One line) | `blow_effects.txt` |
+| :--- | :--- |
+| `N:Orc:G:o:....` | `1:HURT` |
+| `B:CLAW:HURT:1d6` | `2:POISON` |
+| `B:BITE:POISON:1d8`| `3:COLD` |
 
-### Part Two: Resolve (TA ➡️ Student ➡️ TA)
-6.  **Diagnose (TA/Instructor):** We investigate your AAR and **comment on the PR** with hints, questions, or a direct fix. We *leave the PR open*.
-7.  **Apply Fix (Student):** You read the comments. You apply the fix and **push the working code to your AAR branch**. This automatically updates the PR.
-8.  **Verify & Complete (5 pts):** We see your new push and your passing code. You resubmit the *same PR link* to Canvas for the final 5 points.
-
-- **Speaker Note:** Emphasize that the new AAR branch (e.g., `aar-ice7-username`) must be created **from their team's current activity branch** (e.g., `ice7-the-a-team`), *not* from `main`. This ensures their AAR branch has all the team's latest code for us to debug.
+- The **relationship** between these files was *implicit*. It existed only in the C code's logic, and you had to re-build it from scratch in Python.
+- **This is a "flat-file database," and it's a nightmare of data integrity problems.**
+- **Speaker Note:** "For your MFE, you had to write custom Python code to manually 'join' these files. What happens if a game designer adds a new blow effect but forgets to tell you? Your MFE breaks. What if you add a blow that *doesn't exist* in the effects file? The game crashes. This is a **data integrity** problem, and it's the exact problem SQL was invented to solve."
