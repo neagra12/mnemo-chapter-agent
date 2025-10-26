@@ -1,3 +1,54 @@
+# mod1_lec3_Database_and_Models.md
+
+## **---- PROMPT ----**
+```markdown
+Let's build the mod1_lec3 slide deck. We need to match to the ICE and the MongogDB assignment. 
+I want to introduce persistence and reference the angband save file. Also reference the gamedata directory with the text files and the associations of the monster.txt files to the others. It was a mess. This leads us to SQL for data structures and introduce sqlite. We can mention other database architectures like NoSql and key/value and use MongoDB as an example of NoSQL This ties to the first AI query in the MongoDB assignment. With structure is a good time to introduce models and migration. We can mention the import trap with app.py and model.py.
+We should then mention concurrency and transactions as benefits of SQL with a brief explanation of both. 
+Finally we should interduce the new (starting this week) SBP, and the new AAR workflow and point award mechanism. 
+```
+
+
+
+
+## **---- PROMPT ----**
+```markdown
+Let's drop the concurrency and transactions discussion. 
+Drop slide 3, the gamedata discussion will make our point alone. 
+Drop slide 8. I will have a speaker note at the closing slide.
+Assume the SBP and AAR slides will go faster because the students have been primed with announcements in Canvas this week about the changes. 
+
+Do these changes with the substituted slide below improve our timing?
+
+
+Replace slide 7 with this slide below. 
+
+## Slide 7: Relational vs. NoSQL (The Core Trade-Off)
+- **Key Point:** SQLAlchemy is an "Object-**Relational** Mapper" because it's built for **Relational** (SQL) databases. The most popular alternative is **NoSQL**.
+- **The Core Trade-Off:** This is the central conflict you must understand.
+
+| Concept | Relational (SQL / SQLAlchemy) | NoSQL (Document / MongoDB) |
+| :--- | :--- | :--- |
+| **Data Model** | **Normalized** (Data is split into separate, related tables, e.g., `User` and `Joke`). | **Denormalized** (Data is stored in one "document," e.g., a `User` with a *list* of their jokes embedded inside). |
+| **Schema** | **Schema-on-Write** (Rigid. The table *must* conform to the `models.py` definition. Enforced by the DB.) | **Schema-on-Read** (Flexible. Each document can have a different structure. Enforced by your *app code*.) |
+| **"The Lock"** | **Transactions (ACID).** Solves the race condition with guaranteed, strict consistency. | **Atomic Operations.** Concurrency is managed differently, often at the *document* level. (Faster, but different.) |
+| **The "Join"** | **Yes.** You can easily `JOIN` the `User` and `Joke` tables. | **No.** You *cannot* join collections. This is why data is "denormalized" (pre-joined). |
+| **Code** | `SQLAlchemy` (ORM) | `PyMongo` (Driver) |
+
+- Speaker Note: "Pay close attention to this slide. This is the **exact set of trade-offs** you will be investigating in this week's challenge. This is your 'ground truth' for evaluating the AI."
+```
+
+Here is the revised 16-slide deck for `mod1_Lec03_Databases_Models`.
+
+This version incorporates all your requested changes:
+
+  * Slides 3 (Intro Persistence), 8 (MongoDB Challenge), 15 (Transactions), and 16 (Concurrency) have been **removed**.
+  * The old "NoSQL" slide has been **replaced** with your new, specific trade-off table.
+  * The `Learning Objectives` and `Key Takeaways` have been updated to match the new, leaner content.
+
+-----
+
+````markdown
 # Lecture 3: Databases, Models, & Migrations
 ## Slide 1: Title Slide
 - **Topic:** Persistence, Databases, Models, and Migrations
@@ -155,3 +206,9 @@
 - **Migrations** are "Git for our database" — they keep models and the DB in sync.
 - **SBP/AAR** is your new professional workflow for getting unblocked.
 - **Speaker Note:** (For you, as requested) "As a reminder, you have a Weekly Challenge assignment to explore these trade-offs by evaluating MongoDB. Use Slide 6 as your starting point for that investigation."
+````
+
+## **---- PROMPT ----**
+```markdown
+
+```
