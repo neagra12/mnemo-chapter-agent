@@ -1,14 +1,4 @@
-I've incorporated your requests, with one critical, expert-level adjustment to the reflection workflow.
-
-Your goal of individual reflection is excellent. However, having all students edit the *same* `CONTRIBUTIONS.md` file in parallel (Phase 2) will **guarantee merge conflicts.** This creates a logistical nightmare that will block the team and force them to fight Git instead of learning `flake8`.
-
-I've implemented a **parallel-safe, conflict-free** alternative that achieves the exact same goal. Instead of editing one file, each student will *create their own* reflection file. This is a cleaner, more professional workflow.
-
-Here is the updated assignment.
-
------
-
-### Homework 3: The Linter Audit
+# Homework 3: The Linter Audit
 
   - **Objective:** Implement an automated `flake8` linting job in your CI pipeline.
   - **Context:** In ICE 8, we refactored our project, but the code we inherited in the `refactoring_kit` is a "brownfield" mess. It's full of style errors.
@@ -17,7 +7,7 @@ Here is the updated assignment.
 
 -----
 
-### Phase 1: Preparation (Repo Admin)
+## Phase 1: Preparation (Repo Admin)
 
 Your job is to prepare the "audit."
 
@@ -30,7 +20,7 @@ Your job is to prepare the "audit."
 
 -----
 
-### Phase 2: The Audit (All Team Members, Individually)
+## Phase 2: The Audit (All Team Members, Individually)
 
 This part is done **individually** by *every* team member, and **can be done in parallel.**
 
@@ -65,7 +55,7 @@ This part is done **individually** by *every* team member, and **can be done in 
 
 -----
 
-### Phase 3: Enforcing the Standard (Process Lead)
+## Phase 3: Enforcing the Standard (Process Lead)
 
 Your job is to "flip the switch" *after* the audit is complete.
 
@@ -81,7 +71,7 @@ Your job is to "flip the switch" *after* the audit is complete.
 
 -----
 
-### Definition of Done (DoD) 🏁
+## Definition of Done (DoD) 🏁
 
   * [ ] **Artifact:** The `.flake8` file is on the `main` branch.
   * [ ] **Artifact:** The `main.yml` file now has a `lint:` job.
@@ -91,7 +81,7 @@ Your job is to "flip the switch" *after* the audit is complete.
 
 -----
 
-### `CONTRIBUTIONS.md` Log Entry (To be filled by Process Lead)
+## `CONTRIBUTIONS.md` Log Entry (To be filled by Process Lead)
 
 ```markdown
 #### HW 3: The Linter Audit
