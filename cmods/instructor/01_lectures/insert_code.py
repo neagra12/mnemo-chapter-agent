@@ -46,3 +46,19 @@ from app import db
 # Brittle, hard to maintain, and a HUGE security risk (SQL Injection)  
 user_input = "Admin' --"  
 db.execute("SELECT * FROM users WHERE username = '" + user_input + "'")
+
+
+joke:
+  id: 101
+  text: "Why did the...?"
+  rating: 5
+  user: "@username"
+
+{
+  "joke": {
+    "id": 101,
+    "text": "Why did the...?",
+    "rating": 5,
+    "user": "@username"
+  }
+}
