@@ -1,5 +1,306 @@
 # Decision Log for Clio
 
+---
+
+
+
+---
+
+## 2025-10-26 @ 14:17 EDT - Finalizing the "Recipe/Tool" Build Pipeline
+
+**Scope:** `Workflow`, `Build_Process`, `Scaffolding`, `ICE_Workflow`
+
+**Description:**
+We have formalized the workflow for generating "starter kit" `.zip` files for ICEs and assignments. This workflow is now a two-part, tool-based pipeline to ensure consistency, reusability, and a clean separation of "content" from "logic."
+
+**The Pipeline:**
+1.  **The "Tool" (`scripts/build_kit.sh`):** A generic, reusable Bash script. Its only job is to:
+    * Create a secure, temporary staging directory.
+    * Accept a "recipe" script as an argument.
+    * Execute the "recipe" *inside* the staging directory.
+    * Zip the contents of the staging directory into the `dist/kits/` folder.
+    * Clean up all temporary files.
+
+2.  **The "Recipe" (e.g., `cmods/student/02_ices/mod1_icex08_refactor_kit.sh`):** A content-specific, executable Bash script. Its only job is to populate the *current working directory* (which the "Tool" sets to the staging area) with all the necessary files and directories for that specific starter kit.
+
+**Rationale:**
+This model is vastly superior to our initial single-script approach.
+* **Separation of Concerns:** The "Tool" (`build_kit.sh`) handles the *process* (zip, paths, cleanup), while the "Recipe" (`..._kit.sh`) handles the *content* (the `cat << EOF` blocks).
+* **Scalability:** We can now create new, complex starter kits by simply writing a new "recipe" script. We never have to touch the "tool" script again.
+* **Maintainability:** This fits our `cmod` philosophy. The "recipe" (content) lives in `cmods/` alongside the ICE it belongs to, while the "tool" (logic) lives in a central `scripts/` directory.
+
+---
+
+You are absolutely right to question this. This is an excellent point.
+
+`moj` is the better choice. `project` is a common *tutorial convention*, but it is not a strong *industry best practice* and it is pedagogically weaker.
+
+Let's break down the "why."
+
+### `project` (The "Tutorial" Model)
+
+  * **Why it's used:** This pattern is common in tutorials (especially the Django `project`/`app` model) to create a "generic" template. The pedagogical idea is to show a *reusable pattern* where `project/` is "the main package" and `tests/` is "the tests."
+  * **Why it's bad:** It's generic and abstract. An import like `from project.models import User` has no identity. It's "the models from... the project." This is weak.
+
+### `moj` (The "Application" Model)
+
+  * **Why it's better (Pedagogy):** It is **specific and descriptive**.
+
+      * `from moj.models import User` is concrete. It reads as "get the `User` model *from the Ministry of Jokes app*."
+      * This reinforces the application's identity and makes the code "self-documenting." It's less abstract and easier for students to trace.
+
+  * **Why it's better (Industry):** This is a *far more common and professional* industry practice.
+
+      * You don't `import project` when you use Flask; you `import flask`. The package name *is* the application/library name.
+      * This avoids namespace collisions and makes the project's components clearly identifiable.
+
+The only "better" industry practice would be the `src/moj` layout, but this adds a layer of `pip install -e .` path complexity that is *unnecessary cognitive load* for this course.
+
+**Decision: We will use `moj` as the standard package name.** All examples and scaffolding will be updated.
+
+Here is the log entry to formalize this excellent pivot.
+
+-----
+
+## 2025-10-26 @ 12:28 EDT - Standardizing on `moj/` as the App Package Name
+
+**Scope:** `MoJ_Project`, `ICE_Scaffolding`, All `mod1` Lectures
+
+**Description:**
+We are pivoting from the generic `project/` directory to the specific `moj/` directory for the main application package. This decision supersedes the "Simple Package Model" decision from 12:23 EDT.
+
+All future artifacts will assume the following directory structure:
+
+```
+FA25-SE1-TEAMXX-MoJ/    <-- The <repo-root>
+|
+|-- .github/
+|   |-- workflows/
+|       |-- main.yml
+|
+|-- moj/                  <-- THIS IS THE FLASK "app package"
+|   |-- __init__.py       <-- Main app file (app, db, migrate)
+|   |-- models.py
+|   |-- config.py
+|
+|-- tests/
+|   |-- conftest.py
+|   |-- test_models.py
+|
+|-- .flake8
+|-- requirements.txt
+|-- migrations/
+|-- CONTRIBUTIONS.md
+|-- README.md
+```
+
+**Rationale:**
+
+1.  **Pedagogical Clarity:** `moj` is specific and descriptive. An import like `from moj.models import User` is less abstract and easier for students to trace than the generic `from project.models import User`.
+2.  **Industry Alignment:** Naming the core package after the application itself is a more professional and common industry standard than the "tutorial-ism" of a generic `project` folder.
+3.  **Project Identity:** This standardizes the project's identity from the repository name (`...-MoJ`) to its core importable package (`moj`).
+4.  **Cognitive Load (Rejected Alternative):** We are *still* rejecting the `src/moj` layout, as it adds installation and path-mapping complexity (`pip install -e .`) that is unnecessary for our learning objectives.
+
+---
+
+## 2025-10-26 @ 11:47 EDT - Pedagogical Strategy for mod1_Lec03 (Databases) & ICE07
+
+**Scope:** `mod1_Lec03_Databases_Models.md`, `ICE_07_Models_Migrations.md`, `Course_Pedagogy`, `SBP_Workflow`
+
+**Description:**
+We have finalized the lecture and ICE for the database module. This plan reflects three major pedagogical decisions:
+
+1.  **Pairing SBP Rollout with a High-Risk ICE:** The new **Standard Blocker Protocol (SBP)** and **After-Action Report (AAR)** workflow is being introduced in this lecture. We are *intentionally* pairing this policy rollout with ICE07, an exercise known to have a high risk of technical blockers (e.g., the circular import trap, the multi-step migration command workflow).
+    * **Rationale:** This strategy introduces the "safety net" (SBP) at the exact moment students are most likely to need it. By time-boxing the in-class portion and making the final `flask db upgrade` step homework, we are creating an immediate, practical, and low-stakes application for the SBP.
+
+2.  **Strengthening the "Brownfield-to-Greenfield" Bridge:** The lecture's justification for using a database has been explicitly tied to the students' prior work.
+    * **Rationale:** The new Slide 3 ("The MFE Problem") frames the "pain" of the `Angband` Monster File Editor assignment (manually managing flat-file relationships) as the core problem that a relational database (SQLAlchemy) is designed to solve. This directly connects their Part 1 experience to the Part 2 "greenfield" architecture.
+
+3.  **Prioritizing Workflow over Theory:** The lecture content was strategically "de-scoped" to focus on practical, workflow-oriented skills.
+    * **Rationale:** We removed deep theoretical dives (e.g., standalone slides on ACID transactions, concurrency) to dedicate more time to the *practical implementation*: the ORM-to-SQL mapping (Slide 9), the migration process (Slide 11), and the SBP/AAR workflow. The "theory" (SQL vs. NoSQL) is now concentrated in a single, dense trade-off table (Slide 6) that serves as "ground truth" for the `MongoDB_exploration.md` weekly challenge, creating a tight loop between the lecture and the asynchronous assignment.
+
+---
+
+Understood. This is a much more robust standard.
+
+It decouples the lecture's identity from the assignment numbering, which makes it stable across semesters and perfect for your build scripts to parse.
+
+We will now use the standard: **`mod#_Lec##_Topic.md`**
+
+Applying this to our database lecture, assuming the "Ministry of Jokes" project is **Module 1** and this is the **3rd lecture** in that module (after 1. Flask and 2. CI):
+
+* **Module:** `mod1`
+* **Lecture:** `Lec03`
+* **Topic:** `Databases_Models`
+
+The new file name will be:
+`mod1_Lec03_Databases_Models.md`
+
+The full, standardized path will be:
+`cmod/instructor_facing/01_lectures/mod1_Lec03_Databases_Models.md`
+
+Here is the log entry for this decision.
+
+---
+
+## 2025-10-25 @ 16:07 EDT - Standardizing Artifact Naming Conventions
+
+**Scope:** Workflow, Artifact Organization, `cmod` Structure, Build Process
+
+**Description:**
+We are formalizing the file naming convention for all course artifacts to ensure stability, semester-to-semester resilience, and to enable build scripts to deterministically link artifacts into a "shadow delivery tree."
+
+### The New Standard
+The naming convention will be based on the **delivery schedule (Module and Lecture number)**, not on variable assignment numbers (like ICEs).
+
+* **Lecture Files:** `mod#_Lec##_Topic.md`
+    * **Example:** `mod1_Lec03_Databases_Models.md`
+* **ICE Files:** `mod#_ICE##_Topic.md`
+* **Challenge Files:** `mod#_Lab##_Topic.md`
+* **Quiz Files:** `mod#_Quiz##_Topic.md`
+
+This standard will be applied to all artifacts in the `cmod/` directory. For example:
+* `cmod/instructor_facing/01_lectures/mod1_Lec03_Databases_Models.md`
+* `cmod/student_facing/02_ices/mod1_ICE03_Databases_Models.md`
+* `cmod/instructor_facing/02_ta_guides/TA_Guide_ICE03.md`
+---
+
+## 2025-10-25 @ 11:34 EDT - Formalizing the "Patch and Notify" Workflow (SOP-03)
+
+**Scope:** Workflow, Artifact Management, Model Drift Mitigation
+
+**Description:**
+We have identified a new workflow to handle small, surgical edits (e.g., fixing a version number, correcting a typo) in generated content without risking "model drift" from a full regeneration.
+
+The "Regenerate" workflow is rejected for this use case, as the AI is generative, not deterministic, and will lose the precise manual fix.
+
+The new, approved workflow is **"Patch and Notify" (SOP-03)**:
+
+1.  **Instructor (Manual Patch):** The instructor makes the fast, precise, manual edit directly in the artifact.
+2.  **Instructor (Notify Prompt):** The instructor uses a specific "Patch" prompt to inform Clio of the "Problem" and the "Fix."
+3.  **Clio (Acknowledge & Update):** Clio must acknowledge the patch and confirm that its internal template for that artifact has been updated.
+
+**Rationale:** This process combines the speed and precision of a manual edit with the long-term consistency of keeping Clio's internal knowledge in-sync.
+
+---
+## Clio Internal Log: 2025-10-25 @ 11:28 EDT
+
+**Subject: Optimizing "Mnemo System" Workflow & Context Window**
+
+**Scope:** My (Clio's) generation process, instructor interaction model, and knowledge base requirements.
+
+### 1. Handbook Update SOP: "Append, Don't Rewrite"
+To mitigate "model drift" and ensure the integrity of the instructor's handbooks, I will no longer rewrite an entire handbook to add a new section.
+
+* **New Process:** When a new SOP or playbook is created, my deliverable will be the **standalone, self-contained text block** for that new section.
+* **Instructor's Role:** The instructor will then act as the "integrator," manually copying and pasting this new block into their master document.
+* **Rationale:** This is safer, more precise, and `git-friendly`. It uses my generative strength without risking the integrity of existing, validated rules.
+
+### 2. Knowledge Base Curation (Context Window Optimization)
+We have defined the optimal set of files for the instructor to provide as my knowledge base. This is designed to maximize my focus and performance by eliminating low-value "noise."
+
+* **DEPRECATED (Exclude from Context):** Sample artifacts (`ICEX07.md`, `lecture1.md`, `wk1_quiz.md`, etc.) are now considered historical, low-value context. They are *examples* of past work, not *instructions*, and should be excluded.
+* **REQUIRED (High-Value Context):** My "mind" for the course should consist of:
+    1.  **`clio_persona.md`:** (My Rules)
+    2.  **`decisions_log.md`:** (Our Shared Rationale)
+    3.  **`instructor_handbook.md`:** (The Instructor's Playbook)
+    4.  **"Course Facts":** (e.g., `FA24 P465 Lecture Schedule.csv`, `MoJ_Project_description.md`).
+---
+
+## 2025-10-24 @ 21:25 EDT - Integrating AAR Template into ICEs & Pivoting to Individual AARs
+
+**Scope:** Workflow, SBP, ICE Template, Pedagogy, Grading
+
+**Description:**
+We have made two significant improvements to the Standard Blocker Protocol (SBP).
+
+1.  **AAR Template Integration:** The 7-part AAR template is now integrated directly into the `ICE Template`. This allows me (Clio) to pre-fill a new "Instructor's Diagnostic Hints" section with ICE-specific guidance, simulating a senior engineer's "expert biasing" to make the AAR a more effective diagnostic tool.
+2.  **Pivot to Individual AARs:** We are clarifying and formalizing the SBP as an **individual "safe harbor" protocol**, not a team-wide one. This was based on the instructor's clarification that individuals, not just teams, can file AARs. This supersedes the "team AAR" workflow logged at 21:10 EDT.
+
+### The Finalized (Individual) AAR Workflow:
+
+  * **Trigger:** An *individual student* is blocked for \>15 minutes.
+  * **Action:** The student informs their team, creates an `aar/AAR-ICE[X]-<username>.md` file from the template, and completes it.
+  * **Submission (Part 1):** The student opens a PR with their AAR and assigns the **instructor**. The PR URL is submitted to Canvas for 5 points.
+  * **Feedback (Part 2):** The instructor provides a hotfix via PR comments. The student applies the fix, completes the original ICE, and resubmits their *passing* PR for the final 5 points.
+
+**Rationale:** This workflow is pedagogically superior. It maintains the high cognitive engagement of document authoring, simulates a professional senior/junior engineer dialog, and provides a robust "safe harbor" for individual students without forcing the entire team to pivot.
+
+---
+## 2025-10-24 @ 21:10 EDT - Finalizing the AAR Submission & Review Workflow (PR-Based)
+
+**Scope:** Workflow, SBP, Grading, Automation, Pedagogical Design
+
+**Description:**
+We have finalized the workflow for the Standard Blocker Protocol (SBP) After-Action Report (AAR) submission and review. We explicitly **rejected** using web forms (like MS Forms) or email attachments in favor of a process that is more pedagogically sound and better simulates a professional engineering workflow.
+
+### The Finalized AAR Workflow:
+1.  **Student Action (Authoring):** When blocked, the team will copy a `aar_template.md` file into an `/aar` directory in their project repository. They will fill out this document as a team.
+2.  **Student Action (Submission):** The team will commit the new `AAR-ICE[X].md` file to a new branch and open a **Pull Request (PR)**, assigning the **instructor** as a reviewer. This PR serves as their on-time "Part 1" (5-point) submission.
+3.  **Instructor Action (Automation):** The instructor will use the PR URL as an input to a local script (via Apple Shortcuts) that will fetch, parse, and log the AAR data into the course's private improvement log.
+4.  **Instructor Action (Feedback):** The instructor will provide feedback, lessons learned, and (if necessary) a hotfix by **commenting directly on the Pull Request.**
+5.  **Resolution:** The PR will be merged or closed, and the student will proceed with the "Part 2" hotfix submission.
+
+### Rationale:
+This workflow was chosen because it perfectly aligns with our core goals:
+* **Core Goal (SE Experience):** Using a PR to review a post-mortem document is a high-fidelity simulation of a real-world engineering process.
+* **Developer Workflow Competency:** It reinforces the Git/PR workflow for non-code artifacts.
+* **Cognitive Load Management:** It shifts the "Form vs. Document" debate decisively toward **document authoring**, which promotes deeper reflection and metacognition by having students construct a single, coherent narrative.
+* **Automation:** It provides a clean, scriptable "handle" (the PR URL) for the instructor's automation, without compromising the student experience.
+
+---
+## 2025-10-24 @ 15:28 EDT - Optimizing Rubric Workflow for Pandoc and Canvas
+
+**Scope:** Workflow, In-Class Exercises (ICEs), Grading Artifacts, Pandoc
+
+**Description:**
+We identified a critical conflict between our two target renderers (Canvas and Pandoc). Inlined HTML rubrics, while professional-looking in Canvas, are discarded by Pandoc, which breaks the `Markdown -> PDF/DOCX` pipeline. Conversely, Pandoc-native tables (like grid tables) render poorly or as plain text in the Canvas RCE.
+
+To resolve this, we are adopting a "two-target" workflow to treat the Markdown file as the single source of truth for the Pandoc toolchain.
+
+### 1. Master Document (Pandoc-Native)
+All future ICE Markdown files will use a **Pandoc-native grid table** for the rubric. This ensures the master file can be perfectly converted to PDF or DOCX using our standard Pandoc toolchain.
+
+### 2. Canvas Deliverable (HTML Snippet)
+As a separate, manual step, I (Clio) will generate a **Canvas-optimized HTML snippet** for the rubric immediately after generating the ICE. The instructor will then manually copy this HTML into the Canvas RCE to ensure a professional appearance.
+
+This is our standard operating procedure for now. The instructor will remind me to provide this snippet after generating an ICE, and we can revisit automating this pipeline later.
+
+---
+
+## 2025-10-23 @ 12:01 EDT - Formalizing the "Standard Blocker Protocol" (SBP) & "5+5" Grading Model
+
+**Scope:** Course Policy, Grading, In-Class Exercises (ICEs), Evidence-Driven Design
+
+**Description:**
+The total failure of ICE 2 revealed a critical gap in our course design: an un-tested or broken ICE (an "instructional failure") unfairly penalizes students and creates a high-anxiety, low-learning environment.
+
+To remediate this, we have designed the **"Standard Blocker Protocol" (SBP)** to act as a "safe harbor." This policy transforms a technical failure into a high-level pedagogical opportunity, shifting the learning objective from "task completion" to "professional triage and recovery."
+
+### 1. The "5+5" Grading Model
+The initial idea to award full (10/10) credit for an After-Action Report (AAR) was **REJECTED**. This flaw was identified: "Knowing the answer is only half of an engineering problem." The full engineering loop (`Blocker -> Report -> Fix -> Verification`) must be incentivized.
+
+The finalized policy is the **"5+5" Grading Model**:
+* **Part 1: The AAR (5 pts):** If a team is blocked (>15 min), they must pivot. Submitting a professional, on-time AAR (using the 7-part template) *to the original ICE assignment* counts as their "on-time" submission and is worth the first **5 points**. This is the "safe harbor" that protects them from a late penalty.
+* **Part 2: The Hotfix (5 pts):** The instructor will provide a "hotfix." The team receives the **remaining 5 points** only after they apply the fix, achieve the original Definition of Done, and **resubmit** the correct, working deliverable (e.g., the passing PR) to the same assignment.
+
+### 2. The Canvas Workflow (Simplified)
+The initial idea of a separate, semester-long "AAR Triage Assignment" was **REJECTED**. It is incompatible with Canvas's submission logic, as it would be overwritten with each new AAR, destroying the evidence trail.
+
+The final, simplified workflow is:
+1.  A blocked team submits their AAR (the alternate deliverable) directly *to the original ICE assignment* (e.G., "ICE 2").
+2.  The TA grades this submission, awarding 5/10 for the AAR.
+3.  The TA provides the hotfix in the Canvas assignment's "Comments" field.
+4.  The team **resubmits** their *fixed* deliverable (the passing PR) to the *same* assignment.
+5.  The TA re-grades the final submission, updating the score to 10/10.
+
+This keeps all artifacts, evidence, and communication for a single ICE within a single, self-contained Canvas assignment.
+
+### 3. Action Item: Template Updates
+This SBP is now a core policy. It **must** be added to all future ICEs.
+1.  **`ICE_TEMPLATE` Update:** The `ICE_TEMPLATE` has been permanently updated to include a "💡 Standard Blocker Protocol (SBP)" section that clearly outlines this "5+5" policy and workflow.
+2.  **`START/END` Markers:** The `ICE_TEMPLATE` has also been updated to include the `` and `` markers, as required by the **Mnemo System v1.1** automated pipeline.
+
 --- 
 
 ## 2025-10-19 @ 13:05 EDT - Integrating DevSecOps Tools (GitHub Security Tab)

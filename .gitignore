@@ -1,0 +1,122 @@
+# ------------------------------------------------------------
+# macOS “trash” – files that love to hide in plain sight
+# ------------------------------------------------------------
+# The infamous Finder thumbnail cache
+.DS_Store               
+# Resource forks that belong in the past
+.AppleDouble           
+# Legacy Launch Services overrides
+.LSOverride             
+# Custom folder icons (yes, the ? matches Icon\r)
+Icon?                   
+# AppleDouble files for each hidden dotfile
+._*                     
+# Spotlight indexing data
+.Spotlight-V100         
+# The Recycle Bin for macOS
+.Trashes
+# Volume icon files
+.VolumeIcon.icns
+# Archive metadata (zip/tar)
+__MACOSX/
+
+# ------------------------------------------------------------
+# Python – keep the virtual env, caches, compiled bytecode out
+# ------------------------------------------------------------
+# Virtual environments (venv, virtualenv, conda, etc.)
+venv/
+ENV/
+env/
+.venv/
+*.egg-info/
+.conda/
+# Byte‑code / compiled / C extensions
+__pycache__/
+*.py[cod]
+*$py.class
+# Distribution / packaging
+build/
+dist/
+*.egg
+*.whl
+# Pytest / coverage artifacts
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+# IDE/editor artefacts (feel free to add your own)
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ------------------------------------------------------------
+# C / C++ – ignore build artefacts, object files, and IDE junk
+# ------------------------------------------------------------
+# Object files, static libs, shared libs, executables
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+*.exe
+*.out
+# Debug symbols
+*.dSYM/
+# Build directories (customise if you use something else)
+build/
+bin/
+obj/
+# Makefile generated dependencies
+*.d
+# IDE / editor files
+.cproject
+.project
+.settings/
+*.launch
+*.cxx
+*.autosave
+
+# ------------------------------------------------------------
+# Bash scripts – ignore temporary shells, history, and logs
+# ------------------------------------------------------------
+*.sh~
+*.bash_history
+*.zsh_history
+*.log
+*.tmp
+# Session sockets (e.g., tmux, screen)
+*.sock
+
+# ------------------------------------------------------------
+# HTML / front‑end – drop the typical cruft
+# ------------------------------------------------------------
+# Compiled/minified assets (you may want to version them, but most
+# projects generate them on the fly)
+*.min.css
+*.min.js
+dist/
+public/
+# Node / npm artefacts (if you ever sprinkle a bit of JavaScript)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ------------------------------------------------------------
+# Miscellaneous – keep the repo tidy, the mind stoic
+# ------------------------------------------------------------
+# Backup files created by editors (vim, emacs, etc.)
+*~
+*.bak
+*.orig
+*.swp
+*.swo
+
+# End of .gitignore
