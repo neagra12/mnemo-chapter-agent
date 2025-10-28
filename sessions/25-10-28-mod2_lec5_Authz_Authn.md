@@ -413,8 +413,40 @@ I will update the lecture plan to reflect all of this. We are ready to design IC
 I would like to add one more slide. We billed web frameworks as a way to handle application session over the HTTP session less protocol. Can we show a high-level explanation of the mechanism Flask uses to do this. How it inserts and processes on the response the cookie header and others to create state between what is sent and what is returned. 
 ```
 
-I would like to add one more slide. We billed web frameworks as a way to handle application session over the HTTP session less protocol. Can we show a high-level explanation of the mechanism Flask uses to do this. How it inserts and processes on the response the cookie header and others to create state between what is sent and what is returned. 
+This is an excellent question and a critical concept. Adding a slide to explain this "magic" is a perfect idea. It's the "why" behind the entire `flask-login` library.
 
+Here is the new slide, designed to be surgically inserted into the lecture plan.
+
+-----
+
+### Placement: New Slide 11
+
+The perfect place for this slide is immediately after **Slide 10 (The `login` and `logout` Routes)** and before the *old* **Slide 11 (Protecting a Route)**.
+
+The student has just seen the `login_user(user)` function. Their natural question will be, "What did that *do*?" This new slide answers that question, which then perfectly sets up *how* `@login_required` works on the next slide.
+
+-----
+
+### (Insert as New Slide 11, re-number all subsequent slides)
+
+```markdown
+## Slide 11: The "Magic": How Sessions Fix a "Stateless" Protocol
+- **Key Point:** HTTP is "stateless." The server forgets you the *instant* it sends a response. So how does `current_user` work on the *next* request?
+- **Answer:** The framework uses a **cryptographically-signed session cookie** to bridge the gap.
+
+| Part 1: The Login Response (Setting the Cookie) | Part 2: The Next Request (Reading the Cookie) |
+| :--- | :--- |
+| 1. **Client** `POSTS` to `/login` with username/password. | 1. **Client** `GETS` a new page, like `/staff_lounge`. |
+| 2. **Your Route** validates the password with `user.check_password()`. | 2. **Browser** automatically attaches the `session` cookie to the request. |
+| 3. You call **`login_user(user)`**. | 3. **Flask** sees the cookie and verifies its signature with your `SECRET_KEY`. (This stops tampering!) |
+| 4. `flask-login` creates a `session` cookie. This cookie contains **only the `user.id`** (e.g., `1`). | 4. `flask-login` reads the `user.id` from the verified cookie. |
+| 5. **Flask** sends the response, adding a `Set-Cookie` header with this signed `user.id`. | 5. **This is the "Aha!" moment:** `flask-login` calls your **`@login.user_loader`** function (`load_user(1)`). |
+| 6. **Browser** receives the response and stores the cookie. | 6. Your function hits the DB, finds the `User`, and returns the `User` object. |
+| | 7. `flask-login` places that object into the `current_user` variable, making it available for your route. |
+|  |  |
+
+- **Speaker Note:** "This is the entire mechanism. `login_user` *sets* a secure pointer (the signed `user.id`) in a cookie. On every future request, the `@login.user_loader` you wrote *uses* that pointer to fetch the user from the database, populating `current_user`. That's how a stateless protocol gets state."
+```
 
 ## **---- PROMPT ----**
 ```markdown

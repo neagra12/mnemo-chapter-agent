@@ -41,6 +41,7 @@
       - This is the **VIP List**.
       - Once you're *inside* (authenticated), this determines if you can enter the "Staff Only" area (e.g., delete jokes) or just the "Public" area.
       - **In Flask:** This is checking `current_user.role == 'admin'`.
+  - **Speaker Note:** "As we build this, think about our two 'target' routes. `/login` is our **Authentication** (AuthN) route. The `/staff_lounge` (which we'll build) is our **Authorization** (AuthZ) route. You can't get to the second one without passing the first."
 
 ## **Slide 5: The Password Problem 🔒**
 
@@ -69,7 +70,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(128)) # We already built this!
+    password_hash = db.Column(db.String(128)) # <------------------ Added attribute means migrate schema
     jokes = db.relationship('Joke', backref='author', lazy='dynamic')
 
     # NEW: Method to set the password hash
@@ -84,9 +85,9 @@ class User(db.Model):
         return '<User {}>'.format(self.username)
 ```
 
-  - **Speaker Note:** "Notice we're just adding *methods* to the class. The database *schema* (`password_hash` column) is unchanged, so no migration is needed for this step."
+  - **Speaker Note:** "Notice we're just adding *methods* to the class. The database *schema* has changed (`password_hash` column), so we must do a migration. Let's wait to see how many other changes we need on this feature branch before looking at our migration plan."
 
-**Slide 7: Worked Example 2: Installing `flask-login`**
+## **Slide 7: Worked Example 2: Installing `flask-login`**
 
   - **Key Point:** `flask-login` is the standard tool for managing user sessions (i.e., "remembering" who is logged in).
   - **Step 1: Install it.**
@@ -95,7 +96,7 @@ class User(db.Model):
     pip freeze > requirements.txt
     ```
 
-**Slide 8: Worked Example 3: Initializing `flask-login`**
+## **Slide 8: Worked Example 3: Initializing `flask-login`**
 
   - **Key Point:** We must initialize the `LoginManager` just like we did for `db` and `migrate`.
 
@@ -121,7 +122,7 @@ from moj import routes, models
 
   - **Speaker Note:** "That `login.login_view = 'login'` line is critical. If a user tries to access a protected page, `flask-login` will automatically redirect them to the `/login` route. 'login' is the *function name* of the route we're about to write."
 
-**Slide 9: Worked Example 4: The `UserMixin`**
+## **Slide 9: Worked Example 4: The `UserMixin`**
 
   - **Key Point:** `flask-login` needs our `User` model to have 4 specific methods (`is_authenticated`, `is_active`, `is_anonymous`, `get_id()`).
   - We can get all 4 *for free* by inheriting from `UserMixin`.
@@ -147,9 +148,12 @@ def load_user(id):
     return User.query.get(int(id))
 ```
 
+  - * A "mixin" is a common Object-Oriented Programming (OOP) pattern. It's a class that provides a "mix-in" of methods and properties, but isn't meant to be the *primary* parent.
+  - **Speaker Note:** I will add this: "Think of `db.Model` as the *parent* of our class; it defines it as a database model. Think of `UserMixin` as a *consultant* we're bringing in. It 'mixes in' the four specific methods that `flask-login` needs to do its job: `is_authenticated`, `is_active`, `is_anonymous`, and `get_id()`."
+
   - **Speaker Note:** "This is the 'magic' that connects `flask-login` to our database. When a user comes back to the site, `flask-login` will read the session cookie, get the user's `id`, and call `load_user(id)` to fetch them from the DB."
 
-**Slide 10: Worked Example 5: The `login` and `logout` Routes**
+## **Slide 10: Worked Example 5: The `login` and `logout` Routes**
 
   - **Key Point:** Now we build the "front door" logic in `moj/routes.py`.
 
@@ -185,7 +189,25 @@ def logout():
     return "You are now logged out!"
 ```
 
-**Slide 11: Worked Example 6: Protecting a Route**
+## Slide 11: The "Magic": How Sessions Fix a "Stateless" Protocol
+- **Key Point:** HTTP is "stateless." The server forgets you the *instant* it sends a response. So how does `current_user` work on the *next* request?
+- **Answer:** The framework uses a **cryptographically-signed session cookie** to bridge the gap.
+
+| Part 1: The Login Response (Setting the Cookie) | Part 2: The Next Request (Reading the Cookie) |
+| :--- | :--- |
+| 1. **Client** `POSTS` to `/login` with username/password. | 1. **Client** `GETS` a new page, like `/staff_lounge`. |
+| 2. **Your Route** validates the password with `user.check_password()`. | 2. **Browser** automatically attaches the `session` cookie to the request. |
+| 3. You call **`login_user(user)`**. | 3. **Flask** sees the cookie and verifies its signature with your `SECRET_KEY`. (This stops tampering!) |
+| 4. `flask-login` creates a `session` cookie. This cookie contains **only the `user.id`** (e.g., `1`). | 4. `flask-login` reads the `user.id` from the verified cookie. |
+| 5. **Flask** sends the response, adding a `Set-Cookie` header with this signed `user.id`. | 5. **This is the "Aha!" moment:** `flask-login` calls your **`@login.user_loader`** function (`load_user(1)`). |
+| 6. **Browser** receives the response and stores the cookie. | 6. Your function hits the DB, finds the `User`, and returns the `User` object. |
+| | 7. `flask-login` places that object into the `current_user` variable, making it available for your route. |
+|  |  |
+
+- **Speaker Note:** "This is the entire mechanism. `login_user` *sets* a secure pointer (the signed `user.id`) in a cookie. On every future request, the `@login.user_loader` you wrote *uses* that pointer to fetch the user from the database, populating `current_user`. That's how a stateless protocol gets state."
+
+
+## **Slide 12: Worked Example 6: Protecting a Route**
 
   - **Key Point:** We can now protect routes from anonymous users with one line.
 
@@ -207,27 +229,30 @@ def staff_lounge():
 
   - **Speaker Note:** "If you are *not* logged in and try to go to `/staff_lounge`, the `login.login_view = 'login'` setting (from Slide 8) and the `@login_required` decorator will work together to automatically send you to the `/login` page."
 
-**Slide 12: Authorization (AuthZ): The "VIP List"**
+## **Slide 13: Authorization (AuthZ): The "VIP List"**
 
   - **Key Point:** We have AuthN (login). Now we need AuthZ (roles).
   - This is a **database schema change**.
-  - **Step 1: Add the `role` column to our model.**
+  - **Step 1:** Add the `password_hash` column to our model.
+  - **Step 2:** Add the `role` column to our model.
+  - **Step 3:** Migrate schema.**
+  - **Step 4:** Consider data migration plan **both test and production**.
 
 <!-- end list -->
 
-```python
-# In moj/models.py
-
-class User(UserMixin, db.Model):
-    # ... (id, username, email, password_hash) ...
-    role = db.Column(db.String(10), index=True, default='user') # <-- NEW
-    jokes = db.relationship('Joke', backref='author', lazy='dynamic')
-    # ... (rest of the class) ...
-```
+  ```python
+  # In moj/models.py
+  class User(UserMixin, db.Model):
+      # ... (id, username, email) ...
+      password_hash = db.Column(db.String(128)) # <-- NEW
+      role = db.Column(db.String(10), index=True, default='user') # <-- NEW
+      jokes = db.relationship('Joke', backref='author', lazy='dynamic')
+      # ... (rest of the class) ...
+  ```
 
   - **Speaker Note:** "We're setting a `default` of 'user'. This means all existing users will get this role, and any new users will get it automatically."
 
-**Slide 13: Worked Example 7: Run the Migration\!**
+## **Slide 14: Worked Example 7: Run the Migration\!**
 
   - **Key Point:** We just changed our models, so we *must* run a migration. This is a direct skill from Cycle 1 (ICE 7).
 
@@ -249,7 +274,7 @@ class User(UserMixin, db.Model):
 
   - **Speaker Note:** "This is the professional workflow. Model, migrate, inspect, upgrade. We've now successfully changed the 'blueprint' of our live database."
 
-**Slide 14: Worked Example 8: Using Roles**
+## **Slide 15: Worked Example 8: Using Roles**
 
   - **Key Point:** `flask-login` gives us the `current_user` object in every route. We can now use it to check roles.
 
@@ -269,9 +294,12 @@ def admin_panel():
     return "Welcome to the ADMIN PANEL, {}.".format(current_user.username)
 ```
 
+  - **ICE 9 Challenge:** "Your `admin_panel` route works, but the `if current_user.role != 'admin':` check is repetitive. Can you create a custom `@admin_required` decorator to do this automatically? (Hint: You'll need to use `from functools import wraps` and create a function that returns another function.)"
+
   - **Speaker Note:** "This is the core of Authorization. The `@login_required` decorator handles AuthN. The `if` statement handles AuthZ. We'll add a 403 error handler (like our 404) later to make this look nice."
 
-**Slide 15: Key Takeaways**
+
+## **Slide 16: Key Takeaways**
 
   - **Authentication (AuthN)** = "Who you are" (Login).
   - **Authorization (AuthZ)** = "What you can do" (Roles).
@@ -283,7 +311,7 @@ def admin_panel():
   - **`current_user`** is the "global" object we use to check properties like `current_user.username` or `current_user.role`.
   - Adding a new column (like `role`) is a schema change that **requires a new migration**.
 
-**Slide 16: Your Mission (ICE 9)**
+## **Slide 17: Your Mission (ICE 9)**
 
   - The lecture code is the "backend" logic, but it's not user-friendly. We "hardcoded" the login for `user 1`.
   - Your task in the ICE is to build the **frontend**:
