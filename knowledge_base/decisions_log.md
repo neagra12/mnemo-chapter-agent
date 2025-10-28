@@ -6,6 +6,74 @@
 
 ---
 
+### Decision Log: MoJ Cycles 1 & 2 (AuthN/AuthZ & CRUD)
+
+- **Date:** 2025-10-28
+- **Status:** Decided
+
+---
+
+## Context
+
+Following high-level architectural planning, we needed to design the specific, day-to-day curriculum for the first two "sprints" of the Ministry of Jokes (MoJ) project. This involved finalizing all lectures, in-class exercises (ICEs), asynchronous assignments (AAs), and support artifacts for Weeks 9-11. The primary challenge was managing the extremely high cognitive load of introducing databases, refactoring, auth, and CRUD in rapid succession.
+
+---
+
+## Decisions
+
+We have designed and finalized the following two "sprints."
+
+### 1. Cycle 1 Sprint: "The Foundation" (Weeks 9-10)
+
+- **Lectures:**
+    - `Lec 3`: Introduces **Databases** (SQLAlchemy, Flask-Migrate) and the **Standard Blocker Protocol (SBP)**.
+    - `Lec 4`: Introduces **Refactoring** (`app.py` -> `moj/` package), **Testing** (`pytest`), and **Linting** (`flake8`).
+- **ICEs (Role-Based, Parallel):**
+    - `ICE 7`: Teams will define `User`/`Joke` models and run their first migration.
+    - `ICE 8`: Teams will refactor the app, write their first `pytest`, and be given a **"poisoned" kit** of 5 files (`__init__.py`, `config.py`, `routes.py`, `conftest.py`, `test_models.py`) that contain lint errors.
+- **Asynchronous Work:**
+    - `A08 (MongoDB Challenge)`: An individual AI-assisted tech evaluation, graded via the **Standard Analysis Protocol (SAP)**.
+    - `A09 (Linter Audit)`: A team assignment to "clean" the 5 poisoned files.
+- **Capstone:**
+    - `Project 1`: A `v1.0.0` GitHub Release that serves as a quality gate, requiring a "green" build badge, a completed `ETHICS.md`, and a full `CONTRIBUTIONS.md` log.
+
+### 2. Cycle 2, Sprint 1: "AuthN/AuthZ & CRUD" (Week 11)
+
+- **Lectures:**
+    - `Lec 5 (AuthN/AuthZ)`: A dense, "I/WE" lecture covering the "backend" of authentication. It introduces `flask-login`, `werkzeug` hashing, `UserMixin`, and the **session cookie mechanism**.
+    - `Lec 6 (CRUDy Jokes)`: An "I/WE" lecture on the "Create" and "Read" pattern. It formally introduces **Jinja2 templating** (`{{}}`, `{%%}`) and **template inheritance** (`{% extends %}`).
+- **ICE (In-Class "YOU"):**
+    - `ICE 9`: A 35-min sprint where students build the "frontend" forms (`/login`, `/register`) using `flask-wtf`.
+- **Asynchronous Work (Homework):**
+    - `A09 (Change Password)`: A **"Team Best"** assignment.
+        - **Individual Task:** Every student must individually build the `change_password` feature *and* its corresponding `pytest` test.
+        - **Team Task:** The team reviews all individual PRs and merges the "best" one to the feature branch.
+        - **EC Task:** Add a `re`-based password complexity validator.
+
+### 3. Key Artifacts & Process Decisions
+
+- **The "Critical Bridge" (ICE 9 Kit):** We will provide a comprehensive `ICE09_auth_kit.zip` that contains all backend code *from* Lecture 5. This kit is the "scaffolding" that makes the 35-minute ICE possible, as it allows students to focus only on the *new* skill (forms) rather than re-typing the backend code.
+- **Test Scaffolding:** The `ICE09_auth_kit` will *also* include `tests/test_auth.py` with pre-written, working tests for `login` and `register`. This turns the `A09` homework (writing `test_change_password`) into a "pattern-matching" task, which manages its complexity.
+- **TopHat Triage Dashboard:** We will surgically insert HTML for a **private, asynchronous TopHat poll** into the ICEs. This allows TAs to triage the room and find blocked teams without creating a public, shaming leaderboard.
+- **Canvas/Build Workflow:** All Canvas pages will be generated using the user-provided HTML templates. The PDF build script issue will be solved by adding the `-f markdown+grid_tables` flag to the `pandoc` command.
+- **Pedagogical Pivot (Containerization):** We will *intentionally* leave the `SECRET_KEY` hardcoded in `config.py`. This is a "known flaw" that we will use to motivate the move to environment variables during the Containerization (Cycle 3) module.
+
+---
+
+## Rationale
+
+This plan is an aggressive but pedagogically sound "I-WE-YOU" sprint.
+
+- **Managing Cognitive Load:** The primary concern was the density of the AuthN/AuthZ module. By splitting the "backend" (Lecture 5) from the "frontend forms" (ICE 9) and the "testing" (A09), we break one massive topic into three manageable, scaffolded steps.
+- **Engineering Realism:** The `A09` homework was designed as a "Team Best" to enforce **individual competency** (everyone *must* build the feature) and **team-based peer review** (they *must* read each other's code). It also correctly bundles the feature *with its tests*, modeling a complete "Jira ticket."
+- **Data-Driven Teaching:** The TopHat "Triage Dashboard" aligns with our evidence-driven approach, giving instructors real-time, private data to deploy TAs effectively.
+- **Workload Pacing:** All "spiky" workloads from Cycle 1 have been resolved. The Week 11-12 cadence is now a clean, repeatable rhythm:
+    - **Monday (Lec/ICE):** Learn/practice a new "stack" (e.g., AuthN).
+    - **Wednesday (HW/Lec/ICE):** Deliver the "YOU" (e.g., AuthN tests) and learn/practice the next "stack" (e.g., CRUD).
+    - **Friday (HW):** Deliver the "YOU" for the second stack.
+
+---
+
 ## 2025-10-26 @ 14:17 EDT - Finalizing the "Recipe/Tool" Build Pipeline
 
 **Scope:** `Workflow`, `Build_Process`, `Scaffolding`, `ICE_Workflow`
