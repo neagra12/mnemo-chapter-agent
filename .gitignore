@@ -36,6 +36,7 @@ __pycache__/
 *$py.class
 # Distribution / packaging
 build/
+dist
 dist/
 *.egg
 *.whl
