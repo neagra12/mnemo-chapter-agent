@@ -27,6 +27,11 @@ focus on the "frontend" (forms) during the ICE.
 
 FILE MANIFEST:
 ================
+.flaskenv:
+    - NEW: Public config for the Flask runner.
+    - Sets FLASK_APP=moj and FLASK_DEBUG=1.
+    - Now you can just type 'flask run'!
+
 moj/__init__.py:
     - CONTAINS: The Flask 'app' and 'db' objects.
     - NEW: Initializes the 'LoginManager' and sets 'login.login_view'.
@@ -67,6 +72,16 @@ tests/test_auth.py:
     - NEW: This is the "WE" scaffolding for your A09 homework.
     - It contains complete, working tests for the 'register' and 'login'
       routes that you will build in the ICE.
+EOF
+
+# --- .flaskenv (NEW) ---
+echo "   -> Writing .flaskenv..."
+cat << EOF > ".flaskenv"
+# Public, non-sensitive settings for the Flask runner
+# This file SHOULD be committed to your repository.
+
+FLASK_APP=moj
+FLASK_DEBUG=1
 EOF
 
 # --- moj/__init__.py (Unchanged) ---
