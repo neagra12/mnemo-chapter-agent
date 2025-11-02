@@ -1,4 +1,9 @@
 # ------------------------------------------------------------
+# Project specific – files and folders for local work
+# ------------------------------------------------------------
+scratch_edits/
+
+# ------------------------------------------------------------
 # macOS “trash” – files that love to hide in plain sight
 # ------------------------------------------------------------
 # The infamous Finder thumbnail cache

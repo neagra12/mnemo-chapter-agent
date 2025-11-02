@@ -3,6 +3,15 @@
   - **Objective:** Implement user-facing registration and login forms using `flask-wtf`.
   - **Time Limit:** 35-40 minutes
   - **Context:** In the lecture, we built the "engine" for authentication: the password hashing, the `UserMixin`, and the `@login_required` decorator. However, our `/login` route was just a "hardcoded" placeholder. This ICE builds the *real* user interface—the "dashboard" for our auth engine. We will use the `flask-wtf` library to create secure, server-side forms.
+  - _**Caution --** Each team should start with the following conditions:_
+    - _Local repo is on main branch and successful git pull._
+    - _Activate your virtual environment (venv)_
+    - _Run_ `pip install -r requirements.txt` _to ensure all packages are installed and available._
+    - _Be sure to set our environment variable `FLASK_APP` to `moj`:_
+      ```bash
+          export FLASK_APP=moj  # macOS or Linux shell
+          $env:FLASK_APP="moj"  # Windows PowerShell
+      ```
 
 -----
 
@@ -10,39 +19,65 @@
 
 For this ICE, we will use the **Authentication Kit**. Assign these three roles immediately.
 
-  * **`Repo Admin`:** (Git & Environment) Installs new packages, updates `requirements.txt`, handles all Git operations (branching, merging, PR).
+  * **`Repo Admin`:** (Git & Environment) Installs new packages, updates `requirements.txt`, handles all Git operations, and is the only one who runs `flask db migrate`.
   * **`Process Lead`:** (Forms) Creates the new `moj/forms.py` file and defines the Python classes for our `LoginForm` and `RegistrationForm`.
-  * **`Dev Crew`:** (Routes & Logic) Modifies `moj/routes.py` to import the new forms, handle `POST` requests, and process user logins/registrations.
-
-## \<div style="background-color: \#f5f5f5; border: 2px dashed \#990000; padding: 12px 24px; margin: 20px 0px;"\> \<h4\>\<span style="color: \#990000;"\>📈 Triage Dashboard (TopHat)\</span\>\</h4\> \<p\>As your team completes each major part of the ICE, the \<strong\>team member who completed the part\</strong\> should check in on TopHat. This is \<em\>not\</em\> a race and is \<em\>not\</em\> a public leaderboard. This is our private "Triage Dashboard" to help us see if you're blocked.\</p\> \<p\>All checkpoints are open from the start. Please log them as you go:\</p\> \<ul style="margin-top: 0px;"\> \<li\>\<strong\>Checkpoint 1:\</strong\> Part 1 Complete (Kit \&amp; Install)\</li\> \<li\>\<strong\>Checkpoint 2:\</strong\> Part 2 Complete (Forms File Created)\</li\> \<li\>\<strong\>Checkpoint 3:\</strong\> Part 3 Complete (Login Route Finished)\</li\> \<li\>\<strong\>Checkpoint 4:\</strong\> Part 4 Complete (Register Route Finished)\</li\> \<li\>\<strong\>🔴 BLOCKED:\</strong\> We are stuck and need TA help.\</li\> \</ul\> \</div\>
+  * **`Dev Crew (Backend)`:** (Logic) Modifies `moj/routes.py` to import the forms, handle `POST` requests, and process user logins/registrations.
+  * **`Dev Crew (Frontend)`:** (Templates) Modifies `templates/login.html` and `templates/register.html` to render the forms using Jinja2.
 
 ## Task Description: Building the Forms
+
+---
 
 ### Phase 1: Kit & Installation (Repo Admin)
 
 1.  **Branch:** Pull `main` and create a new branch: `ice9-authn-forms`.
-2.  **Download the Kit:** Download `ICE09_auth_kit.zip` from Canvas.
-      * **CRITICAL:** This kit contains all the "backend" code from Lecture 5. **Unzip and copy its contents** (the `moj/` and `migrations/` directories) into your repo, **overwriting** your existing files. This will update your `__init__.py`, `models.py`, `routes.py`, `config.py` and add new templates.
-3.  **Install:** Install the new form library:
+2.  **Download and apply the Kit:** Download `ICE09_auth_kit.zip` from Canvas.
+      * **CRITICAL:** This kit contains all the "backend" code from Lecture 5. **Unzip and copy its contents** (the `moj/`, `templates/`, and `tests` directories) into your repo, **overwriting** your existing files. This will update your `__init__.py`, `models.py`, `routes.py`, `config.py` and add new templates.
+3.  **Install:** Install the new form library (**with your venv active!**):
     ```bash
-    pip install flask-wtf
+    pip install flask-wtf flask_login email_validator
     ```
 4.  **Update:** Update your `requirements.txt` file:
     ```bash
     pip freeze > requirements.txt
     ```
-5.  **Commit:** `git add .` and `git commit -m "feat: add auth backend and new templates from kit"`.
-6.  *Announce to the team that the branch is ready.*
 
-### Phase 2: Define the Forms (WE 👩‍🏫) (Process Lead)
+5. **Upgrade DB:** You should make sure your local db file is updated. In this case we actually moved the db file from `./moj/app.db` to `./moj.db`. In the previous ICE, we created the database file in the package. Good design has us separate data from code.  
+If you do not have a db file, it will create one an migrate it to the current state of the repo.
+   ```bash
+    flask db upgrade
+   ```
+   
+6. **DB Migrate:** Your code (models.py) is now ahead of your database. You must generate the migration script:
+   ```bash
+   flask db migrate -m "Add password_hash and role to User"
+   ```
+7. **DB Upgrade Authn Changes:** Apply the new migration to your local database:
+    ```bash
+    flask db upgrade
+    ```
+8.  **Commit:** `git add .` and `git commit -m "feat: add auth backend, flask-wtf, and new DB migration"`.
 
-This is a "WE do it together" task. Your job is to create the Python classes that *represent* our forms.
+9.  **Push:** `git push --set-upstream origin ice9-authn-forms`.
+
+10. *Announce to the team that the branch is ready. Tell them they must run `pip install` and `flask db upgrade`.*
+
+---
+---
+
+### Phase 2: Define the Forms (Process Lead)
+
+Your job is to create the Python classes that *represent* our forms.
 
 1.  **Pull:** `git pull` to get the latest branch.
 
-2.  **Create File:** Create a new file: `moj/forms.py`.
+2.  **Install New Dependencies:** 
+    - `pip install -r requirements.txt` updated requirements from the Process Lead. 
+    - `flask db upgrade` to apply db changes to your copy of the `moj.db`
 
-3.  **Add Code:** Paste the following code into `moj/forms.py`. This defines the fields and *validators* (rules) for our two forms.
+3.  **Create File:** Create a new file: `moj/forms.py`.
+
+4.  **Add Code:** Paste the following code into `moj/forms.py`. This defines the fields and *validators* (rules) for our two forms.
 
     ```python
     # In moj/forms.py
@@ -51,12 +86,14 @@ This is a "WE do it together" task. Your job is to create the Python classes tha
     from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
     from moj.models import User
 
+
     class LoginForm(FlaskForm):
         """Form for user login."""
         username = StringField('Username', validators=[DataRequired()])
         password = PasswordField('Password', validators=[DataRequired()])
         remember_me = BooleanField('Remember Me')
         submit = SubmitField('Sign In')
+
 
     class RegistrationForm(FlaskForm):
         """Form for new user registration."""
@@ -80,15 +117,28 @@ This is a "WE do it together" task. Your job is to create the Python classes tha
                 raise ValidationError('Please use a different email address.')
     ```
 
-4.  **Commit:** `git add moj/forms.py` and `git commit -m "feat: define LoginForm and RegistrationForm"`.
+4.  **Commit:** `git add moj/forms.py` and `git commit -m "feat: define LoginForm and RegistrationForm"` and push to GitHub.
 
 5.  *Announce to the `Dev Crew` that the forms are ready to be used.*
 
-### Phase 3: Implement Form Logic (YOU 🫵) (Dev Crew)
+---
+---
 
-This is the "YOU do it" task. Your job is to update `moj/routes.py` to actually *use* the forms from Phase 2.
+### Phase 3: Implement Form Logic (Dev Crew - Parallel Work)
+
+The `Process Lead` has just pushed `moj/forms.py`. The `Dev Crew` now splits into two parallel tasks.
+
+---
+
+#### **Task 3A: `Dev Crew (Backend)` - The Route Logic**
+
+Your job is to update `moj/routes.py` to actually *use* the forms. You can do hti sin parallel with the other crew member working on the front end. **The Dev Crew works in parallel for Phase 3.**
 
 1.  **Pull:** `git pull` to get the new `moj/forms.py` file.
+
+2.  **Install New Dependencies:** 
+    - `pip install -r requirements.txt` updated requirements from the Process Lead. 
+    - `flask db upgrade` to apply db changes to your copy of the `moj.db`
 
 2.  **Open:** Open `moj/routes.py`.
 
@@ -97,74 +147,54 @@ This is the "YOU do it" task. Your job is to update `moj/routes.py` to actually 
     ```python
     # ... (existing imports)
     from flask import render_template, redirect, url_for, request, flash # <-- Add 'flash'
-    from flask_login import login_user, logout_user, current_user, login_required
     from moj.models import User, Joke
     from moj import db # <-- NEW
     from moj.forms import LoginForm, RegistrationForm # <-- NEW
     ```
 
-4.  **Update `login` Route:** Find the *existing* `@app.route('/login')` route (from the starter kit). It's a "hardcoded" placeholder. **Replace it entirely** with this new version that actually processes the form:
+4.  **Update `login` Route:** Find the *existing* `@app.route('/login')` route. **Replace it entirely** with this new version that processes the form:
 
     ```python
-    # In moj/routes.py
-
     @app.route('/login', methods=['GET', 'POST'])
     def login():
-        # A user who is already logged in shouldn't see the login page
         if current_user.is_authenticated:
             return redirect(url_for('index'))
         
-        form = LoginForm()
+        form = LoginForm() # <-- Instantiate the form
         if form.validate_on_submit():
-            # 1. Find the user in the database
             user = User.query.filter_by(username=form.username.data).first()
-            
-            # 2. Check password
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid username or password')
                 return redirect(url_for('login'))
-            
-            # 3. Log them in!
             login_user(user, remember=form.remember_me.data)
             return redirect(url_for('index'))
             
-        return render_template('login.html', title='Sign In', form=form)
+        return render_template('login.html', title='Sign In', form=form) # <-- Pass 'form'
     ```
 
-5.  **Create `register` Route:** This route doesn't exist yet. **Add this new route** (e.g., after the `login` route):
+5.  **Create `register` Route:** **Add this new route** (e.g., after the `login` route):
 
     ```python
-    # In moj/routes.py
-
     @app.route('/register', methods=['GET', 'POST'])
     def register():
         if current_user.is_authenticated:
             return redirect(url_for('index'))
             
-        form = RegistrationForm()
+        form = RegistrationForm() # <-- Instantiate the form
         if form.validate_on_submit():
-            # 1. Create the new user object
             user = User(username=form.username.data, email=form.email.data)
-            # 2. Set their password (this hashes it)
             user.set_password(form.password.data)
-            # 3. Add to database
             db.session.add(user)
             db.session.commit()
             flash('Congratulations, you are now a registered user!')
             return redirect(url_for('login'))
             
-        return render_template('register.html', title='Register', form=form)
+        return render_template('register.html', title='Register', form=form) # <-- Pass 'form'
     ```
 
-6.  **Update `index` Route:** We need to update the `index` route to render the new `_navigation.html` (which was in the kit).
-
-      * **Replace** the *existing* `index` route with this:
-
-    <!-- end list -->
+6.  **Update `index` Route:** **Replace** the *existing* `index` route with this (it just adds `@login_required`):
 
     ```python
-    # In moj/routes.py
-
     @app.route('/')
     @app.route('/index')
     @login_required # <-- Now the index requires you to be logged in!
@@ -174,9 +204,61 @@ This is the "YOU do it" task. Your job is to update `moj/routes.py` to actually 
 
 7.  **Commit:** `git add moj/routes.py` and `git commit -m "feat: implement login and register route logic"`.
 
+-----
+
+#### **Task 3B: `Dev Crew (Frontend)` - The Template Rendering**
+
+Your job is to update the HTML templates to *render* the forms.
+
+1.  **Pull:** `git pull` (you don't need to wait for Task 3A, you just need `moj/forms.py` from Phase 2).
+2.  **Open:** `templates/login.html`.
+3.  **Replace Placeholder:** **Replace the placeholder `<p>...</p>`** text with the real Jinja2 form:
+    ```html
+    <form action="" method="post" novalidate>
+        <!-- form is a variable defined in routes.py:login() and passed when rendering -->
+        {{ form.hidden_tag() }} <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+        </p>
+        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    ```
+4.  **Open:** `templates/register.html`.
+5.  **Replace Placeholder:** **Replace the placeholder `<p>...</p>`** text with the real Jinja2 form:
+    ```html
+    <form action="" method="post" novalidate>
+        <!-- form is a variable defined in routes.py:register() and passed when rendering -->
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}
+        </p>
+        <p>
+            {{ form.email.label }}<br>
+            {{ form.email(size=64) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=32) }}
+        </p>
+        <p>
+            {{ form.password2.label }}<br>
+            {{ form.password2(size=32) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    ```
+6.  **Commit:** `git add templates/login.html templates/register.html` and `git commit -m "feat: render login and register forms in templates"` and push to GitHub.
+
+
 ### Phase 4: Log and Submit (Repo Admin)
 
-1.  **Pull:** `git pull` to get the final `moj/routes.py` changes.
+1.  **Pull:** `git pull` to get the final `moj/routes.py` and tempalte changes.
 2.  **Test:** Run the app (`flask run`) and test the full workflow:
       * Can you load `/register`?
       * Can you create a new user?
@@ -198,7 +280,7 @@ This is the "YOU do it" task. Your job is to update `moj/routes.py` to actually 
 * **Roles:**
     * Repo Admin: `@github-userX`
     * Process Lead: `@github-userY`
-    * Dev Crew: `@github-userZ`
+    * Dev Crew: `@github-userZ`, ...
 * **Summary of Work:** [1-2 sentence summary, e.g., "Installed flask-wtf, defined the `LoginForm` and `RegistrationForm` in `forms.py`, and implemented the `login` and `register` routes in `routes.py` to handle form validation and user creation."]
 * **Evidence & Reflection:** What is the purpose of `form.validate_on_submit()`? What two things does it check for before returning `True`?
 ```
