@@ -90,7 +90,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
-login.login_view = 'login' # Tell flask-login which route to redirect to
+login.login_view = 'login'  # Tell flask-login which route to redirect to
 
 from moj import routes, models
 EOF
@@ -100,17 +100,19 @@ echo "   -> Writing moj/config.py..."
 cat << EOF > "moj/config.py"
 import os
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class Config:
     """Set Flask configuration variables."""
-    
+
     # CRITICAL: Flask-WTF (forms) requires a SECRET_KEY
     # This key is used to prevent CSRF attacks.
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess-this-secret'
-    
+
     # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or\\
         'sqlite:///' + os.path.join(basedir, 'moj.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 EOF
@@ -123,17 +125,19 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import datetime
 
+
 # This "user_loader" callback is used to reload the user object
 # from the user ID stored in the session.
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    
+
     # New columns from Lecture 5
     password_hash = db.Column(db.String(128))
     role = db.Column(db.String(10), index=True, default='user')
@@ -149,6 +153,7 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
 
 class Joke(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -168,12 +173,14 @@ from flask import render_template, redirect, url_for, request, abort
 from flask_login import login_user, logout_user, current_user, login_required
 from moj.models import User, Joke
 
+
 @app.route('/')
 @app.route('/index')
-@login_required # <-- Note: The index is now protected
+@login_required  # <-- Note: The index is now protected
 def index():
-    """Renders the main index.html page."""
-    return render_template('index.html', title='Home')
+    """The main 'Hello World' route."""
+    return "Ministry of Jokes is now serioulsy open! Seriuosly."
+
 
 @app.route('/login')
 def login():
@@ -182,7 +189,7 @@ def login():
     Your team will REPLACE this in the ICE.
     """
     # TODO: Build a real login form!
-    
+
     # 1. Get the one user from our DB (we'll assume it's user 1)
     user = User.query.get(1)
 
@@ -192,23 +199,26 @@ def login():
     # 3. Send them to the index page
     return redirect(url_for('index'))
 
+
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('login')) # Send them to login page
+    return redirect(url_for('login'))  # Send them to login page
+
 
 @app.route('/staff_lounge')
-@login_required # This is the AuthN (authentication) check
+@login_required  # This is the AuthN (authentication) check
 def staff_lounge():
     return "Welcome to the staff lounge, {}!".format(current_user.username)
 
+
 @app.route('/admin_panel')
-@login_required # 1. They must be logged in...
+@login_required  # 1. They must be logged in...
 def admin_panel():
     # 2. ...and they MUST be an admin! (AuthZ)
     if current_user.role != 'admin':
-        abort(403) # "Forbidden" error
-    
+        abort(403)  # "Forbidden" error
+
     return "Welcome to the ADMIN PANEL, {}.".format(current_user.username)
 EOF
 
@@ -344,7 +354,7 @@ cat << EOF > "templates/base.html"
   <body>
     {% include '_navigation.html' %}
     <hr>
-    
+
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul class="flash">
@@ -363,13 +373,13 @@ EOF
 cat << EOF > "templates/_navigation.html"
 <nav>
   <a href="{{ url_for('index') }}">Home</a>
-  
+
   {% if current_user.is_anonymous %}
   <a href="{{ url_for('login') }}">Login</a>
   <a href="{{ url_for('register') }}">Register</a>
   {% else %}
   <a href="{{ url_for('staff_lounge') }}">Staff Lounge</a>
-  
+
   {% if current_user.role == 'admin' %}
   <a href="{{ url_for('admin_panel') }}">Admin</a>
   {% endif %}
@@ -394,7 +404,7 @@ cat << EOF > "templates/login.html"
     <h1>Sign In</h1>
     <p>This is the placeholder HTML for the login form.</p>
     <p>Your task in the ICE is to replace this with a real Flask-WTF form.</p>
-    
+
     <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
 EOF
 cat << EOF > "templates/register.html"
@@ -415,21 +425,23 @@ import pytest
 from moj import app as flask_app
 from moj import db
 
+
 @pytest.fixture
 def app():
     """Create and configure a new app instance for each test."""
     flask_app.config.update({
         "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:", # Use in-memory db
-        "WTF_CSRF_ENABLED": False, # Disable CSRF for testing forms
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",  # Use in-memory db
+        "WTF_CSRF_ENABLED": False,  # Disable CSRF for testing forms
     })
 
     # --- Setup database ---
     with flask_app.app_context():
-        db.create_all() # Create all tables
-        yield flask_app # Run the test
-        db.session.remove() # Clean up
-        db.drop_all() # Drop all tables
+        db.create_all()  # Create all tables
+        yield flask_app  # Run the test
+        db.session.remove()  # Clean up
+        db.drop_all()  # Drop all tables
+
 
 @pytest.fixture
 def client(app):
@@ -450,7 +462,7 @@ def test_hello_world(client):
     # An unauthenticated client should be redirected.
     response = client.get('/')
     assert response.status_code == 302
-    assert 'login' in response.location # Check that it redirects to login
+    assert 'login' in response.location  # Check that it redirects to login
 EOF
 
 # --- tests/test_auth.py (NEW FILE) ---
@@ -458,6 +470,7 @@ echo "   -> Writing tests/test_auth.py (NEW - Scaffolding for A09)..."
 cat << EOF > "tests/test_auth.py"
 from moj.models import User
 from moj import db
+
 
 def test_register_new_user(client):
     """
@@ -472,13 +485,13 @@ def test_register_new_user(client):
         'email': 'new@example.com',
         'password': 'password123',
         'password2': 'password123'
-    }, follow_redirects=True) # <-- 'follow_redirects' is key!
-    
+    }, follow_redirects=True)  # <-- 'follow_redirects' is key!
+
     # 2. Check the response
     assert response.status_code == 200
     # Check that we were redirected to the login page
     assert b'Sign In' in response.data
-    assert b'Congratulations' in response.data # Check for flash message
+    assert b'Congratulations' in response.data  # Check for flash message
 
     # 3. Check the database
     user = User.query.filter_by(username='newuser').first()
@@ -486,6 +499,7 @@ def test_register_new_user(client):
     assert user.email == 'new@example.com'
     assert user.check_password('password123')
     assert not user.check_password('wrongpassword')
+
 
 def test_login_and_logout_user(client, app):
     """
@@ -506,18 +520,18 @@ def test_login_and_logout_user(client, app):
         'username': 'testuser',
         'password': 'testpassword'
     }, follow_redirects=True)
-    
+
     assert response.status_code == 200
-    assert b'Home' in response.data # Redirected to index
-    assert b'Sign In' not in response.data # Login link is gone
-    assert b'Logout' in response.data # Logout link appears
+    assert b'Home' in response.data  # Redirected to index
+    assert b'Sign In' not in response.data  # Login link is gone
+    assert b'Logout' in response.data  # Logout link appears
 
     # --- Test Logout ---
     response = client.get('/logout', follow_redirects=True)
-    
+
     assert response.status_code == 200
-    assert b'Sign In' in response.data # Redirected to login
-    assert b'Logout' not in response.data # Logout link is gone
+    assert b'Sign In' in response.data  # Redirected to login
+    assert b'Logout' not in response.data  # Logout link is gone
 EOF
 
 echo "   -> Recipe complete. Kit is built."
