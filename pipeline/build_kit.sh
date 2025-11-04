@@ -81,6 +81,12 @@ echo "✅ Recipe executed successfully."
 
 # --- 6. Zipping ---
 echo "📦 Zipping the kit..."
+
+# avoid zip behavior to append rather than replace
+if [ -f "$ZIP_ABS_PATH" ]; then 
+    echo "Removing old zip file..."
+    rm "$ZIP_ABS_PATH"
+fi
 # We 'cd' into the staging dir again to zip its *contents*,
 # and use the *absolute path* for the output file.
 (
