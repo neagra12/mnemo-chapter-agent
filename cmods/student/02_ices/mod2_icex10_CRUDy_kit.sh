@@ -57,6 +57,11 @@ EOF
 echo "   -> Writing moj/forms_append.py ( JokeForm)..."
 cat << EOF > "moj/forms_append.py"
 # *** APPEND TO moj/forms.py ***
+# *** PEP 8 ***
+# says these lines should be moved to the top or integrated with existing `from` statements
+from wtforms import TextAreaField
+from wtforms.validators import Length
+
 
 class JokeForm(FlaskForm):
     """Form for submitting a new joke."""
@@ -69,22 +74,19 @@ echo "   -> Writing moj/routes_append.py (Solution to ICE9 + CRUD)..."
 cat << EOF > "moj/routes_append.py"
 # *** APPEND TO moj/routes.py ***
 
+from moj.forms import JokeForm
+
 # !!! REMOVE /index ROUTE ABOVE !!!
 @app.route('/')
 @app.route('/index')
-@login_required 
+@login_required
 def index():
     """Renders the main index.html page with a feed of jokes."""
     # 1. Query the database
     jokes_list = Joke.query.order_by(Joke.timestamp.desc()).all()
-    
+
     # 2. Pass the list to the template
     return render_template('index.html', title='Home', jokes=jokes_list)
-
-# *** PEP 8 ***
-# says these lines should be moved to the top or integrated with existing `from` statements
-from wtforms import TextAreaField
-from wtforms.validators import Length
 
 
 @app.route('/submit_joke', methods=['GET', 'POST'])
@@ -97,7 +99,7 @@ def submit_joke():
         db.session.commit()
         flash('Your joke has been submitted!')
         return redirect(url_for('index'))
-        
+
     return render_template('submit_joke.html', title='Submit Joke', form=form)
 EOF
 
@@ -109,7 +111,7 @@ cat << EOF > "templates/index.html"
 
 {% block content %}
     <h1>Hello, {{ current_user.username }}!</h1>
-    
+
     <p><a href="{{ url_for('submit_joke') }}">Submit a New Joke</a></p>
     <hr>
 
@@ -119,7 +121,7 @@ cat << EOF > "templates/index.html"
             <p>
                 <strong>{{ joke.author.username }}</strong> 
                 <span style="color: #888;">(on {{ joke.timestamp.strftime('%Y-%m-%d') }})</span>
-            </D
+            </p>
             <p>{{ joke.body }}</p>
         </div>
     {% else %}
