@@ -23,7 +23,7 @@ This is a full-stack feature. Assign these four roles immediately.
 
 ### Task Description: Building the Admin Feature
 
-This ICE does **not** have a starter kit. Your "starter" is the code you just completed in `A10`.
+This ICE does **not** have a starter kit. Your "starter" is the code you just completed in `A10`. </br>**_Be sure to enable your virtual environment._**
 
 #### Phase 1: The "Admin Setup" (Repo Admin)
 
@@ -34,6 +34,7 @@ You are responsible for the entire environment and command setup. Work carefully
       * **Create `.env`:** In the **project root**, create a new file named `.env` with this content:
         ```
         # Developer-specific, non-secret settings
+        FLASK_APP=moj
         FLASK_DEBUG=1
         DATABASE_URL=sqlite:///moj.db
         ```
@@ -49,6 +50,11 @@ You are responsible for the entire environment and command setup. Work carefully
         # Read from .env, but use the old path as a fallback
         SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
             'sqlite:///' + os.path.join(basedir, 'moj.db')
+        ```
+      * **Install** `python-dotenv`:
+        ```bash
+        pip install python-dotenv
+        pip freeze > requirements.txt
         ```
 3.  **Task 2: The `Click` Command**
       * **Create `moj/commands.py`:** Create this new file:
@@ -95,10 +101,11 @@ You are responsible for the entire environment and command setup. Work carefully
     <!-- end list -->
     ```
     # Developer-specific, non-secret settings
+    FLASK_APP=moj
     FLASK_DEBUG=1
     DATABASE_URL=sqlite:///moj.db
     ```
-3.  **Install Packages:** (This makes sure `click` is installed, though it's a Flask dependency).
+3.  **Install Packages:** (This makes sure `python-dotenv` is installed, though it's a Flask dependency).
     ```bash
     (venv) $ pip install -r requirements.txt
     ```
@@ -118,19 +125,8 @@ You are responsible for the entire environment and command setup. Work carefully
 Your job is to create the new `AdminJokeForm` by inheriting from `JokeForm`.
 
 1.  **Open:** `moj/forms.py`.
-2.  **Add Imports:** At the top, add `TextAreaField` and `Length`.
-    ```python
-    from wtforms import ..., TextAreaField
-    from wtforms.validators import ..., Length
-    ```
-3.  **Import `JokeForm`:** Find the line `from moj.models import User` and add `JokeForm` to your imports (you'll need to import it from `moj.forms` itself, or from the `A10` `edit_joke` form). A simple way is to just **import `JokeForm` from `A10`'s file**:
-    ```python
-    # ...
-    from moj.models import User
-    from .forms import JokeForm # Or wherever your JokeForm is
-    ```
-    *(If your `JokeForm` is already in `moj/forms.py`, just make sure you can import it)*
-4.  **Add `AdminJokeForm`:** Add this new class to the **bottom** of `moj/forms.py`.
+
+2.  **Add `AdminJokeForm`:** Add this new class to the **bottom** of `moj/forms.py`.
     ```python
     class AdminJokeForm(JokeForm):
         """
@@ -143,7 +139,7 @@ Your job is to create the new `AdminJokeForm` by inheriting from `JokeForm`.
         justification = TextAreaField('Admin Justification', 
                                     validators=[DataRequired(), Length(min=5, max=256)])
     ```
-5.  **Commit & Push:** Commit your changes.
+3.  **Commit & Push:** Commit your changes.
 
 -----
 
@@ -256,7 +252,37 @@ Your job is to implement the template inheritance.
         </ul>
     {% endblock %}
     ```
-4.  **Commit & Push:** Commit your changes.
+4.  **Edit Links** added to jokes in `templates/profile.html`:
+   ```python
+                <p>{{ joke.body }}</p>  
+        # ^^^^ EXISITNG CODE ^^^^ #
+        # === NEW CODE === #
+        {% if joke.author == current_user %}
+            <p><a href="{{ url_for('edit_joke', joke_id=joke.id) }}">Edit Joke</a></p>
+        {% elif current_user.role == 'admin' %}
+            <p><a href="{{ url_for('admin_edit_joke', joke_id=joke.id) }}">Edit Joke</a></p>
+        {% endif %}
+        # === END NEW CODE === #
+        # vvvv EXISTING CODE vvvv #
+    </div>  
+   ```
+5.  **Edit Links** added to jokes in `templates/index.html`:
+   
+   ```python
+        <span style="color: #888;">(on {{ joke.timestamp.strftime('%Y-%m-%d') }})</span>
+    # ^^^^ EXISITING CODE ^^^^ #
+    # ==== NEW CODE ==== #
+    {% if joke.author == current_user %}
+        <a href="{{ url_for('edit_joke', joke_id=joke.id) }}">📝</a>
+    {% elif current_user.role == 'admin' %}
+        <a href="{{ url_for('admin_edit_joke', joke_id=joke.id) }}">📝</a>
+    {% endif %}
+    # ==== END NEW CODE ====#
+    # vvvv EXISTING CODE vvvv #
+    </p>
+   ```
+
+6.  **Commit & Push:** Commit your changes.
 
 -----
 
@@ -270,6 +296,7 @@ Your job is to prove the new RBAC security works.
     from moj import db
     from moj.models import User, Joke
 
+
     # Helper function to create users in the DB
     def make_users():
         user = User(username='testuser', email='user@a.com', role='user')
@@ -277,6 +304,7 @@ Your job is to prove the new RBAC security works.
         admin = User(username='admin', email='admin@a.com', role='admin')
         admin.set_password('a')
         return user, admin
+
 
     def test_admin_can_access_panel(client, app):
         """GIVEN a logged-in Admin, WHEN they GET /admin_panel, THEN they see the panel."""
@@ -289,6 +317,7 @@ Your job is to prove the new RBAC security works.
         assert response.status_code == 200
         assert b'Admin Panel' in response.data
 
+
     def test_user_cannot_access_panel(client, app):
         """GIVEN a logged-in User, WHEN they GET /admin_panel, THEN they get a 403."""
         with app.app_context():
@@ -299,23 +328,31 @@ Your job is to prove the new RBAC security works.
         response = client.get('/admin_panel')
         assert response.status_code == 403
 
+
     def test_admin_can_edit_joke_route(client, app):
         """GIVEN a logged-in Admin, WHEN they POST to /admin/edit_joke, THEN the joke is changed."""
+
         with app.app_context():
             user, admin = make_users()
             joke = Joke(body="Original joke", author=user)
             db.session.add_all([user, admin, joke])
             db.session.commit()
-            
+            joke_id = joke.id
+
         client.post('/login', data={'username': 'admin', 'password': 'a'})
-        response = client.post(f'/admin/edit_joke/{joke.id}', data={
+        response = client.post(f'/admin/edit_joke/{joke_id}', data={
             'body': 'Edited by admin',
             'justification': 'Testing admin powers'
         }, follow_redirects=True)
-        
+
         assert response.status_code == 200
         assert b'Admin Panel' in response.data
+
+        # query db for new values
+        with app.app_context():
+            joke = Joke.query.get_or_404(joke_id)
         assert joke.body == 'Edited by admin'
+
 
     def test_user_cannot_use_admin_edit_route(client, app):
         """GIVEN a logged-in User, WHEN they POST to /admin/edit_joke, THEN they get a 403."""
@@ -324,13 +361,17 @@ Your job is to prove the new RBAC security works.
             joke = Joke(body="Original joke", author=user)
             db.session.add_all([user, admin, joke])
             db.session.commit()
+            joke_id = joke.id
 
         client.post('/login', data={'username': 'testuser', 'password': 'a'})
-        response = client.post(f'/admin/edit_joke/{joke.id}', data={
+        response = client.post(f'/admin/edit_joke/{joke_id}', data={
             'body': 'Edited by user',
             'justification': 'Hacking'
         })
         assert response.status_code == 403
+        # query db for new values
+        with app.app_context():
+            joke = Joke.query.get_or_404(joke_id)
         assert joke.body == 'Original joke'
     ```
 3.  **Commit & Push:** Commit your changes.
@@ -364,6 +405,6 @@ Your job is to prove the new RBAC security works.
     * Process Lead: `@github-userZ`
     * QA Crew: `@github-userA`
 * **Summary of Work:** [1-2 sentence summary, e.g., "Refactored the app to use .env files, added a 'flask init-admin' command, and built an admin-only 'Edit Joke' feature using form and template inheritance."]
-* **Evidence & Reflection:** This was our first time using inheritance. How did extending `JokeForm` and `edit_joke.html` make this feature faster to build? What lesson does the "decoupled" `justification` field teach us?
+* **Evidence & Reflection:** This was our first time using inheritance. How might extending `JokeForm` and `edit_joke.html` impact our ability to maintain this code base overtime? We added the `justification` field at this point in the project to demonstrate that a decoupled front-end and back-end allows greater flexability. However, what are the trade-offs of this approach?
 ```
 
