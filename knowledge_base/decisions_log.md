@@ -6,6 +6,52 @@
 
 ---
 
+### Decision Log: Refactor Lecture 7 & Reschedule Audit Log
+
+- **Date:** 2025-11-08
+- **Status:** Decided
+
+---
+
+## Context
+
+We performed a time and risk analysis of the planned **Lecture 7 ("Admin Powers & Audit Trails")** and its accompanying **ICE 11**.
+
+The analysis revealed a **critical over-stacking of complex topics**:
+1.  `.env` refactor for dev consistency.
+2.  `flask init-admin` (Click command) for automation.
+3.  RBAC (`if` checks) for authorization.
+4.  **A full-stack "Audit Log" feature** (new `AdminAction` model, DB migration, `AdminJokeForm` inheritance, new routes writing to two tables, new `admin_panel` template with loops).
+5.  Template inheritance.
+6.  New testing strategies for all of the above.
+
+This plan created an **unrealistic 35-minute lecture** and a **high-risk 45-minute ICE** with a massive bottleneck on the `Repo Admin` (Phases 1-3) and a complex sync (Phase 4).
+
+## Decisions
+
+1.  The **"Admin Action / Audit Log"** feature is **removed** from Lecture 7 and ICE 11.
+2.  **Lecture 7** will be simplified to focus *only* on the "Admin Setup" and basic RBAC. The three core topics will be:
+    * `.env` for developer environment consistency.
+    * `flask init-admin` (Click command) for automated admin creation.
+    * Basic RBAC: Implementing admin-only features using `if current_user.role == 'admin'` and `abort(403)`.
+3.  **ICE 11** will be simplified to match. The team will implement the `.env` refactor, add the `init-admin` command, and build a *simple* Admin "Edit Joke" feature (a new route/template) that is protected by an `if` check, with **no** audit log.
+4.  The "Audit Log" concept will be **moved** and expanded into a new **Lecture 10**.
+5.  **Lecture 10 ("The Logging Service")** will serve as the capstone for Cycle 2. It will follow Lecture 9 (12-Factor App) and perfectly fulfill the "XI. Logs" factor. This is where we will implement the `UserAction` table (a refactor of the `AdminAction` idea) as a site-wide logging feature.
+
+## Rationale
+
+This decision, while a significant change, dramatically improves the course's pacing and pedagogical structure.
+
+1.  **Solves the Bottleneck:** It makes Lecture 7 and ICE 11 achievable within the time limit. It removes the high-risk, multi-step database migration and complex setup from the `Repo Admin`, allowing the team to focus on the core RBAC concept.
+2.  **Improves Thematic Purity:** It correctly identifies that an "Audit Log" is a **logging feature**, not an *authorization* feature. It was thematically misplaced.
+3.  **Creates a Perfect Cycle 2 Narrative:** The new flow for Cycle 2 is far more logical and professional.
+    * **Lec 5/6:** Build the app (AuthN, CRUD).
+    * **Lec 7/8:** Secure the *inside* (RBAC, Business Logic).
+    * **Lec 9:** Secure the *outside* (XSS, CSRF, 12-Factor).
+    * **Lec 10:** *Log* all activity (Logging Service / Audit Trail), which is the perfect conclusion to the 12-Factor App discussion.
+
+---
+
 ### Decision Log: Restructuring the Security & 12-Factor Module (Lec 7-9)
 
 - **Date:** 2025-11-08
