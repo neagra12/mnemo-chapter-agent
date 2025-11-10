@@ -4,12 +4,12 @@
   * **Assignment:** 6 (A11)
   * **Topic:** Admin RBAC, Audit Logs, & Unit Testing
   * **Points:** 10
-  * **Due Date:** Friday, November 14 @ 11:59 PM
+  * **Due Date:** 
   * **Type:** "Team Best"
 
 ## The "Why"
 
-In Lecture 7, we designed the "Admin-Audit" pattern. In `ICE 11`, you worked as a team to *implement* this pattern for the **`Joke`** model. You built the `AdminAction` table, created the `AdminJokeForm`, and implemented the `admin_edit_joke` route, all while logging the action to an audit trail.
+In the lecture, we outlined a design for managing our application. In `ICE 11`, you worked as a team to *implement* this design for the **`Joke`** model. You created the `AdminJokeForm`, and implemented the `admin_edit_joke` route. For now while we require a justification for the change, we do not yet do anything with it. 
 
 Now, it's time for you to *master* this pattern.
 
@@ -30,15 +30,12 @@ This is a "Team Best" assignment.
 
 ## Core Task: Build the "Admin Modify User" Feature
 
-You must follow the "Admin-Audit" pattern from `ICE 11`. This will involve touching (or creating) 6 different files.
+You must follow the design for Jokes from `ICE 11`. This will involve touching (or creating) 6 different files.
 
 ### 1\. The Form (`moj/forms.py`)
 
-  * Create a new form class named `AdminUserForm`. This form should **not** extend `JokeForm`.
-  * It needs three fields:
-      * `role`: Use a `SelectField` to allow the admin to choose between 'user' and 'admin'.
-      * `justification`: A `TextAreaField` (just like in the ICE) that is required and has a length validator.
-      * `submit`: A `SubmitField`.
+  * Create a new form class named `AdminUserForm`. This form should **not** extend `RegistrationForm`.
+  * Your subclass should only implement the additional attributes for administration.
 
 ### 2\. The Route (`moj/routes.py`)
 
@@ -49,7 +46,7 @@ You must follow the "Admin-Audit" pattern from `ICE 11`. This will involve touch
       * Pre-populate the form with that user's *current* role (`form.role.data = user.role`).
   * **On `POST` (`form.validate_on_submit()`):**
       * **Log the action:** Create a new `AdminAction` object. Fill in all the details (e.g., `action_type="Edit User"`, `model_type="User"`, `model_id=user.id`, etc.).
-      * **Update the user:** Change the user's role in the database (`user.role = form.role.data`).
+      * **Update the user:** Change the user's role in the database (`user.role = form.role.data`) if required.
       * **Commit:** `db.session.commit()` (this saves both the user change and the new log entry).
       * `flash(...)` a success message and `redirect(url_for('admin_panel'))`.
 
@@ -68,22 +65,21 @@ You must follow the "Admin-Audit" pattern from `ICE 11`. This will involve touch
 
 ### 5\. The Admin Panel (Update `templates/admin_panel.html`)
 
-  * Your `admin_panel.html` should *already* work, as it just loops over the `AdminAction` table.
-  * **Refactor:** Make sure your "Target" column is generic, so it correctly displays both "Joke \#X" and "User \#Y". (Hint: You may need to adjust the `Jinja2` logic in your `{% for %}` loop).
+  * Your `admin_panel.html` should *already* work, as it just loops over the `Users` and `Jokes` table.
+  * **Verify:** Verify everything still looks good. 
 
 ### 6\. The Tests (`tests/test_admin_user.py`)
 
   * **Create a new test file:** `tests/test_admin_user.py`.
-  * **Rename the old test:** As discussed in the lecture, rename `tests/test_admin_joke.py` to `tests/test_admin_joke.py` (if it wasn't already). This keeps our tests separate by role and feature.
   * **Write two new tests:**
     1.  `test_admin_can_edit_user_role`:
           * GIVEN: A regular `user` and a logged-in `admin_user`.
           * WHEN: The `admin_user` `POST`s to `/admin/edit_user/<user_id>` with a new role and justification.
-          * THEN: The response is a `302` redirect, the `user.role` in the database *is* changed, and a new `AdminAction` row *is* created.
+          * THEN: The response is a `302` redirect, the `user.role` in the database *is* changed.
     2.  `test_user_cannot_edit_user_role`:
           * GIVEN: A regular `user_A` and a logged-in `user_B`.
           * WHEN: `user_B` attempts to `POST` to `/admin/edit_user/<user_A_id>`.
-          * THEN: The response is `403 Forbidden`, the `user_A.role` is *not* changed, and no `AdminAction` is created.
+          * THEN: The response is `403 Forbidden`, the `user_A.role` is *not* changed.
 
 -----
 
@@ -95,10 +91,9 @@ Implement the "Admin Delete User" feature, following the *exact same "Admin-Audi
   * **The Route:** Create a new `admin_delete_user` route that is protected by RBAC.
   * **The Logic:**
     1.  Get the `justification` from the delete form.
-    2.  **Log the action:** Create an `AdminAction` with `action_type="Delete User"`.
-    3.  **Delete the user:** `db.session.delete(user)`.
-    4.  `db.session.commit()`.
-    5.  `flash(...)` and redirect.
+    2.  **Delete the user:** `db.session.delete(user)`.
+    3.  `db.session.commit()`.
+    4.  `flash(...)` and redirect.
   * **Note:** Deleting a user who has authored jokes will cause a database `IntegrityError` if not handled. For this EC, you may test by deleting a user *without* any jokes, or you can research how to handle "cascading deletes" in SQLAlchemy. The goal is to prove you can build the secure, audited route.
 
 -----
