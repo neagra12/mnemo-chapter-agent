@@ -291,10 +291,91 @@ Implement the "Export to CSV" feature.
 
 ## **---- PROMPT ----**
 ```markdown
+How about adding a challenge to the prune the history table by deleting records older than a user provided date. We could do another challenge to implement the csv download option. 
 
+They need to provide the unit tests for these challenges. 1 point for the work and 1 point for the tests.
 ```
 
+You're right. A feature isn't "done" until it's tested. This is a crucial part of the challenge.
 
+Here is the updated `A14` assignment, which explicitly adds the testing requirements and updates the rubric to match your 1+1 point structure.
+
+-----
+
+### Homework 9: The Full-Stack Logger (A14)
+
+*(Core Tasks 1-3 remain the same...)*
+
+-----
+
+### ⭐ EC 1: "Prune History" Challenge (+2 Points)
+
+Implement a feature for admins to "prune" old logs.
+
+1.  **Work (1 pt):**
+      * **Form:** Create a `PruneHistoryForm` (`moj/forms.py`) with a `DateField` and a `justification`.
+      * **Template:** Create `prune_history.html` to render this form.
+      * **Route:** Create a new `/admin/prune_history` route (GET/POST), protected by `@admin_required`.
+      * **Logic:** On `POST`, delete logs older than the form's date. **Crucially, log this action itself** (e.g., `action_type=UserAction.ADMIN_PRUNE_LOG`) with the justification and number of records deleted.
+2.  **Tests (1 pt):**
+      * In `tests/test_admin.py`, create a new test, `test_prune_history`.
+      * **GIVEN:** A logged-in admin, 3 logs *before* 2025-01-01, and 2 logs *after*.
+      * **WHEN:** The admin `POST`s to `/admin/prune_history` with the date `2025-01-01` and a justification.
+      * **THEN:**
+        1.  The 3 old logs are deleted.
+        2.  The 2 new logs remain.
+        3.  A *new* log (the "prune" action) is created.
+        4.  The final `UserAction.query.count()` is 3.
+
+### ⭐ EC 2: "CSV Export" Challenge (+2 Points)
+
+Implement the "Export to CSV" feature.
+
+1.  **Work (1 pt):**
+      * **Route:** Create a new `/admin/export_logs` route, protected by `@admin_required`.
+      * **Add Link:** Add a link to this route in your `admin_panel.html` template.
+      * **Logic:** Query all `UserAction` logs. Use Python's `io` and `csv` modules to generate a CSV. Return the data using Flask's `make_response`, setting the `Content-Disposition` and `Content-type` headers correctly.
+2.  **Tests (1 pt):**
+      * In `tests/test_admin.py`, create a new test, `test_csv_export`.
+      * **GIVEN:** A logged-in admin and 2 `UserAction` logs in the database.
+      * **WHEN:** The admin `GET`s `/admin/export_logs`.
+      * **THEN:**
+        1.  The `response.status_code` is 200.
+        2.  The `response.headers['Content-type']` is `text/csv`.
+        3.  The `response.headers['Content-Disposition']` contains `attachment; filename=moj_logs.csv`.
+        4.  The `response.data` (as bytes) contains the CSV header row (e.g., `b"Timestamp,User,Action Type"`) and the data from the 2 logs.
+
+-----
+
+### Rubric (For TA Use)
+
+(I've updated the EC sections to reflect the 1+1 split)
+
+```html
+<table style="width: 100%; border-collapse: collapse; border: 1px solid #ccc;" summary="Grading rubric for A14">
+    <tr style="background-color: #f9f9f9;">
+        <td style="padding: 12px; border: 1px solid #ccc; vertical-align: top;">
+            <strong>EC 1: "Prune History" (+2 pts)</strong>
+            <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 20px;">
+                <li>(+1 pt) The feature is implemented: The form, route, and delete logic are functional.</li>
+                <li>(+1 pt) The test is written: <code>test_prune_history</code> is implemented and proves the logs were deleted and the new log was created.</li>
+            </ul>
+        </td>
+        <td style="padding: 12px; border: 1px solid #ccc; text-align: right; vertical-align: top;">/ +2</td>
+    </tr>
+    <tr>
+        <td style="padding: 12px; border: 1px solid #ccc; vertical-align: top;">
+            <strong>EC 2: "CSV Export" (+2 pts)</strong>
+            <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 20px;">
+                <li>(+1 pt) The feature is implemented: The route correctly generates and returns a CSV file.</li>
+                <li>(+1 pt) The test is written: <code>test_csv_export</code> is implemented and proves the headers and data are correct.</li>
+            </ul>
+        </td>
+        <td style="padding: 12px; border: 1px solid #ccc; text-align: right; vertical-align: top;">/ +2</td>
+    </tr>
+    
+    </table>
+```
 
 
 

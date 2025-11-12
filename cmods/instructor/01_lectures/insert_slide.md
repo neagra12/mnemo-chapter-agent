@@ -1,10 +1,6 @@
-You're absolutely right. This is a critical lesson in pragmatic engineering. It's the perfect way to cap off the lecture.
 
-Here are the two slides you can add right after the "My Activity" slide.
 
----
-
-### ## Slide 10: The "Gold-Plating" Trap (The Eager Engineer) 🏃‍♂️
+## ## Slide 10: The "Gold-Plating" Trap (The Eager Engineer) 🏃‍♂️
 
 * **Speaker:** "Okay, so we're about to add a 10,000-row, unfiltered table to the bottom of our admin panel. I can feel the 'eager engineer' in all of you screaming..."
 * 
@@ -18,7 +14,7 @@ Here are the two slides you can add right after the "My Activity" slide.
 
 ---
 
-### ## Slide 11: The Pragmatic Engineer: "Is this the requirement?" 👩‍💻
+## ## Slide 11: The Pragmatic Engineer: "Is this the requirement?" 👩‍💻
 
 * **The Senior Engineer:** "Stop. What was the *user story*?"
     > "As an admin, I need to see a log of all actions... *so that* I can audit what happened."

@@ -121,13 +121,19 @@ Your job is to refactor the admin routes to *use* the new table.
     ```
 4.  **Refactor `admin_panel`:**
       * Find the `admin_panel` route.
-      * **Replace the query:** The panel should now show *actions*, not lists of users/jokes.
+      * **Add the history:** The panel should now show *actions* as well as the lists of users/jokes.
     <!-- end list -->
     ```python
     @app.route('/admin_panel')
     @login_required
     @admin_required # (from A12)
     def admin_panel():
+
+        # Get data for the dashboard
+        users = User.query.order_by(User.username).all()
+        jokes = Joke.query.order_by(Joke.timestamp.desc()).all()
+        # ^^^^^^^ ORIGINAL CODE ^^^^^^^^ #
+
         # A clean, fast, and maintainable query
         admin_types = [UserAction.ADMIN_EDIT_JOKE, UserAction.ADMIN_EDIT_USER]
         
@@ -135,6 +141,7 @@ Your job is to refactor the admin routes to *use* the new table.
             UserAction.action_type.in_(admin_types) # <-- Using .in_()
         ).order_by(UserAction.timestamp.desc()).all()
         
+        # vvvvvv ORIGINGAL CODE vvvvv #
         return render_template('admin_panel.html', 
                                 title="Admin Panel", actions=actions)
     ```
@@ -149,8 +156,16 @@ Your job is to refactor the admin panel template to be an "Audit Log Viewer."
 1.  **Open:** `templates/admin_panel.html`.
 2.  **Replace Everything:** **Delete** the old user/joke lists. **Replace** the file's `{% block content %}` with this new table:
     ```html
-    {% extends "base.html" %}
-    {% block content %}
+        <h2>All Jokes ({{ jokes|length }})</h2>
+        <ul>
+            {% for joke in jokes %}
+                <li>"{{ joke.body }}" - <i>by {{ joke.author.username }}</i>
+                {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin_edit_joke', joke_id=joke.id) }}">📝</a>
+                {% endif %}</li>
+            {% endfor %}
+        </ul>. 
+        {# ^^^^^^^ INSERT CHANGES AFTER JOKES ^^^^^^^^ #}
         <h1>Admin Panel: Audit Log</h1>
         <table border="1" style="width: 100%;">
             <thead>
@@ -184,7 +199,7 @@ Your job is to refactor the admin panel template to be an "Audit Log Viewer."
                 {% endfor %}
             </tbody>
         </table>
-    {% endblock %}
+    {% endblock %}  {# <====== ORIGINAL CODE #}
     ```
 3.  **Commit & Push:** Commit your changes.
 
@@ -205,30 +220,21 @@ Your job is to prove the new logging logic works.
     <!-- end list -->
     ```python
     def test_admin_can_edit_joke_route(client, app):
-        # ... (all the existing setup for this test)
-        with app.app_context():
-            user, admin = make_users()
-            joke = Joke(body="Original joke", author=user)
-            db.session.add_all([user, admin, joke])
-            db.session.commit()
-            
-        client.post('/login', data={'username': 'admin', 'password': 'a'})
-        response = client.post(f'/admin/edit_joke/{joke.id}', data={
-            'body': 'Edited by admin',
-            'justification': 'Testing admin powers'
-        }, follow_redirects=True)
-        
+        # ... (all the existing setup)
+
         # --- (Old assertions) ---
         assert response.status_code == 200
-        assert b'Admin Panel: Audit Log' in response.data # (This proves the new template loads)
+        assert b'Admin Panel' in response.data
+        assert b'All Users' in response.data  # <-- This still exists!
+        assert b'All Jokes' in response.data  # <-- This still exists!
+        assert b'Admin Audit Log' in response.data # <-- This is new!
         assert joke.body == 'Edited by admin'
-        
+
         # --- (NEW ASSERTIONS) ---
         log = UserAction.query.first()
         assert log is not None
         assert log.user == admin
-        assert log.action_type == UserAction.ADMIN_EDIT_JOKE # <-- Use the constant!
-        assert log.target_id == joke.id
+        assert log.action_type == UserAction.ADMIN_EDIT_JOKE
         assert log.details == "Testing admin powers"
     ```
 4.  **Test:** Run `pytest tests/test_admin.py`. Your refactored test should pass.
