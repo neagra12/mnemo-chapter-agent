@@ -36,7 +36,7 @@ You are responsible for updating the database schema.
     class Rating(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         score = db.Column(db.Integer, index=True, nullable=False)
-        timestamp = db.Column(db.DateTime, index=True, default=datetime.datetime.utcnow)
+        timestamp = db.Column(db.DateTime, index=True, default=datetime.datetime.now(datetime.timezone.utc))
         user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
         joke_id = db.Column(db.Integer, db.ForeignKey('joke.id'))
 
@@ -210,7 +210,7 @@ You have two template tasks:
 1.  **Create new file:** Create `tests/test_ratings.py`.
 2.  **Add Tests:** Add these four tests:
     ```python
-    from moj import db
+    from moj import db, app
     from moj.models import User, Joke, Rating
     import pytest
 

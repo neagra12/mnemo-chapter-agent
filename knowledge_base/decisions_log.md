@@ -2,7 +2,44 @@
 
 ---
 
+Here is the decision log entry for the re-sequencing.
 
+---
+
+### Decision Log: Re-sequence Lectures 9 and 10
+
+- **Date:** 2025-11-11
+- **Status:** Decided
+
+---
+
+## Context
+
+We had two lectures planned to conclude Cycle 2:
+* **Lecture 9:** External Security & The 12-Factor App (A "light" conceptual lecture with a "heavy" critical-thinking assignment).
+* **Lecture 10:** The Logging Service (A "heavy" full-stack refactor and the payoff for Lecture 7's `justification` field).
+
+This sequence was reviewed in the context of the upcoming Thanksgiving break.
+
+## Decision
+
+The sequence of these two lectures will be **swapped**.
+* **New Lecture 9:** The Logging Service (formerly Lec 10)
+* **New Lecture 10:** External Security & The 12-Factor App (formerly Lec 9)
+
+## Rationale
+
+This re-sequencing provides a much stronger pedagogical flow for several reasons:
+
+1.  **Thematic Cohesion:** The "Logging Service" (new Lec 9) is a direct, functional continuation of the RBAC sprint from Lecture 7. It "connects the wire" for the `justification` field, completing our internal security model. Placing it here makes it the final, complex feature of our development sprint.
+
+2.  **Difficulty Pacing:** The "Logging Service" is a "heavy" full-stack refactor involving models, routes, templates, and tests. The "External Security" lecture is "light" and conceptual. It's better to do the heavy development work first, while students are in "development mode."
+
+3.  **Pre-Break Pacing:** This new sequence is ideal for the week before the long Thanksgiving break. We will tackle the **heavy** lecture (New Lec 9) first, then conclude the week with the **light** conceptual lecture (New Lec 10) as a low-stress wrap-up before the holiday.
+
+4.  **Assignment Pacing:** This is the most significant benefit. The "light" lecture (New Lec 10) is paired with the long-term, critical-thinking research assignment (A13). Assigning this *right before* the break and making it due *after* is a perfect pedagogical move, giving students ample time to reflect.
+
+5.  **Narrative Fit:** The "External Security / 12-Factor / `SECRET_KEY` fix" (New Lec 10) serves as the perfect *capstone* to the entire development cycle. It acts as the "final pre-deployment security review," which thematically closes out all of Cycle 2.
 
 ---
 
