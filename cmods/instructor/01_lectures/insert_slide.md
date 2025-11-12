@@ -1,109 +1,33 @@
-# Replacement slide for mod2_lec5_AuthZ_AuthN
+You're absolutely right. This is a critical lesson in pragmatic engineering. It's the perfect way to cap off the lecture.
 
+Here are the two slides you can add right after the "My Activity" slide.
 
-## 2\. Update Slide 11: The "Magic" of Sessions
+---
 
-We just need to label the diagram's arrows with the functions we just introduced.
+### ## Slide 10: The "Gold-Plating" Trap (The Eager Engineer) 🏃‍♂️
 
-<!-- #### **AFTER (New Slide 11):** -->
+* **Speaker:** "Okay, so we're about to add a 10,000-row, unfiltered table to the bottom of our admin panel. I can feel the 'eager engineer' in all of you screaming..."
+* 
+* **The "Must-Have" List (that isn't):**
+    * "This is a mess! We need a better UI!"
+    * "We *must* add pagination. What if there are 10 million rows?"
+    * "We *must* add a filter-by-user dropdown."
+    * "We *must* add a date-range picker."
+    * "The columns *must* be sortable!"
+* **Key Point:** This is a trap called **"gold-plating."** It's the impulse to add features *beyond* the scope of the current requirement. It's a *good* impulse (it's user-focused!), but it's dangerous.
 
-| Part 1: The Login Response | Part 2: The Next Request |
-| :--- | :--- |
-| 1. Client `POSTS` to `/login`. | 1. Client `GETS` `/staff_lounge`. |
-| 2. Your route validates the password. | 2. Browser attaches the `session` cookie. |
-| 3. You call `login_user(user)`. | 3. Flask verifies the cookie. |
-| 4. `flask-login` creates the `session` cookie. | 4. `flask-login` reads the `user.id`. |
-| 5. **`return redirect(url_for('index'))`** | 5. `flask-login` calls your `@login.user_loader`. |
-| 6. Flask sends a `Set-Cookie` header. | 6. Your function returns the `User` object. |
-| 7. Browser stores the cookie. | 7. `flask-login` populates `current_user`. |
-| | 8. **`return render_template('staff_lounge.html')`** |
+---
 
-<!-- 
+### ## Slide 11: The Pragmatic Engineer: "Is this the requirement?" 👩‍💻
 
-### The Real Solution: Modify 2 Existing Slides
-
-The problem isn't the ICE; it's that the *lecture* is incomplete. We need to introduce `render_template` and `redirect` *within the lecture's existing code examples*. This makes the lecture a better "scaffold" for the ICE.
-
-Here are the surgical edits.
-
------
-
-### 1\. Update Slide 10: The `login` and `logout` Routes
-
-We will change the "placeholder" code to use the *real* functions. This makes the lecture code identical to the code they'll use in the ICE.
-
-#### **BEFORE (Old Slide 10):**
-
-```python
-@app.route('/login')
-def login():
-    # ...
-    # 1. Get the one user from our DB
-    user = User.query.get(1)
-    # 2. "Log them in"
-    login_user(user)
-    return "You are now logged in!" # <-- WEAK
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return "You are now logged out!" # <-- WEAK
-```
-
-#### **AFTER (New Slide 10):**
-
-```python
-# In moj/routes.py
-from flask import render_template, redirect, url_for, request # <-- ADDED
-from flask_login import login_user, logout_user, current_user 
-from moj.models import User, Joke
-
-# ...
-
-@app.route('/login')
-def login():
-    # We will build the *real* form in the ICE.
-    # For now, we'll just log in a "hardcoded" user.
-
-    # 1. Get the one user from our DB
-    user = User.query.get(1)
-    # 2. "Log them in"
-    login_user(user)
-    # 3. Send them to the index page
-    return redirect(url_for('index')) # <-- FIXED
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    # 4. Send them back to the login page
-    return redirect(url_for('login')) # <-- FIXED
-
-@app.route('/index')
-def index():
-    # 5. Use render_template to show a real HTML page
-    return render_template('index.html', title='Home') # <-- NEW
-```
-
-**New Speaker Note:** "Notice we are no longer just returning strings. We're using `redirect(url_for(...))` to send the user to a *different route*, and `render_template('index.html')` to send them a full HTML file from our `templates/` folder. This is the core of any web framework."
-
------
-
-### 2\. Update Slide 11: The "Magic" of Sessions
-
-We just need to label the diagram's arrows with the functions we just introduced.
-
-#### **AFTER (New Slide 11):**
-
-| Part 1: The Login Response | Part 2: The Next Request |
-| :--- | :--- |
-| 1. Client `POSTS` to `/login`. | 1. Client `GETS` `/staff_lounge`. |
-| 2. Your route validates the password. | 2. Browser attaches the `session` cookie. |
-| 3. You call `login_user(user)`. | 3. Flask verifies the cookie. |
-| 4. `flask-login` creates the `session` cookie. | 4. `flask-login` reads the `user.id`. |
-| 5. **`return redirect(url_for('index'))`** | 5. `flask-login` calls your `@login.user_loader`. |
-| 6. Flask sends a `Set-Cookie` header. | 6. Your function returns the `User` object. |
-| 7. Browser stores the cookie. | 7. `flask-login` populates `current_user`. |
-| | 8. **`return render_template('staff_lounge.html')`** |
-
-
--->
+* **The Senior Engineer:** "Stop. What was the *user story*?"
+    > "As an admin, I need to see a log of all actions... *so that* I can audit what happened."
+* **Did we meet the story?** **Yes.** A `<table>` with all the data meets the requirement.
+* **The Pragmatic Truth:**
+    1.  **Filtering is a *New Feature*:** A filter UI is a *new user story*. It needs to be designed, prioritized by the **Product Owner**, and built as its own task. We do not build features no one has asked for.
+    2.  **Our MVP is simple:** We will add the *unfiltered* log. That's the requirement for today. In our ICE, we will add *all* actions to the panel, not just admin actions.
+* **The Pragmatic Compromise (The "Ops" Hatch):**
+    * "But what if they *really* need to filter?"
+    * **Don't build a UI.** Build a simple, internal **"Export to CSV"** tool.
+    * An admin can download the raw data and use Excel, Google Sheets, or a reporting tool to do their own filtering. This is **10x less work** for us and gives them **100% of the power**.
+    * This is a perfect, testable tool we can justify for our own internal operations, and we can even hide it behind a `.env` setting (e.This is a perfect, testable tool we can justify for our own internal operations, and we can even hide it behind a `.env` setting (e.g., `if app.config['ENABLE_LOG_EXPORT']: ...`).

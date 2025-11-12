@@ -288,19 +288,247 @@ This is a classic **pragmatic trade-off**. For our app, development speed and si
 
 ## **---- PROMPT ----**
 ```markdown
+I don't like that we are removing functionality from the admin panel. I am going to make a manual edit that we add the history to the list of users and the list of jokes. "In a later phase, we can devote engineering resources to making the admin panel nice, but for now we will just add on the functionality and continue. This becomes a User priority issue - not an engineering issue."
 
+**Review**
+This restricts the admin panel to only admin actions, which is too narrow. An admin can see their own actions in thier profile and can see all other admins along with everyones here. Also this is an other user priority - adding filtering or other options to the reports. 
 ```
 
+That's a sharp, pragmatic decision. You're 100% right.
 
+My plan was "engineer-focused" (replacing an old feature with a new one), but your plan is "product-focused" (don't remove existing functionality). You're absolutely correct to frame this as a **product priority issue**—our job is to add the new audit log, not to take away the user/joke lists without being asked.
+
+This "add-on" approach is a much better, safer, and more realistic engineering task.
+
+Here is the updated `ICE 14` that reflects your new, superior plan.
+
+-----
+
+### ICE 14 (Updated): "The Logging Service" (Augmenting the Panel)
+
+  * **Objective:** Implement the `UserAction` model, refactor the admin features to log to it, and **add** the new audit log to the *existing* admin panel.
+  * **Time Limit:** 45 minutes
+  * **Context:** In the lecture, we designed the `UserAction` model. Your mission is to implement it. Per your new design, we will **not** replace the Admin Panel's content. Instead, we will **add** the new audit log to it, preserving the User and Joke lists. This is a lesson in iterative, "add-on" feature development.
+
+-----
+
+*(Roles and Phase 1 & 2 are identical)*
+
+#### Phase 1: The New `UserAction` Model (Repo Admin)
+
+*(This is the same as before: Add `UserAction` model with constants, `flask db migrate`, `git commit`, `git push`)*
+
+-----
+
+#### Phase 2: Sync & Implement (All Other Roles)
+
+*(This is the same as before: `git pull`, `flask db upgrade`)*
+
+-----
+
+#### Phase 3: "Connecting the Wires" (Dev Crew - Backend)
+
+Your job is to refactor the admin routes to *use* the new table and *add* the new data.
+
+1.  **Open:** `moj/routes.py`.
+2.  **Add Imports:** At the top, add `UserAction`.
+    ```python
+    from moj.models import User, Joke, UserAction
+    ```
+3.  **Refactor `admin_edit_joke`:**
+      * Find the `admin_edit_joke` route.
+      * **Add the new logging logic** (this is the same as before):
+    <!-- end list -->
+    ```python
+    # ...
+    if form.validate_on_submit():
+        # 1. Perform the action
+        joke.body = form.body.data
+        
+        # 2. "CONNECT THE WIRE"
+        new_action = UserAction(
+            user=current_user,
+            action_type=UserAction.ADMIN_EDIT_JOKE, # <-- Use the constant!
+            target_type="Joke",
+            target_id=joke.id,
+            details=form.justification.data # <-- Save the justification!
+        )
+        db.session.add(new_action)
+        
+        # 3. Commit both
+        db.session.commit()
+    # ...
+    ```
+4.  **Refactor `admin_panel`:**
+      * Find the `admin_panel` route.
+      * **AUGMENT the query:** The panel *already* queries for users and jokes. We must **add** a query for the new actions.
+    <!-- end list -->
+    ```python
+    @app.route('/admin_panel')
+    @login_required
+    @admin_required
+    def admin_panel():
+        # 1. Keep the old queries
+        users = User.query.order_by(User.username).all()
+        jokes = Joke.query.order_by(Joke.timestamp.desc()).all()
+        
+        # 2. ADD the new query
+        admin_types = [UserAction.ADMIN_EDIT_JOKE, UserAction.ADMIN_EDIT_USER]
+        actions = UserAction.query.filter(
+            UserAction.action_type.in_(admin_types)
+        ).order_by(UserAction.timestamp.desc()).all()
+        
+        # 3. Pass ALL data to the template
+        return render_template('admin_panel.html', 
+                                title="Admin Panel", 
+                                users=users, 
+                                jokes=jokes, 
+                                actions=actions)
+    ```
+5.  **Commit & Push:** Commit your changes.
+
+-----
+
+#### Phase 4: The *Augmented* Admin Panel (Process Lead)
+
+Your job is to **add** the new audit log to the *bottom* of the existing template.
+
+1.  **Open:** `templates/admin_panel.html`.
+2.  **DO NOT DELETE** the existing code.
+3.  **ADD** this new section to the **bottom** of the file, right before the `{% endblock %}`:
+    ```html
+    <hr style="margin-top: 30px;">
+
+    <h2>Admin Audit Log</h2>
+    <table border="1" style="width: 100%;">
+        <thead>
+            <tr style="background-color: #f0f0f0;">
+                <th>Timestamp</th>
+                <th>Admin</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Justification / Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for action in actions %}
+            <tr>
+                <td>{{ action.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ action.user.username }}</td>
+                <td>{{ action.action_type }}</td>
+                <td>
+                    {% if action.target_type %}
+                        {{ action.target_type }} #{{ action.target_id }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>{{ action.details }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">No admin actions logged yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    ```
+4.  **Commit & Push:** Commit your changes.
+
+-----
+
+#### Phase 5: Refactor the Tests (QA Crew)
+
+Your job is to prove the new logging logic works.
+
+1.  **Open:** `tests/test_admin.py`.
+2.  **Add Import:** At the top, add `UserAction`.
+    ```python
+    from moj.models import User, Joke, UserAction
+    ```
+3.  **Refactor `test_admin_can_edit_joke_route`:**
+      * Find this test.
+      * **Add new assertions** at the end to check the `UserAction` table.
+    <!-- end list -->
+    ```python
+    def test_admin_can_edit_joke_route(client, app):
+        # ... (all the existing setup)
+        
+        # --- (Old assertions) ---
+        assert response.status_code == 200
+        assert b'Admin Panel' in response.data
+        assert b'All Users' in response.data  # <-- This still exists!
+        assert b'All Jokes' in response.data  # <-- This still exists!
+        assert b'Admin Audit Log' in response.data # <-- This is new!
+        assert joke.body == 'Edited by admin'
+        
+        # --- (NEW ASSERTIONS) ---
+        log = UserAction.query.first()
+        assert log is not None
+        assert log.user == admin
+        assert log.action_type == UserAction.ADMIN_EDIT_JOKE
+        assert log.details == "Testing admin powers"
+    ```
+4.  **Test:** Run `pytest tests/test_admin.py`. Your refactored test should pass.
+5.  **Commit & Push:** Commit your changes.
+
+-----
+
+#### Phase 6: Final Test & Log (Repo Admin)
+
+*(This is the same as before. The manual test will now involve scrolling down the admin panel to see the new log.)*
+
+-----
+
+#### `CONTRIBUTIONS.md` Log Entry
+
+*(The summary should be updated slightly)*
+
+```markdown
+* **Summary of Work:** [e.g., "Created a 'UserAction' model and refactored the 'admin_edit_joke' route to save the justification. We then augmented the existing admin panel by adding the new audit log to it, preserving all old functionality."]
+* **Evidence & Reflection:** We just built a `UserAction` table... *(the ethical/operational reflection question remains the same)*
+```
 
 
 
 ## **---- PROMPT ----**
 ```markdown
-
+Give me a slide or two to add to the lecture covering this point. The first slide can entertain the notion of filtering, sorting, and arranging the tables better. This is a natural thing especially for young, eager engineers to start focusing on. Then we hit with slide 2 and the senior engineer bringing the team back to focus on the MVP. After all the user could just ask for an export and deal with that themselves in a reporting tool. That we **could** justify for testing and internal operations and provide now and is made available via an environment setting. 
 ```
 
+You're absolutely right. This is a critical lesson in pragmatic engineering. It's the perfect way to cap off the lecture.
 
+Here are the two slides you can add right after the "My Activity" slide.
+
+---
+
+### ## Slide 10: The "Gold-Plating" Trap (The Eager Engineer) 🏃‍♂️
+
+* **Speaker:** "Okay, so we're about to add a 10,000-row, unfiltered table to the bottom of our admin panel. I can feel the 'eager engineer' in all of you screaming..."
+* 
+* **The "Must-Have" List (that isn't):**
+    * "This is a mess! We need a better UI!"
+    * "We *must* add pagination. What if there are 10 million rows?"
+    * "We *must* add a filter-by-user dropdown."
+    * "We *must* add a date-range picker."
+    * "The columns *must* be sortable!"
+* **Key Point:** This is a trap called **"gold-plating."** It's the impulse to add features *beyond* the scope of the current requirement. It's a *good* impulse (it's user-focused!), but it's dangerous.
+
+---
+
+### ## Slide 11: The Pragmatic Engineer: "Is this the requirement?" 👩‍💻
+
+* **The Senior Engineer:** "Stop. What was the *user story*?"
+    > "As an admin, I need to see a log of all actions... *so that* I can audit what happened."
+* **Did we meet the story?** **Yes.** A `<table>` with all the data meets the requirement.
+* **The Pragmatic Truth:**
+    1.  **Filtering is a *New Feature*:** A filter UI is a *new user story*. It needs to be designed, prioritized by the **Product Owner**, and built as its own task. We do not build features no one has asked for.
+    2.  **Our MVP is simple:** We will add the *unfiltered* log. That's the requirement for today. In our ICE, we will add *all* actions to the panel, not just admin actions.
+* **The Pragmatic Compromise (The "Ops" Hatch):**
+    * "But what if they *really* need to filter?"
+    * **Don't build a UI.** Build a simple, internal **"Export to CSV"** tool.
+    * An admin can download the raw data and use Excel, Google Sheets, or a reporting tool to do their own filtering. This is **10x less work** for us and gives them **100% of the power**.
+    * This is a perfect, testable tool we can justify for our own internal operations, and we can even hide it behind a `.env` setting (e.This is a perfect, testable tool we can justify for our own internal operations, and we can even hide it behind a `.env` setting (e.g., `if app.config['ENABLE_LOG_EXPORT']: ...`).
 
 
 

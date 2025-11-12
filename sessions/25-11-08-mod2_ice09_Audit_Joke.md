@@ -281,10 +281,33 @@ Your job is to prove the new logging logic works.
 
 ## **---- PROMPT ----**
 ```markdown
-
+I think an ethical challenge for the audit trail would be better than the "magic string" reflection. We just added a table that records everyone's actions and the time they did it. The users maybe wondering if there is any other information besides their action history. There are operational issues (what happens to this table over time?) and ethical issues (who owns the log? can a user delete their history? The right to be forgotten available to all EU citizens.) As engineers we should be aware of these issues.
 ```
 
+This is a fantastic, high-level observation, and you are 100% right. It's a much stronger, more meaningful reflection question.
 
+My "magic string" question was a simple, low-level **technical** check. Your proposal is a high-level **engineering and ethics** check. It forces students to confront the real-world, non-functional implications of their work, which is a perfect "pragmatic engineering" lesson to cap off the cycle.
+
+This is the exact moment to make them think about scalability, privacy, and "the right to be forgotten." It's a brilliant substitution.
+
+Here is the updated `CONTRIBUTIONS.md` log entry for **ICE 14**, with your new, superior reflection question.
+
+-----
+
+### `CONTRIBUTIONS.md` Log Entry
+
+```markdown
+#### ICE 14: "The Logging Service"
+* **Date:** 2025-XX-XX
+* **Team Members Present:** `@github-user1`, `@github-user2`, ...
+* **Roles:**
+    * Repo Admin: `@github-userX`
+    * Dev Crew (Backend): `@github-userY`
+    * Process Lead: `@github-userZ`
+    * QA Crew: `@github-userA`
+* **Summary of Work:** [1-2 sentence summary, e.g., "Paid off our technical debt by creating a new 'UserAction' model with class constants. We refactored the 'admin_edit_joke' route to 'connect the wire' and save the justification to this table. The admin panel is now a full audit log viewer, and our tests confirm the log is created."]
+* **Evidence & Reflection:** We just built a `UserAction` table that logs what users do and when. As engineers, what are the **ethical** or **operational** questions we should be asking? For example, who "owns" this data? What happens when this table has a billion rows? Can a user request their history be deleted (e.g., "the right to be forgotten")?
+```
 
 
 ## **---- PROMPT ----**
