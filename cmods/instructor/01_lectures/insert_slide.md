@@ -1,29 +1,46 @@
+## New Slide: "The Data Lifecycle: What Happens When We Delete?"
 
+The Ticking Time Bomb: We have a huge problem in our app.
 
-## ## Slide 10: The "Gold-Plating" Trap (The Eager Engineer) 🏃‍♂️
+A User has many Jokes (db.relationship).
 
-* **Speaker:** "Okay, so we're about to add a 10,000-row, unfiltered table to the bottom of our admin panel. I can feel the 'eager engineer' in all of you screaming..."
-* 
-* **The "Must-Have" List (that isn't):**
-    * "This is a mess! We need a better UI!"
-    * "We *must* add pagination. What if there are 10 million rows?"
-    * "We *must* add a filter-by-user dropdown."
-    * "We *must* add a date-range picker."
-    * "The columns *must* be sortable!"
-* **Key Point:** This is a trap called **"gold-plating."** It's the impulse to add features *beyond* the scope of the current requirement. It's a *good* impulse (it's user-focused!), but it's dangerous.
+A User has many UserActions (db.relationship).
 
----
+Question: What happens if we DELETE a User?
 
-## ## Slide 11: The Pragmatic Engineer: "Is this the requirement?" 👩‍💻
+Answer: The database will crash with an IntegrityError! The jokes table has rows that point to a user.id that no longer exists.
 
-* **The Senior Engineer:** "Stop. What was the *user story*?"
-    > "As an admin, I need to see a log of all actions... *so that* I can audit what happened."
-* **Did we meet the story?** **Yes.** A `<table>` with all the data meets the requirement.
-* **The Pragmatic Truth:**
-    1.  **Filtering is a *New Feature*:** A filter UI is a *new user story*. It needs to be designed, prioritized by the **Product Owner**, and built as its own task. We do not build features no one has asked for.
-    2.  **Our MVP is simple:** We will add the *unfiltered* log. That's the requirement for today. In our ICE, we will add *all* actions to the panel, not just admin actions.
-* **The Pragmatic Compromise (The "Ops" Hatch):**
-    * "But what if they *really* need to filter?"
-    * **Don't build a UI.** Build a simple, internal **"Export to CSV"** tool.
-    * An admin can download the raw data and use Excel, Google Sheets, or a reporting tool to do their own filtering. This is **10x less work** for us and gives them **100% of the power**.
-    * This is a perfect, testable tool we can justify for our own internal operations, and we can even hide it behind a `.env` setting (e.This is a perfect, testable tool we can justify for our own internal operations, and we can even hide it behind a `.env` setting (e.g., `if app.config['ENABLE_LOG_EXPORT']: ...`).
+The Lifecycle Problem: We haven't defined the lifecycle rules for our data. We need to tell the database what to do.
+
+The "Senior" Solution: Cascading Deletes
+
+We need to tell our User model: "When you are deleted, you must also delete all the child records that depend on you."
+
+We will refactor our models.py to add cascade rules.
+
+moj/models.py (The Refactor):
+
+```Python
+class User(UserMixin, db.Model):
+    # ...
+    # This relationship...
+    jokes = db.relationship('Joke', backref='author', lazy='dynamic')
+
+    # ...becomes THIS:
+    jokes = db.relationship('Joke', backref='author', lazy='dynamic',
+                            cascade="all, delete-orphan")
+
+    # We do the same for UserAction...
+    actions = db.relationship('UserAction', backref='user', lazy='dynamic',
+                              cascade="all, delete-orphan")
+
+class Joke(db.Model):
+    # ...
+    # This foreign key...
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # ...becomes THIS (to support the cascade):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"))
+```
+
+Speaker Note: "This is not optional. This is the fix that makes our app stable. The cascade tells SQLAlchemy what to do, and the ondelete tells the database itself what to do. Now, when we delete a user, all their jokes and actions are safely deleted with them, and our app won't crash."

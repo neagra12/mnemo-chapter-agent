@@ -1,7 +1,6 @@
-# Homework 7: Pragmatic Engineering (A 12-Factor App Analysis)
+# Assignment 15: Pragmatic Engineering (A 12-Factor App Analysis)
 
   - **Objective:** Critically analyze the 12-Factor App methodology, using AI to research valid, real-world use cases for *violating* its rules.
-  - **Due Date:** Friday, [Date] @ 11:59 PM
   - **Grading:** This is a 10-point "Team Report" assignment. Each team member is responsible for one section of the final report.
 
 -----
@@ -20,7 +19,7 @@ A good engineer knows the rules. A **great** engineer knows *why* the rules exis
 
 This is not a "Team Best" assignment. Instead, your team will work together to produce a single, comprehensive **Analysis Report**.
 
-1.  **`Repo Admin`:** Creates the main branch `hw7-12factor-report`.
+1.  **`Repo Admin`:** Creates the main branch `A15-factor-report`.
 2.  **Team Task (In-Class):** As a team, **assign one 12-Factor App rule to each team member.** (e.g., Alice takes "XI. Logs," Bob takes "IV. Backing Services," etc.).
 3.  **Individual Task:** Each member uses AI to research their rule and writes their analysis in a separate text file.
 4.  **`Process Lead` (or other role):** Creates a new file in the repo root named `REPORT.md`.
@@ -63,7 +62,7 @@ For your analysis, add a fifth section:
 
 Here is a complete example of what one team member's section might look like.
 
-### 5\. Rule XI: Logs
+### 5. Rule XI: Logs
 
   * **The Rule:** "Logs" states that an app should never write to a file. Instead, it should treat logs as "event streams" and write them to `stdout` (the console), letting a separate service capture and manage them.
   * **The "Good" Violation:** A small, internal-only admin dashboard for a 3-person team. The team decides to *violate* this rule by configuring Python's `logging` module to write to a local file (`moj.log`).

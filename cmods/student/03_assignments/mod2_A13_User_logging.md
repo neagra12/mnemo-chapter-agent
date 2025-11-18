@@ -1,15 +1,13 @@
-# Homework 9: The Full-Stack Logger (A14)
+# Homework 9: The Full-Stack Logger (A13)
 
-  * **Module:** 2
-  * **Assignment:** 9 (A14)
+  * **Assignment:** 9 A13
   * **Topic:** Completing the "Logging Service" Refactor
   * **Points:** 10
-  * **Due Date:** Friday, November 21 @ 11:59 PM
   * **Type:** "Team Best"
 
 ## The "Why"
 
-In Lecture 10 and `ICE 14`, we paid off our technical debt by building the `UserAction` model. We "connected the wire" for *one* admin action (`admin_edit_joke`) and built the "Admin Panel" to view it.
+In Lecture 10 and `ICE 13`, we paid off our technical debt by building the `UserAction` model. We "connected the wire" for *one* admin action (`admin_edit_joke`) and built the "Admin Panel" to view it.
 
 Our app is still not *fully* logged. We are still silently performing other actions.
 
@@ -30,7 +28,7 @@ This is a "Team Best" assignment.
 
 ## Core Task 1: Log Admin User Edits
 
-This is a 1-to-1 replication of the pattern from `ICE 14`.
+This is a 1-to-1 replication of the pattern from `ICE 13`.
 
 1.  **Open `moj/models.py`:** Add a new class constant to `UserAction` (e.g., `ADMIN_EDIT_USER = "Admin Edit User"`).
 2.  **Open `moj/routes.py`:** Find your `admin_edit_user` route (from `A11`).
