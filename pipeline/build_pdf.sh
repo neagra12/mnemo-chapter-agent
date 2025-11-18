@@ -41,6 +41,8 @@ mkdir -p "$OUTPUT_DIR"
 # -H <(...): Manually includes the required LaTeX packages,
 #             which fixes the 'Undefined control sequence' error.
 #
+
+
 echo "Building PDF... (this may take a moment)"
 pandoc -f markdown-yaml_metadata_block "$MARKDOWN_FILE" \
     -f markdown+grid_tables \

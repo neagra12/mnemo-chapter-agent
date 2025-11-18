@@ -1,9 +1,46 @@
-## Slide 4: The `app.py` to `moj/` Refactor
-- **Key Point:** This is how we transform our simple `app.py` (from ICE 7) into a scalable package (for ICE 8).
-- We are **splitting one file into four** specific files, each with one job.
+## New Slide: "The Data Lifecycle: What Happens When We Delete?"
 
-| Old File (`app.py`) | New Files (in `moj/` package) |
-| :--- | :--- |
-| ```python # Our old app.py app = Flask(__name__) # --- Config --- app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' db = SQLAlchemy(app) migrate = Migrate(app, db) # --- Models --- class User(db.Model): ... # --- Routes --- @app.route('/') def index(): return "Hello World!" ``` | ```python # 1. moj/config.py class Config: SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db' ... # 2. moj/__init__.py from moj.config import Config app = Flask(__name__) app.config.from_object(Config) db = SQLAlchemy(app) migrate = Migrate(app, db) # Imports *after* init from moj import routes, models # 3. moj/models.py from moj import db class User(db.Model): ... # 4. moj/routes.py from moj import app @app.route('/') def index(): return "Hello World!" ``` |
+The Ticking Time Bomb: We have a huge problem in our app.
 
-- **Speaker Note:** "This is the most important change. Our single `app.py` is being split. The new 'heart' of our app is `moj/__init__.py`. It creates the `app` and `db` objects. All our routes move to `routes.py`, models to `models.py`, and configs to `config.py`. The starter zip for today's ICE gives you files 1, 2, and 4. Your *job* will be to move file 3 (`models.py`) and fix its import."
+A User has many Jokes (db.relationship).
+
+A User has many UserActions (db.relationship).
+
+Question: What happens if we DELETE a User?
+
+Answer: The database will crash with an IntegrityError! The jokes table has rows that point to a user.id that no longer exists.
+
+The Lifecycle Problem: We haven't defined the lifecycle rules for our data. We need to tell the database what to do.
+
+The "Senior" Solution: Cascading Deletes
+
+We need to tell our User model: "When you are deleted, you must also delete all the child records that depend on you."
+
+We will refactor our models.py to add cascade rules.
+
+moj/models.py (The Refactor):
+
+```Python
+class User(UserMixin, db.Model):
+    # ...
+    # This relationship...
+    jokes = db.relationship('Joke', backref='author', lazy='dynamic')
+
+    # ...becomes THIS:
+    jokes = db.relationship('Joke', backref='author', lazy='dynamic',
+                            cascade="all, delete-orphan")
+
+    # We do the same for UserAction...
+    actions = db.relationship('UserAction', backref='user', lazy='dynamic',
+                              cascade="all, delete-orphan")
+
+class Joke(db.Model):
+    # ...
+    # This foreign key...
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # ...becomes THIS (to support the cascade):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"))
+```
+
+Speaker Note: "This is not optional. This is the fix that makes our app stable. The cascade tells SQLAlchemy what to do, and the ondelete tells the database itself what to do. Now, when we delete a user, all their jokes and actions are safely deleted with them, and our app won't crash."

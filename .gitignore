@@ -1,4 +1,9 @@
 # ------------------------------------------------------------
+# Project specific – files and folders for local work
+# ------------------------------------------------------------
+scratch_edits/
+
+# ------------------------------------------------------------
 # macOS “trash” – files that love to hide in plain sight
 # ------------------------------------------------------------
 # The infamous Finder thumbnail cache
@@ -36,6 +41,7 @@ __pycache__/
 *$py.class
 # Distribution / packaging
 build/
+dist
 dist/
 *.egg
 *.whl

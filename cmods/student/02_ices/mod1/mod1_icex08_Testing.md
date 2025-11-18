@@ -275,3 +275,79 @@ Your team's work is "Done" when you can check all of the following:
 
 
 ```
+
+
+
+----
+
+
+This is a critical problem, and your analysis is 100% correct. A failed "handoff" from the previous ICE (like an unmerged PR or a stale `main` branch) will cause the entire *next* ICE to fail.
+
+Here is a new "Team Readiness Statement" (or "Protocol") that you can surgically insert at the **very top** of your `mod2_ice08.md` file, right after the main title. This makes it a formal, "do-this-first" checklist.
+
+-----
+
+### Surgical Insertion for `mod2_ice08.md`
+
+Paste this HTML block directly below the `ICE 8: Enforcing Quality...` title and `Purpose` section.
+
+```html
+<div style="background-color: #fcf8e3; border: 2px solid #c09853; padding: 12px 24px; margin: 20px 0px;">
+    <h4><span style="color: #c09853;">🛑 Team Readiness Protocol (5 Minutes)</span></h4>
+    <p>This ICE <strong>requires</strong> the code from ICE 7. Do not start until the <strong>Repo Admin</strong> shares their screen and leads the entire team through these verification steps.</p>
+    
+    <ol>
+        <li>
+            <strong>Step 1: Verify Git Repository State (Single Source of Truth)</strong>
+            <p>Run these commands from your terminal in the root of your project:</p>
+            <pre style="background: #333; color: #fff; padding: 10px;">
+$ git checkout main
+$ git pull
+$ git status</pre>
+            <p>✅ <strong>CHECK:</strong> Does the output say: <code>Your branch is up to date with 'origin/main'.</code>?</p>
+            <ul>
+                <li>If **YES**, proceed.</li>
+                <li>If **NO** (or if the `git pull` had merge conflicts), your `main` branch is not clean. **STOP** and get your TA. Your ICE 7 PR may not be merged.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Step 2: Verify File Prerequisites</strong>
+            <p>Run <code>ls</code> (Mac/Linux) or <code>dir</code> (Windows). You are verifying that the *results* of ICE 7 are present.</p>
+            <p>✅ <strong>CHECK:</strong> Do you see all of these files/folders in your root directory?</p>
+            <ul>
+                <li><code>app.py</code></li>
+                <li><code>models.py</code></li>
+                <li><code>migrations/</code></li>
+            </ul>
+            <p>If you are missing *any* of these, your ICE 7 work is not on `main`. **STOP** and get your TA.</p>
+        </li>
+        <li>
+            <strong>Step 3: Verify Virtual Environment (Venv)</strong>
+            <p>Run your `venv` activation command:</p>
+            <pre style="background: #333; color: #fff; padding: 10px;">
+# Mac/Linux
+$ source venv/bin/activate
+# Windows
+$ .\venv\Scripts\activate</pre>
+            <p>✅ <strong>CHECK:</strong> Does your terminal prompt now show <code>(venv)</code>?</p>
+            <p>Now, run this command to check your installed packages:</p>
+            <pre style="background: #333; color: #fff; padding: 10px;">(venv) $ pip freeze</pre>
+            <p>✅ <strong>CHECK:</strong> Does the list show <code>Flask-SQLAlchemy</code> and <code>Flask-Migrate</code>?</p>
+            <ul>
+                <li>If **YES**, you are ready.</li>
+                <li>If **NO**, your venv is missing the ICE 7 packages. Run <code>pip install -r requirements.txt</code>.</li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Once all three steps are confirmed green ✅, the Repo Admin may proceed to create the `ice8-refactor` branch.</strong></p>
+</div>
+```
+
+### Why this works:
+
+  * **Explicit:** It doesn't just say "check." It provides the *exact* commands to run.
+  * **Addresses Failures:** It specifically targets the two failures you identified:
+    1.  `git pull` ensures the *merged* work from the TA is now local.
+    2.  Checking for the files (e.g., `models.py`) is a second confirmation that the merge actually happened.
+  * **Verifies Venv:** It forces them to activate the venv and *proves* the required libraries are installed by checking `pip freeze`, which is much more robust than just "can you activate it?"
+  * **"Stop" Gates:** It provides clear "STOP" gates, empowering students to get help *before* they've spent 30 minutes working on a broken foundation.

@@ -2,7 +2,218 @@
 
 ---
 
+Here is the decision log entry for the re-sequencing.
 
+---
+
+### Decision Log: Re-sequence Lectures 9 and 10
+
+- **Date:** 2025-11-11
+- **Status:** Decided
+
+---
+
+## Context
+
+We had two lectures planned to conclude Cycle 2:
+* **Lecture 9:** External Security & The 12-Factor App (A "light" conceptual lecture with a "heavy" critical-thinking assignment).
+* **Lecture 10:** The Logging Service (A "heavy" full-stack refactor and the payoff for Lecture 7's `justification` field).
+
+This sequence was reviewed in the context of the upcoming Thanksgiving break.
+
+## Decision
+
+The sequence of these two lectures will be **swapped**.
+* **New Lecture 9:** The Logging Service (formerly Lec 10)
+* **New Lecture 10:** External Security & The 12-Factor App (formerly Lec 9)
+
+## Rationale
+
+This re-sequencing provides a much stronger pedagogical flow for several reasons:
+
+1.  **Thematic Cohesion:** The "Logging Service" (new Lec 9) is a direct, functional continuation of the RBAC sprint from Lecture 7. It "connects the wire" for the `justification` field, completing our internal security model. Placing it here makes it the final, complex feature of our development sprint.
+
+2.  **Difficulty Pacing:** The "Logging Service" is a "heavy" full-stack refactor involving models, routes, templates, and tests. The "External Security" lecture is "light" and conceptual. It's better to do the heavy development work first, while students are in "development mode."
+
+3.  **Pre-Break Pacing:** This new sequence is ideal for the week before the long Thanksgiving break. We will tackle the **heavy** lecture (New Lec 9) first, then conclude the week with the **light** conceptual lecture (New Lec 10) as a low-stress wrap-up before the holiday.
+
+4.  **Assignment Pacing:** This is the most significant benefit. The "light" lecture (New Lec 10) is paired with the long-term, critical-thinking research assignment (A13). Assigning this *right before* the break and making it due *after* is a perfect pedagogical move, giving students ample time to reflect.
+
+5.  **Narrative Fit:** The "External Security / 12-Factor / `SECRET_KEY` fix" (New Lec 10) serves as the perfect *capstone* to the entire development cycle. It acts as the "final pre-deployment security review," which thematically closes out all of Cycle 2.
+
+---
+
+### Decision Log: Refactor Lecture 7 & Reschedule Audit Log
+
+- **Date:** 2025-11-08
+- **Status:** Decided
+
+---
+
+## Context
+
+We performed a time and risk analysis of the planned **Lecture 7 ("Admin Powers & Audit Trails")** and its accompanying **ICE 11**.
+
+The analysis revealed a **critical over-stacking of complex topics**:
+1.  `.env` refactor for dev consistency.
+2.  `flask init-admin` (Click command) for automation.
+3.  RBAC (`if` checks) for authorization.
+4.  **A full-stack "Audit Log" feature** (new `AdminAction` model, DB migration, `AdminJokeForm` inheritance, new routes writing to two tables, new `admin_panel` template with loops).
+5.  Template inheritance.
+6.  New testing strategies for all of the above.
+
+This plan created an **unrealistic 35-minute lecture** and a **high-risk 45-minute ICE** with a massive bottleneck on the `Repo Admin` (Phases 1-3) and a complex sync (Phase 4).
+
+## Decisions
+
+1.  The **"Admin Action / Audit Log"** feature is **removed** from Lecture 7 and ICE 11.
+2.  **Lecture 7** will be simplified to focus *only* on the "Admin Setup" and basic RBAC. The three core topics will be:
+    * `.env` for developer environment consistency.
+    * `flask init-admin` (Click command) for automated admin creation.
+    * Basic RBAC: Implementing admin-only features using `if current_user.role == 'admin'` and `abort(403)`.
+3.  **ICE 11** will be simplified to match. The team will implement the `.env` refactor, add the `init-admin` command, and build a *simple* Admin "Edit Joke" feature (a new route/template) that is protected by an `if` check, with **no** audit log.
+4.  The "Audit Log" concept will be **moved** and expanded into a new **Lecture 10**.
+5.  **Lecture 10 ("The Logging Service")** will serve as the capstone for Cycle 2. It will follow Lecture 9 (12-Factor App) and perfectly fulfill the "XI. Logs" factor. This is where we will implement the `UserAction` table (a refactor of the `AdminAction` idea) as a site-wide logging feature.
+
+## Rationale
+
+This decision, while a significant change, dramatically improves the course's pacing and pedagogical structure.
+
+1.  **Solves the Bottleneck:** It makes Lecture 7 and ICE 11 achievable within the time limit. It removes the high-risk, multi-step database migration and complex setup from the `Repo Admin`, allowing the team to focus on the core RBAC concept.
+2.  **Improves Thematic Purity:** It correctly identifies that an "Audit Log" is a **logging feature**, not an *authorization* feature. It was thematically misplaced.
+3.  **Creates a Perfect Cycle 2 Narrative:** The new flow for Cycle 2 is far more logical and professional.
+    * **Lec 5/6:** Build the app (AuthN, CRUD).
+    * **Lec 7/8:** Secure the *inside* (RBAC, Business Logic).
+    * **Lec 9:** Secure the *outside* (XSS, CSRF, 12-Factor).
+    * **Lec 10:** *Log* all activity (Logging Service / Audit Trail), which is the perfect conclusion to the 12-Factor App discussion.
+
+---
+
+### Decision Log: Restructuring the Security & 12-Factor Module (Lec 7-9)
+
+- **Date:** 2025-11-08
+- **Status:** Decided
+
+---
+
+## Context
+
+Our original plan for Lecture 7 was to cover multiple, dense topics: the 12-Factor App, `.env` files for security, and external security threats (XSS, CSRF). This was thematically jumbled and presented a high cognitive load.
+
+Simultaneously, we recognized an immediate, "felt" pain point for students: **developer environment inconsistency**. Team members on different operating systems or with different local setups were struggling with hand-offs, particularly around configuration (e.g., `FLASK_DEBUG` status, database file locations).
+
+We needed to restructure Lectures 7, 8, and 9 to solve the immediate consistency problem first, which would then provide a stronger pedagogical foundation for the more abstract security concepts.
+
+---
+
+## Decisions
+
+We have redesigned the "Security & Professional Practices" module to span two distinct, week-long sprints (Weeks 12 and 13).
+
+### 1. Sprint 1: "Internal Security & AuthZ" (Week 12)
+
+This sprint is focused entirely on building an **internal** authorization model (Role-Based Access Control, or RBAC) and solving dev environment pain.
+
+* **Lecture 7: Admin Powers & Dev Consistency**
+    * **Topic 1: `.env` for Consistency.** We will introduce the `.env` file *not* for security, but as the solution for **developer environment consistency**.
+    * **"I/WE" Refactor:** We will move `FLASK_DEBUG` and the `DATABASE_URL` into a `.env` file, which will be added to `.gitignore`. This solves the team hand-off problem.
+    * **Topic 2: The "Setup".** We will explicitly *leave* the hardcoded `SECRET_KEY` in `config.py` as a "code smell" and "technical debt" to be addressed later.
+    * **Topic 3: Formal RBAC.** We will formally introduce the "admin" vs. "user" roles and show students how to modify the database (`flask shell`) to grant themselves admin privileges.
+    * **"I/WE" Feature:** We will build an **Admin "Modify Joke"** feature, protected by an `if current_user.role != 'admin'` check.
+    * **Assignment (A11):** Students will implement the **Admin "Modify User"** feature.
+
+* **Lecture 8: Ratings & Advanced RBAC**
+    * **Topic 1: Many-to-Many Relationships.** We will design and implement the "Joke Rating" feature, which requires a new `Rating` model acting as an **association table** (linking `user_id` and `joke_id`).
+    * **Topic 2: Reinforcing RBAC.** We will apply our new RBAC rules to this feature (e.g., "An admin can delete any rating").
+    * **Assignment (A12):** Students will refactor their duplicated `if...` checks into a custom **`@admin_required` decorator**.
+
+### 2. Sprint 2: "External Security & 12-Factor" (Week 13)
+
+This sprint focuses on defending against **external** threats and formalizing our professional patterns.
+
+* **Lecture 9: External Security & The 12-Factor App**
+    * **Topic 1: The "Duh!" Moment.** We will pay off our "technical debt." We'll ask, "Where should this insecure `SECRET_KEY` go?" Students, now comfortable with `.env`, will identify the correct solution.
+    * **Topic 2: The "Snap-in".** We will use this refactor as the hook to formally introduce the **12-Factor App**. We will frame it as a validation, showing students how many of the factors (Dependencies, Config, Processes, etc.) they are *already* following.
+    * **Topic 3: External Threats.** Now that we have an internal model to protect, we will introduce **XSS** (and Jinja2's defense) and **CSRF** (and Flask-WTF's defense).
+    * **Topic 4: Security Testing.** We will show students how to write `pytest` tests that *try* to perform an XSS attack, proving that the framework's protections are working.
+
+---
+
+## Rationale
+
+This new structure is far superior pedagogically for three key reasons:
+
+1.  **Solves Immediate Pain:** It uses the `.env` file to solve a real, immediate problem (dev consistency) *before* introducing the abstract concept of secrets management.
+2.  **Thematic Purity:** It creates two clean sprints. Week 12 is "Internal Security (AuthZ)," and Week 13 is "External Security & Config." This separation is logical and prevents cognitive overload.
+3.  **High-Impact "Snap-in":** Introducing the 12-Factor App *after* students have already done the work validates their experience and makes the principles "stick." It's a "naming" of their good habits, not a "list" to memorize. This is a much more powerful and motivating way to teach professional standards.
+
+---
+
+### Decision Log: MoJ Cycles 1 & 2 (AuthN/AuthZ & CRUD)
+
+- **Date:** 2025-10-28
+- **Status:** Decided
+
+---
+
+## Context
+
+Following high-level architectural planning, we needed to design the specific, day-to-day curriculum for the first two "sprints" of the Ministry of Jokes (MoJ) project. This involved finalizing all lectures, in-class exercises (ICEs), asynchronous assignments (AAs), and support artifacts for Weeks 9-11. The primary challenge was managing the extremely high cognitive load of introducing databases, refactoring, auth, and CRUD in rapid succession.
+
+---
+
+## Decisions
+
+We have designed and finalized the following two "sprints."
+
+### 1. Cycle 1 Sprint: "The Foundation" (Weeks 9-10)
+
+- **Lectures:**
+    - `Lec 3`: Introduces **Databases** (SQLAlchemy, Flask-Migrate) and the **Standard Blocker Protocol (SBP)**.
+    - `Lec 4`: Introduces **Refactoring** (`app.py` -> `moj/` package), **Testing** (`pytest`), and **Linting** (`flake8`).
+- **ICEs (Role-Based, Parallel):**
+    - `ICE 7`: Teams will define `User`/`Joke` models and run their first migration.
+    - `ICE 8`: Teams will refactor the app, write their first `pytest`, and be given a **"poisoned" kit** of 5 files (`__init__.py`, `config.py`, `routes.py`, `conftest.py`, `test_models.py`) that contain lint errors.
+- **Asynchronous Work:**
+    - `A08 (MongoDB Challenge)`: An individual AI-assisted tech evaluation, graded via the **Standard Analysis Protocol (SAP)**.
+    - `A09 (Linter Audit)`: A team assignment to "clean" the 5 poisoned files.
+- **Capstone:**
+    - `Project 1`: A `v1.0.0` GitHub Release that serves as a quality gate, requiring a "green" build badge, a completed `ETHICS.md`, and a full `CONTRIBUTIONS.md` log.
+
+### 2. Cycle 2, Sprint 1: "AuthN/AuthZ & CRUD" (Week 11)
+
+- **Lectures:**
+    - `Lec 5 (AuthN/AuthZ)`: A dense, "I/WE" lecture covering the "backend" of authentication. It introduces `flask-login`, `werkzeug` hashing, `UserMixin`, and the **session cookie mechanism**.
+    - `Lec 6 (CRUDy Jokes)`: An "I/WE" lecture on the "Create" and "Read" pattern. It formally introduces **Jinja2 templating** (`{{}}`, `{%%}`) and **template inheritance** (`{% extends %}`).
+- **ICE (In-Class "YOU"):**
+    - `ICE 9`: A 35-min sprint where students build the "frontend" forms (`/login`, `/register`) using `flask-wtf`.
+- **Asynchronous Work (Homework):**
+    - `A09 (Change Password)`: A **"Team Best"** assignment.
+        - **Individual Task:** Every student must individually build the `change_password` feature *and* its corresponding `pytest` test.
+        - **Team Task:** The team reviews all individual PRs and merges the "best" one to the feature branch.
+        - **EC Task:** Add a `re`-based password complexity validator.
+
+### 3. Key Artifacts & Process Decisions
+
+- **The "Critical Bridge" (ICE 9 Kit):** We will provide a comprehensive `ICE09_auth_kit.zip` that contains all backend code *from* Lecture 5. This kit is the "scaffolding" that makes the 35-minute ICE possible, as it allows students to focus only on the *new* skill (forms) rather than re-typing the backend code.
+- **Test Scaffolding:** The `ICE09_auth_kit` will *also* include `tests/test_auth.py` with pre-written, working tests for `login` and `register`. This turns the `A09` homework (writing `test_change_password`) into a "pattern-matching" task, which manages its complexity.
+- **TopHat Triage Dashboard:** We will surgically insert HTML for a **private, asynchronous TopHat poll** into the ICEs. This allows TAs to triage the room and find blocked teams without creating a public, shaming leaderboard.
+- **Canvas/Build Workflow:** All Canvas pages will be generated using the user-provided HTML templates. The PDF build script issue will be solved by adding the `-f markdown+grid_tables` flag to the `pandoc` command.
+- **Pedagogical Pivot (Containerization):** We will *intentionally* leave the `SECRET_KEY` hardcoded in `config.py`. This is a "known flaw" that we will use to motivate the move to environment variables during the Containerization (Cycle 3) module.
+
+---
+
+## Rationale
+
+This plan is an aggressive but pedagogically sound "I-WE-YOU" sprint.
+
+- **Managing Cognitive Load:** The primary concern was the density of the AuthN/AuthZ module. By splitting the "backend" (Lecture 5) from the "frontend forms" (ICE 9) and the "testing" (A09), we break one massive topic into three manageable, scaffolded steps.
+- **Engineering Realism:** The `A09` homework was designed as a "Team Best" to enforce **individual competency** (everyone *must* build the feature) and **team-based peer review** (they *must* read each other's code). It also correctly bundles the feature *with its tests*, modeling a complete "Jira ticket."
+- **Data-Driven Teaching:** The TopHat "Triage Dashboard" aligns with our evidence-driven approach, giving instructors real-time, private data to deploy TAs effectively.
+- **Workload Pacing:** All "spiky" workloads from Cycle 1 have been resolved. The Week 11-12 cadence is now a clean, repeatable rhythm:
+    - **Monday (Lec/ICE):** Learn/practice a new "stack" (e.g., AuthN).
+    - **Wednesday (HW/Lec/ICE):** Deliver the "YOU" (e.g., AuthN tests) and learn/practice the next "stack" (e.g., CRUD).
+    - **Friday (HW):** Deliver the "YOU" for the second stack.
 
 ---
 
