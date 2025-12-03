@@ -9,7 +9,7 @@ That's right, the next step is **Homework 11 (A16)**. This assignment makes the 
 
 -----
 
-## Homework 11: Persisting the AI Analysis (A16)
+# Homework 11: Persisting the AI Analysis (A16)
 
   * **Module:** 3
   * **Assignment:** 11 (A16)
@@ -18,11 +18,11 @@ That's right, the next step is **Homework 11 (A16)**. This assignment makes the 
   * **Due Date:** [Next Due Date]
   * **Type:** "Team Best"
 
-### The "Why": Making Data Valuable
+## The "Why": Making Data Valuable
 
 In ICE 16, the AI rating disappeared once the user clicked away. For the rating to be useful for moderation, filtering, or display, it must be **persisted** in the database. This assignment reinforces the crucial engineering skill of evolving a database schema (`Joke` model) to support a new feature without losing existing data.
 
-### The "Team Best" Workflow
+## The "Team Best" Workflow
 
 1.  **Branch:** The `Repo Admin` creates a branch `hw11-ai-persistence`.
 2.  **Individual PRs:** Each student creates their own PR implementing the changes.
@@ -30,7 +30,7 @@ In ICE 16, the AI rating disappeared once the user clicked away. For the rating 
 
 -----
 
-### Core Task 1: Evolving the Database Schema 📜
+## Core Task 1: Evolving the Database Schema 📜
 
 You need to update the `Joke` model to store the two pieces of information returned by the AI: the descriptive rating and the numerical score.
 
@@ -44,7 +44,7 @@ You need to update the `Joke` model to store the two pieces of information retur
     ```
     *Note: The migration must be run before the next step can access the new columns.*
 
-### Core Task 2: Refactoring the Integration Logic
+## Core Task 2: Refactoring the Integration Logic
 
 Now that the columns exist, update the `create_joke` route to save the data.
 
@@ -77,7 +77,7 @@ db.session.add(joke)
 # ...
 ```
 
-### Core Task 3: Displaying the Permanent Rating
+## Core Task 3: Displaying the Permanent Rating
 
 Make the data visible to prove it's been saved.
 
@@ -91,7 +91,7 @@ Make the data visible to prove it's been saved.
 
 -----
 
-### ⭐ Extra Credit (+2 Points): Testing the Persistence
+## ⭐ Extra Credit (+2 Points): Testing the Persistence
 
 Add a unit test to `tests/test_joke_create.py` (or similar) that validates the entire persistence process:
 
@@ -102,7 +102,7 @@ Add a unit test to `tests/test_joke_create.py` (or similar) that validates the e
 
 -----
 
-### `CONTRIBUTIONS.md` Log Entry
+## `CONTRIBUTIONS.md` Log Entry
 
 ```markdown
 #### HW 11 (A16): Persisting the AI Analysis

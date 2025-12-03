@@ -1,10 +1,9 @@
-# Homework 10: The Deployment Spec (A15)
+# Homework 10: The Deployment Spec A16
 
   * **Module:** 3
-  * **Assignment:** 10 (A15)
+  * **Assignment:** A16
   * **Topic:** Docker Optimization, Entrypoint Scripts, and Service Health
   * **Points:** 10
-  * **Due Date:** Monday, December 1 @ 11:59 PM
   * **Type:** "Team Best"
 
 ## The "Why": Robustness & Automation
