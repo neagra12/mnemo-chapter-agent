@@ -39,7 +39,106 @@ This is a cross-service integration task.
 
 -----
 
-### Phase 2: The Infrastructure (Process Lead - Ops)
+### Phase 2: The Mock AI Service (Process Lead - Ops)
+1. **Create Service Driectory:** Create a new folder named `ai-service/` in your project root.
+2. Create the `ai-service/ai_rater.py` program file with the following content:
+   ```python
+   import os
+   import time
+   import random
+   from flask import Flask, request, jsonify
+
+   # Flask application setup
+   app = Flask(__name__)
+
+   # Define the possible, random ratings
+   POSSIBLE_SCORES = list(range(1, 6)) # [1, 2, 3, 4, 5]
+   POSSIBLE_RATINGS = ["G", "PG", "NSFW"]
+
+   # Mock AI Service: The Black Box
+   @app.route('/rate_joke', methods=['POST'])
+   def rate_joke():
+       """
+       Mocks an AI service call. It expects a JSON body with a 'joke_text' field
+       and returns a random rating and score for the joke.
+       """
+       
+       # 1. Enforce content type
+       if not request.is_json:
+           # 400 Bad Request
+           return jsonify({"error": "Request must contain JSON payload."}), 400
+
+       data = request.get_json()
+       joke_text = data.get('joke_text', 'No joke provided')
+
+       # Simulate network/processing latency to be more realistic
+       time.sleep(0.05) 
+
+       # --- NEW RANDOM LOGIC ---
+       # Randomly select a score (1-5) and a rating (G, PG, NSFW)
+       random_score = random.choice(POSSIBLE_SCORES)
+       random_rating = random.choice(POSSIBLE_RATINGS)
+       # -------------------------
+
+       # Log the request details for debugging in the Docker logs
+       print(f"--- Mock AI Service received request from client ---")
+       print(f"--- Joke: '{joke_text[:75]}{'...' if len(joke_text) > 75 else ''}'")
+
+       # 2. Mock AI Logic: Return a consistent result for deterministic testing
+       mock_rating = {
+           "score": random_score,  # Random 1-5
+           "rating": random_rating, # Random G, PG, or NSFW (new key: 'rating')
+           "analysis": f"AI decided: Score {random_score} and Rating {random_rating}. Integration successful!"
+       }
+
+       # 3. Return the rating as JSON
+       # 200 OK
+       return jsonify(mock_rating), 200
+
+   # The service runs on port 5001 internally. 
+   # Docker Compose will map this to the service name 'ai-service' for inter-container communication.
+   if __name__ == '__main__':
+       # Use 0.0.0.0 for access within the Docker network
+       app.run(debug=False, host='0.0.0.0', port=5002)
+    ```
+3. Create the Dockerfile for the ai-service:
+   ```Dockerfile
+   # Use a minimal Python image for a small, fast container
+   FROM python:3.11-slim
+
+   # Set non-root user to improve security
+   # This is a good practice for production images
+   ARG USERNAME=appuser
+   RUN useradd -m ${USERNAME}
+   USER ${USERNAME}
+
+   # Set the working directory inside the container
+   WORKDIR /home/${USERNAME}/app
+
+   # Copy the requirements file and install dependencies
+   COPY requirements.txt .
+   RUN pip install --no-cache-dir -r requirements.txt
+
+   # Copy the application code
+   COPY app.py .
+
+   # The Flask app is configured to run on port 5001 internally
+   EXPOSE 5002
+
+   # Command to run the application
+   # Use the correct internal port
+   CMD ["python", "app.py"]
+   ```
+4. Modify the moj/config.py file to add the line:
+   ```python
+   AI_SERVICE_URL = os.environ.get('AI_SERVICE_URL')
+   ```
+5. Copy the requirements.txt file from the root of your repo to the ai-service directory. We will build the mock ai service with the same requirements as our web service. This is an expedience since this is just a mock service.
+6. Commit and push the changes.
+
+-----
+
+### Phase 2: The Infrastructure (Dev Crew - Ops)
 
 Your job is to add the new container to the "private network."
 
@@ -61,7 +160,7 @@ Your job is to add the new container to the "private network."
           - FLASK_DEBUG=1
           - DATABASE_URL=postgresql://moj:password@db:5432/moj
           # NEW: Tell Flask where the AI lives (by service name!)
-          - AI_SERVICE_URL=http://ai-service:5000
+          - AI_SERVICE_URL=http://ai-service:5001
         depends_on:
           - db
           - ai-service # Wait for AI to start
@@ -70,9 +169,9 @@ Your job is to add the new container to the "private network."
 
       # NEW SERVICE definition
       ai-service:
-        image: pkimber/moj-ai-rater:latest
+        build: ./ai-service  # <-- Build from the local folder
         ports:
-          - "5001:5000" # Map 5000 inside to 5001 outside (for debugging)
+          - "5001:5002" # Map 5000 inside to 5001 outside (for debugging)
     ```
 
 3.  **Commit & Push.**
