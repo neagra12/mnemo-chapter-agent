@@ -1,0 +1,281 @@
+<h1 style="background-color: #990000; width: 100%; text-align: left; padding-left: 30px;"><strong><span id="ice-9-the-front-door-user-registration-login" style="color: #ffffff;">ICE 9: The &ldquo;Front Door&rdquo; (User Registration &amp; Login)</span></strong></h1>
+<ul>
+    <li><strong>Objective:</strong> Implement user-facing registration and login forms using <code>flask-wtf</code>.</li>
+    <li><strong>Time Limit:</strong> 35-40 minutes</li>
+    <li><strong>Context:</strong> In the lecture, we built the &ldquo;engine&rdquo; for authentication: the password hashing, the <code>UserMixin</code>, and the <code>@login_required</code> decorator. However, our <code>/login</code> route was just a &ldquo;hardcoded&rdquo; placeholder. This ICE builds the <em>real</em> user interface&mdash;the &ldquo;dashboard&rdquo; for our auth engine. We will use the <code>flask-wtf</code> library to create secure, server-side forms.</li>
+    <li><em><strong>Caution:</strong> Each team should start with the following conditions:</em>
+        <ul>
+            <li><em>Local repo is on main branch and successful git pull.</em></li>
+            <li><em>Activate your virtual environment (</em><i>vent)</i></li>
+            <li><i>Run </i><code>pip install -r requirements.txt</code><i> to ensure all packages are installed and available.</i></li>
+        </ul>
+    </li>
+</ul>
+<hr />
+<h2 id="role-kit-selection-strategy-1-parallel-processing">Role Kit Selection (Strategy 1: Parallel Processing ⚡)</h2>
+<p>For this ICE, we will use the <strong>Authentication Kit</strong>. Assign these three roles immediately.</p>
+<ul>
+    <li><strong><code>Repo Admin</code>:</strong> (Git &amp; Environment) Installs new packages, updates <code>requirements.txt</code>, handles all Git operations (branching, merging, PR).</li>
+    <li><strong><code>Process Lead</code>:</strong> (Forms) Creates the new <code>moj/forms.py</code> file and defines the Python classes for our <code>LoginForm</code> and <code>RegistrationForm</code>.</li>
+    <li><strong><code>Dev Crew</code>:</strong> (Routes &amp; Logic) Modifies <code>moj/routes.py</code> to import the new forms, handle <code>POST</code> requests, and process user logins/registrations.</li>
+</ul>
+<h2 id="task-description-building-the-forms" style="margin-top: 18px; background-color: #f3f2eb; border-bottom: 5px inset #990000;">Task Description: Building the Forms</h2>
+<h3 id="phase-1-kit-installation-repo-admin">Phase 1: Kit &amp; Installation (Repo Admin)</h3>
+<ol type="1">
+    <li>
+        <p><strong>Branch:</strong> Pull <code>main</code> and create a new branch: <code>ice9-authn-forms</code>.</p>
+    </li>
+    <li>
+        <p><strong>Download the Kit:</strong> Download <a id="196874122" class="instructure_file_link inline_disabled" href="https://iu.instructure.com/courses/2329877/files/196877048?wrap=1" target="_blank" rel="noopener" data-api-endpoint="https://iu.instructure.com/api/v1/courses/2329877/files/196877048" data-api-returntype="File"><code>ICE09_auth_kit.zip</code> </a>from Canvas.</p>
+        <ul>
+            <li><strong>CRITICAL:</strong> This kit contains all the &ldquo;backend&rdquo; code from Lecture 5. <strong>Unzip and copy its contents</strong> (the <code>moj/</code> and <code>migrations/</code> directories) into your repo, <strong>overwriting</strong> your existing files. This will update your <code>__init__.py</code>, <code>models.py</code>, <code>routes.py</code>, <code>config.py</code> and add new templates.</li>
+        </ul>
+    </li>
+    <li>
+        <p><strong>Install:</strong> Install the new form library:</p>
+        <div id="cb1" class="sourceCode">
+            <pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ex">pip</span> install flask-wtf</span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Update:</strong> Update your <code>requirements.txt</code> file:</p>
+        <div id="cb2" class="sourceCode">
+            <pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ex">pip</span> freeze <span class="op">&gt;</span> requirements.txt</span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Commit:</strong> <code>git add .</code> and <code>git commit -m "feat: add auth backend and new templates from kit"</code> and push to GitHub.</p>
+    </li>
+    <li>
+        <p><em>Announce to the team that the branch is ready.</em></p>
+    </li>
+</ol>
+<h3 id="phase-2-define-the-forms-we-process-lead">Phase 2: Define the Forms (WE 👩&zwj;🏫) (Process Lead)</h3>
+<p>This is a &ldquo;WE do it together&rdquo; task. Your job is to create the Python classes that <em>represent</em> our forms.</p>
+<ol type="1">
+    <li>
+        <p><strong>Pull:</strong> <code>git pull</code> to get the latest branch.</p>
+    </li>
+    <li>
+        <p><strong>Create File:</strong> Create a new file: <code>moj/forms.py</code>.</p>
+    </li>
+    <li>
+        <p><strong>Add Code:</strong> Paste the following code into <code>moj/forms.py</code>. This defines the fields and <em>validators</em> (rules) for our two forms.</p>
+        <div id="cb3" class="sourceCode">
+            <pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># In moj/forms.py</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="im">from</span> flask_wtf <span class="im">import</span> FlaskForm</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="im">from</span> wtforms <span class="im">import</span> StringField, PasswordField, BooleanField, SubmitField</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="im">from</span> wtforms.validators <span class="im">import</span> DataRequired, ValidationError, Email, EqualTo</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="im">from</span> moj.models <span class="im">import</span> User</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a></span><br />
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="kw">class</span> LoginForm(FlaskForm):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>    <span class="co">"""Form for user login."""</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>    username <span class="op">=</span> StringField(<span class="st">'Username'</span>, validators<span class="op">=</span>[DataRequired()])</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>    password <span class="op">=</span> PasswordField(<span class="st">'Password'</span>, validators<span class="op">=</span>[DataRequired()])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>    remember_me <span class="op">=</span> BooleanField(<span class="st">'Remember Me'</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>    submit <span class="op">=</span> SubmitField(<span class="st">'Sign In'</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a></span><br />
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a><span class="kw">class</span> RegistrationForm(FlaskForm):</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a>    <span class="co">"""Form for new user registration."""</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>    username <span class="op">=</span> StringField(<span class="st">'Username'</span>, validators<span class="op">=</span>[DataRequired()])</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>    email <span class="op">=</span> StringField(<span class="st">'Email'</span>, validators<span class="op">=</span>[DataRequired(), Email()])</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a>    password <span class="op">=</span> PasswordField(<span class="st">'Password'</span>, validators<span class="op">=</span>[DataRequired()])</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>    password2 <span class="op">=</span> PasswordField(</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a>        <span class="st">'Repeat Password'</span>, validators<span class="op">=</span>[DataRequired(), EqualTo(<span class="st">'password'</span>)])</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a>    submit <span class="op">=</span> SubmitField(<span class="st">'Register'</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a>    <span class="co"># Custom validator</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a>    <span class="kw">def</span> validate_username(<span class="va">self</span>, username):</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a>        user <span class="op">=</span> User.query.filter_by(username<span class="op">=</span>username.data).first()</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a>        <span class="cf">if</span> user <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a>            <span class="cf">raise</span> ValidationError(<span class="st">'Please use a different username.'</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a>    <span class="co"># Custom validator</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a>    <span class="kw">def</span> validate_email(<span class="va">self</span>, email):</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>        user <span class="op">=</span> User.query.filter_by(email<span class="op">=</span>email.data).first()</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a>        <span class="cf">if</span> user <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a>            <span class="cf">raise</span> ValidationError(<span class="st">'Please use a different email address.'</span>)</span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Commit:</strong> <code>git add moj/forms.py</code> and <code>git commit -m "feat: define LoginForm and RegistrationForm"</code> and push to GitHub..</p>
+    </li>
+    <li>
+        <p><em>Announce to the <code>Dev Crew</code> that the forms are ready to be used.</em></p>
+    </li>
+</ol>
+<h3 id="phase-3-implement-form-logic-you-dev-crew">Phase 3: Implement Form Logic (YOU 🫵) (Dev Crew)</h3>
+<p>This is the &ldquo;YOU do it&rdquo; task. Your job is to update <code>moj/routes.py</code> to actually <em>use</em> the forms from Phase 2.</p>
+<ol type="1">
+    <li>
+        <p><strong>Pull:</strong> <code>git pull</code> to get the new <code>moj/forms.py</code> file.</p>
+    </li>
+    <li>
+        <p><strong>Open:</strong> Open <code>moj/routes.py</code>.</p>
+    </li>
+    <li>
+        <p><strong>Import:</strong> At the top, import the new forms and other tools:</p>
+        <div id="cb4" class="sourceCode">
+            <pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># ... (existing imports)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="im">from</span> flask <span class="im">import</span> render_template, redirect, url_for, request, flash <span class="co"># &lt;-- Add 'flash'</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="im">from</span> flask_login <span class="im">import</span> login_user, logout_user, current_user, login_required</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="im">from</span> moj.models <span class="im">import</span> User, Joke</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="im">from</span> moj <span class="im">import</span> db <span class="co"># &lt;-- NEW</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="im">from</span> moj.forms <span class="im">import</span> LoginForm, RegistrationForm <span class="co"># &lt;-- NEW</span></span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Update <code>login</code> Route:</strong> Find the <em>existing</em> <code>@app.route('/login')</code> route (from the starter kit). It&rsquo;s a &ldquo;hardcoded&rdquo; placeholder. <strong>Replace it entirely</strong> with this new version that actually processes the form:</p>
+        <div id="cb5" class="sourceCode">
+            <pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="co"># In moj/routes.py</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="at">@app.route</span>(<span class="st">'/login'</span>, methods<span class="op">=</span>[<span class="st">'GET'</span>, <span class="st">'POST'</span>])</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">def</span> login():</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>    <span class="co"># A user who is already logged in shouldn't see the login page</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>    <span class="cf">if</span> current_user.is_authenticated:</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>        <span class="cf">return</span> redirect(url_for(<span class="st">'index'</span>))</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>    form <span class="op">=</span> LoginForm()</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>    <span class="cf">if</span> form.validate_on_submit():</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>        <span class="co"># 1. Find the user in the database</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>        user <span class="op">=</span> User.query.filter_by(username<span class="op">=</span>form.username.data).first()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>        <span class="co"># 2. Check password</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>        <span class="cf">if</span> user <span class="kw">is</span> <span class="va">None</span> <span class="kw">or</span> <span class="kw">not</span> user.check_password(form.password.data):</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>            flash(<span class="st">'Invalid username or password'</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>            <span class="cf">return</span> redirect(url_for(<span class="st">'login'</span>))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a>        <span class="co"># 3. Log them in!</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a>        login_user(user, remember<span class="op">=</span>form.remember_me.data)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>        <span class="cf">return</span> redirect(url_for(<span class="st">'index'</span>))</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true"></a>    <span class="cf">return</span> render_template(<span class="st">'login.html'</span>, title<span class="op">=</span><span class="st">'Sign In'</span>, form<span class="op">=</span>form)</span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Create <code>register</code> Route:</strong> This route doesn&rsquo;t exist yet. <strong>Add this new route</strong> (e.g., after the <code>login</code> route):</p>
+        <div id="cb6" class="sourceCode">
+            <pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co"># In moj/routes.py</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="at">@app.route</span>(<span class="st">'/register'</span>, methods<span class="op">=</span>[<span class="st">'GET'</span>, <span class="st">'POST'</span>])</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="kw">def</span> register():</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>    <span class="cf">if</span> current_user.is_authenticated:</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>        <span class="cf">return</span> redirect(url_for(<span class="st">'index'</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>    form <span class="op">=</span> RegistrationForm()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>    <span class="cf">if</span> form.validate_on_submit():</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>        <span class="co"># 1. Create the new user object</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>        user <span class="op">=</span> User(username<span class="op">=</span>form.username.data, email<span class="op">=</span>form.email.data)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>        <span class="co"># 2. Set their password (this hashes it)</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>        user.set_password(form.password.data)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>        <span class="co"># 3. Add to database</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>        db.session.add(user)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>        db.session.commit()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>        flash(<span class="st">'Congratulations, you are now a registered user!'</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>        <span class="cf">return</span> redirect(url_for(<span class="st">'login'</span>))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a>    <span class="cf">return</span> render_template(<span class="st">'register.html'</span>, title<span class="op">=</span><span class="st">'Register'</span>, form<span class="op">=</span>form)</span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Update <code>index</code> Route:</strong> We need to update the <code>index</code> route to render the new <code>_navigation.html</code> (which was in the kit).</p>
+        <ul>
+            <li><strong>Replace</strong> the <em>existing</em> <code>index</code> route with this:</li>
+        </ul>
+        <div id="cb7" class="sourceCode">
+            <pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co"># In moj/routes.py</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="at">@app.route</span>(<span class="st">'/'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="at">@app.route</span>(<span class="st">'/index'</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="at">@login_required</span> <span class="co"># &lt;-- Now the index requires you to be logged in!</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="kw">def</span> index():</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>    <span class="cf">return</span> render_template(<span class="st">'index.html'</span>, title<span class="op">=</span><span class="st">'Home'</span>)</span></code></pre>
+        </div>
+    </li>
+    <li>
+        <p><strong>Commit:</strong> <code>git add moj/routes.py</code> and <code>git commit -m "feat: implement login and register route logic"</code>.</p>
+    </li>
+</ol>
+<h3 id="phase-4-log-and-submit-repo-admin">Phase 4: Log and Submit (Repo Admin)</h3>
+<ol type="1">
+    <li><strong>Pull:</strong> <code>git pull</code> to get the final <code>moj/routes.py</code> changes.</li>
+    <li><strong>Test:</strong> Run the app (<code>flask run</code>) and test the full workflow:
+        <ul>
+            <li>Can you load <code>/register</code>?</li>
+            <li>Can you create a new user?</li>
+            <li>Are you redirected to <code>/login</code>?</li>
+            <li>Can you log in with that new user?</li>
+            <li>Are you redirected to <code>/index</code>?</li>
+            <li>Can you visit <code>/logout</code>?</li>
+        </ul>
+    </li>
+    <li><strong>Log:</strong> Share your screen and fill out the <code>CONTRIBUTIONS.md</code> log.</li>
+    <li><strong>Submit:</strong> Commit the log, push the branch, and open a Pull Request. Submit the PR link to Canvas.</li>
+</ol>
+<hr />
+<h2 id="contributions.md-log-entry" style="margin-top: 18px; background-color: #f3f2eb; border-bottom: 5px inset #990000;"><code>CONTRIBUTIONS.md</code> Log Entry</h2>
+<div id="cb8" class="sourceCode">
+    <pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="fu">#### ICE 9: The "Front Door" (User Registration &amp; Login)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="ss">* </span>**Date:** 2025-XX-XX</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="ss">* </span>**Team Members Present:** <span class="in">`@github-user1`</span>, <span class="in">`@github-user2`</span>, ...</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="ss">* </span>**Roles:**</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="ss">    * </span>Repo Admin: <span class="in">`@github-userX`</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="ss">    * </span>Process Lead: <span class="in">`@github-userY`</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="ss">    * </span>Dev Crew: <span class="in">`@github-userZ`</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="ss">* </span>**Summary of Work:** <span class="co">[</span><span class="ot">1-2 sentence summary, e.g., "Installed flask-wtf, defined the `LoginForm` and `RegistrationForm` in `forms.py`, and implemented the `login` and `register` routes in `routes.py` to handle form validation and user creation."</span><span class="co">]</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a><span class="ss">* </span>**Evidence &amp; Reflection:** What is the purpose of <span class="in">`form.validate_on_submit()`</span>? What two things does it check for before returning <span class="in">`True`</span>?</span></code></pre>
+</div>
+<hr />
+<h2 id="definition-of-done-dod" style="margin-top: 18px; background-color: #f3f2eb; border-bottom: 5px inset #990000;">Definition of Done (DoD) 🏁</h2>
+<ul class="task-list">
+    <li><strong>Artifact (Kit):</strong> The <code>ICE09_auth_kit.zip</code> has been unzipped and committed.</li>
+    <li><strong>Artifact (Env):</strong> <code>flask-wtf</code> is installed and in <code>requirements.txt</code>.</li>
+    <li><strong>Artifact (Forms):</strong> The <code>moj/forms.py</code> file exists and contains the <code>LoginForm</code> and <code>RegistrationForm</code>.</li>
+    <li><strong>Artifact (Routes):</strong> <code>moj/routes.py</code> is updated with <code>POST</code> logic for the <code>/login</code> and <code>/register</code> routes.</li>
+    <li><strong>Functionality:</strong> A new user can successfully register, log in, see the index page, and log out.</li>
+    <li><strong>Process:</strong> <code>CONTRIBUTIONS.md</code> is updated.</li>
+    <li><strong>Submission:</strong> A Pull Request is open with the title <code>ICE 9: The "Front Door"</code>.&nbsp;</li>
+</ul>
+<p>&nbsp;</p>
+<table style="width: 100%; border-collapse: collapse; border: 1px solid #ccc;" summary="Grading rubric for ICE 9">
+    <thead style="background-color: #f2f2f2;">
+        <tr>
+            <th style="width: 70%; padding: 12px; border: 1px solid #ccc; text-align: left;">Criteria</th>
+            <th style="width: 30%; padding: 12px; border: 1px solid #ccc; text-align: right;">Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 12px; border: 1px solid #ccc; vertical-align: top;"><strong><code>CONTRIBUTIONS.md</code> Log (3 pts)</strong>
+                <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 20px;">
+                    <li>File is completed with all fields (roles, summary).</li>
+                    <li>Reflection question is answered thoughtfully.</li>
+                </ul>
+            </td>
+            <td style="padding: 12px; border: 1px solid #ccc; text-align: right; vertical-align: top;">/ 3</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #ccc; vertical-align: top;"><strong>Environment &amp; Forms (3 pts)</strong>
+                <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 20px;">
+                    <li><code>flask-wtf</code> is in <code>requirements.txt</code>.</li>
+                    <li><code>moj/forms.py</code> file is created and contains the <code>LoginForm</code> and Code<code>RegistrationForm</code> classes from the instructions.</li>
+                </ul>
+            </td>
+            <td style="padding: 12px; border: 1px solid #ccc; text-align: right; vertical-align: top;">/ 3</td>
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td style="padding: 12px; border: 1px solid #ccc; vertical-align: top;"><strong>Route Implementation (4 pts)</strong>
+                <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 20px;">
+                    <li><code>/login</code> route is updated to use <code>LoginForm</code> and <code>form.validate_on_submit()</code>.</li>
+                    <li><code>/register</code> route is created, uses <code>RegistrationForm</code>, and correctly creates a new <code>User</code> in the database.</li>
+                    <li><code>index</code> route is correctly updated.</li>
+                </ul>
+            </td>
+            <td style="padding: 12px; border: 1px solid #ccc; text-align: right; vertical-align: top;">/ 4</td>
+        </tr>
+        <tr style="background-color: #f2f2f2;">
+            <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">Total</td>
+            <td style="padding: 12px; border: 1px solid #ccc; text-align: right;">/ 10</td>
+        </tr>
+    </tbody>
+</table>
