@@ -6,7 +6,7 @@
 
 -----
 
-## \#\# Slide 1: Title Slide 🌐
+## Slide 1: Title Slide 🌐
 
   * **Topic:** Exposing Services (The API-First App)
   * **Subtitle:** Decoupling the Frontend and Backend
@@ -14,7 +14,7 @@
 
 -----
 
-## \#\# Slide 2: Learning Objectives
+## Slide 2: Learning Objectives
 
   * By the end of this lecture, you will be able to:
       * **Explain** the difference between a traditional Monolith and an API-First architecture.
@@ -25,7 +25,7 @@
 
 -----
 
-## \#\# Slide 3: The Architectural Shift: Monolith vs. API-First
+## Slide 3: The Architectural Shift: Monolith vs. API-First
 
   * **Monolith (Current State):** Our app is a monolith. The backend (Flask) handles the data *and* renders the HTML (`render_template`). The frontend and backend are tightly coupled.
       * *User asks for `/` -\> Flask queries DB -\> Flask builds HTML -\> Flask sends HTML.*
@@ -36,7 +36,7 @@
 
 -----
 
-## \#\# Slide 4: Building the API Endpoint with `jsonify`
+## Slide 4: Building the API Endpoint with `jsonify`
 
   * Instead of returning the output of `render_template()`, we return JSON data.
 
@@ -68,7 +68,7 @@ def api_jokes():
 
 -----
 
-## \#\# Slide 5: The "Gotcha": CORS (Cross-Origin Resource Sharing)
+## Slide 5: The "Gotcha": CORS (Cross-Origin Resource Sharing)
 
   * **The Problem:** Your Flask API is running on `http://localhost:5000`. Your simple React frontend might be running on `http://localhost:3000`.
   * **The Browser Security Rule:** Browsers **block** JavaScript from making requests from one domain (origin: 3000) to another domain (origin: 5000) unless the server explicitly allows it.
@@ -104,7 +104,7 @@ CORS(app)
 
 -----
 
-## \#\# Slide 7: The Frontend Consumer (Conceptual)
+## Slide 7: The Frontend Consumer (Conceptual)
 
   * The frontend (written in JavaScript/React) simply uses the built-in `fetch` API to get the data.
 
@@ -132,7 +132,7 @@ async function fetchJokes() {
 
 -----
 
-## \#\# Slide 8: Key Takeaways
+## Slide 8: Key Takeaways
 
   * Moving to an API-First architecture requires the backend to return **JSON** (via `jsonify`) instead of HTML.
   * We use **REST** principles to define clean, resource-based endpoints (e.g., `/api/jokes`).
@@ -141,7 +141,7 @@ async function fetchJokes() {
 
 -----
 
-## \#\# Slide 9: Your Mission (ICE 17 & A17)
+## Slide 9: Your Mission (ICE 17 & A17)
 
   * **ICE 17 (Today):**
       * **Install** `flask-cors`.

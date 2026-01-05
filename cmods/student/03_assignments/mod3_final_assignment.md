@@ -2,13 +2,12 @@ You're asking for the final capstone assignment, which is a synthesis of the ent
 
 -----
 
-# Homework 13: The Greenfield Development Capstone (A18) 🚀
+# Assignment 18: The Greenfield Development Capstone (A18) 🚀
 
   * **Module:** Final Synthesis
-  * **Assignment:** 13 (A18)
+  * **Assignment:** A18
   * **Topic:** Architectural Synthesis, Documentation, and Final Submission
   * **Points:** 20 (Course Capstone)
-  * **Due Date:** Final Exam Period
   * **Type:** Team Final Submission
 
 ## The "Why": Articulating Value
