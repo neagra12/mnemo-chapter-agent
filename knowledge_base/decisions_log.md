@@ -2,6 +2,72 @@
 
 ---
 
+### Decision Log: Chapter Agent — Creation & Rationale
+
+- **Date:** 2026-02-18
+- **Status:** Decided
+
+---
+
+## Context
+
+As part of a research comparison effort, we needed to evaluate Clio's approach to
+instructional content generation against the **DARL Instructional Agents** system
+(Yao et al., EACL 2026, arXiv:2508.19611), which uses a multi-agent LLM pipeline
+following the ADDIE framework to generate syllabi, lecture slides, scripts, and
+assessments for university-level courses.
+
+Clio's current design is deeply coupled to P465-specific classroom logistics: ICEs,
+team roles, GitHub PRs, Canvas rubrics, the MoJ project, and the SBP workflow. This
+makes a direct comparison impossible, as Clio generates classroom management artifacts
+while DARL generates standalone instructional content (chapters).
+
+## Decision
+
+A new persona file — `chapter_agent_persona.md` — has been added to the
+`knowledge_base/` directory. It defines a **Chapter Agent**: a separate, single-agent
+system built on Clio's pedagogical principles but redesigned to generate self-contained
+instructional chapter packages comparable to DARL's output.
+
+**Key design choices:**
+
+1. **ADDIE Alignment:** The Chapter Agent explicitly follows the ADDIE phases
+   (Analysis → Design → Development → Implementation → Evaluation) to mirror DARL's
+   framework.
+2. **Four Operation Modes:** Autonomous, Catalog-Guided, Feedback-Guided, and Full
+   Co-Pilot — directly comparable to DARL's four modes.
+3. **Domain-Agnostic:** Unlike Clio, the Chapter Agent has no dependency on P465,
+   MoJ, Flask, GitHub, or Canvas. It can generate chapters for any university-level
+   subject.
+4. **No Classroom Logistics:** ICEs, team roles, PRs, rubrics, and the SBP are
+   deliberately excluded. The output is content only.
+5. **Preserved from Clio:** The I-WE-YOU scaffolding model, Historical Hook,
+   Ethical Reflection prompt, Bloom's Taxonomy alignment, and Pedagogical Review
+   section are all retained as they are pedagogically sound and domain-agnostic.
+
+## What Was NOT Changed
+
+- `clio_persona.md` is unchanged. Clio remains the primary agent for P465.
+- All `cmods/`, `pipeline/`, `sessions/`, and course artifact files are unchanged.
+- This is a purely additive change — no existing files were modified.
+
+## Rationale
+
+This approach allows a clean side-by-side comparison:
+
+| Dimension             | Clio                        | Chapter Agent               | DARL Instructional Agents     |
+| :-------------------- | :-------------------------- | :-------------------------- | :---------------------------- |
+| Architecture          | Single agent                | Single agent                | Multi-agent pipeline          |
+| Framework             | Custom persona              | ADDIE                       | ADDIE                         |
+| Primary output        | ICEs, slides, rubrics       | Chapter packages            | Slides, scripts, assessments  |
+| Domain                | P465 (Flask/Python)         | Any                         | Any (tested on 5 CS courses)  |
+| Operation modes       | Implicit                    | 4 explicit modes            | 4 explicit modes              |
+| Classroom logistics   | Yes (GitHub, Canvas, teams) | No                          | No                            |
+
+**Reference:** `knowledge_base/chapter_agent_persona.md`
+
+---
+
 Here is the decision log entry for the re-sequencing.
 
 ---
@@ -1030,4 +1096,3 @@ Reviews will be conducted every two weeks and is up to the team and the team TA 
 
 ## Reduced number of quizzes first half of course
 I failed to deliver two additional quizzes I intended to deliver in the first 8 weeks of the course. I am interested in making up those quiz scores in the latter half of the class.
-

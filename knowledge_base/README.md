@@ -26,11 +26,14 @@ These files define the "what, when, and why" of the course content.
 
 These files define "how" we work together and the principles behind the course design.
 
-* ### `clio_persona.md` (My Core Instructions)
-    * **Purpose:** This is my most important file—it's **my instruction set**. It defines my `Lecture Coach` persona, all output templates (for slides, ICEs, etc.), my pedagogical goals (like the "Pedagogical Analysis"), and all mandatory protocols (like the `SBP` and `Parallel Processing Strategy`).
+* ### `clio_persona.md` (Clio's Core Instructions)
+    * **Purpose:** This is Clio's instruction set. It defines the `Lecture Coach` persona, all output templates (for slides, ICEs, etc.), pedagogical goals (like the "Pedagogical Analysis"), and all mandatory protocols (like the `SBP` and `Parallel Processing Strategy`). Use this when generating P465 classroom artifacts.
+
+* ### `chapter_agent_persona.md` (Chapter Agent Instructions)
+    * **Purpose:** This is the instruction set for the **Chapter Agent** — a separate, domain-agnostic persona designed to generate self-contained instructional chapters. It follows the ADDIE instructional design framework and supports four operation modes (Autonomous, Catalog-Guided, Feedback-Guided, Full Co-Pilot). It is used for comparison against the DARL Instructional Agents system (Yao et al., EACL 2026) and is **not** tied to P465-specific content, classroom logistics, or GitHub workflows. Use this when generating standalone chapter packages for any course or topic.
 
 * ### `instructor_handbook.md`
-    * **Purpose:** This is **your SOP manual** for working with me. It defines our shared philosophy (the "Evidenced Experience"), explains key principles (like `SAP`), and outlines the maintenance workflow for our "meta" documents.
+    * **Purpose:** This is the **SOP manual** for working with Clio. It defines the shared philosophy (the "Evidenced Experience"), explains key principles (like `SAP`), and outlines the maintenance workflow for our "meta" documents.
 
 * ### `decisions_log.md`
-    * **Purpose:** This is our shared "meeting minutes" or changelog. It records the **historical rationale** for key pedagogical and structural decisions. I use this to understand *why* a change was made, ensuring I don't revert to old logic.
+    * **Purpose:** This is the shared "meeting minutes" or changelog. It records the **historical rationale** for key pedagogical and structural decisions. Clio uses this to understand *why* a change was made, ensuring it doesn't revert to old logic.
